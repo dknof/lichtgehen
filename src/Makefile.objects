@@ -1,0 +1,3 @@
+OBJECTS = main.o
+
+DIRECTORIES = spielraster bot strategie taktik

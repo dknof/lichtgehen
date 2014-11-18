@@ -1,0 +1,45 @@
+2014-11-13
+	- Tiefensuche implementiert, einfache Bewertung
+
+2014-11-11
+	- Wechsel in Endspiel eingebaut (Strategie „Taktiken mit Endspiel“)
+	- Taktik „Tiefensuche“ begonnen
+
+2014-11-10
+	- Feld in Raster umbenannt (analog Spielfeld in Spielraster)
+
+2014-11-09
+	- Taktik Tiefensuche für Raum ausfüllen erweitert
+
+2014-11-08
+	- Das Spiel kann auch ohne externen Server laufen
+	- neue Taktik: Tiefensuche für Raum ausfüllen
+
+2014-11-01
+	- Feld um einige Informationsfunktionen erweitert
+	- Taktik GroessterRaum erstellt
+
+2014-10-31
+	- neue Taktik „Raum ausfüllen“
+	- Ein paar Hilfsfunktionen für Feld erstellt
+
+2014-10-30
+	- new durch unique_ptr ersetzt. Erfordert C++14
+
+2014-10-29
+	- Feld von vector<vector<bool>> auf vector<bool> umgeändert
+	- Taktik „Zufall“ implementiert
+	- Spielfelde 50x50 und Labyrinth hinzugefügt
+
+2014-10-27
+	- Der Weg der Bots wird gespeichert und bunt ausgegeben
+
+2014-10-26
+	- Korrekturen
+	- farbige Ausgabe
+	- debug-Modus
+
+2014-10-25
+	- Start der Programmierung
+	- Spielfeld laden
+	- Gerüst für Strategieen und Taktiken erstellt

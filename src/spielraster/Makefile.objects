@@ -1,0 +1,7 @@
+OBJECTS = spielraster.o \
+	  raster.o \
+	  position.o \
+	  botposition.o \
+	  richtung.o
+
+DIRECTORIES = 

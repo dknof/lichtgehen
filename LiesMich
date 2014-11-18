@@ -1,0 +1,5 @@
+tronbot
+Ein Programm für den siebten Programmierwettbewerb 2014 vom freiesMagazin, siehe (http://www.freiesmagazin.de/siebter_programmierwettbewerb)
+
+Zum Kompilieren: einfach 'make' ausführen sollte reichen.
+Benötigt wird C++14, getestet ist mit dem Compiler gcc version 4.9.1

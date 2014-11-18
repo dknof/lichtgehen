@@ -1,0 +1,5 @@
+OBJECTS = strategie.o \
+	  taktiken.o \
+	  taktiken_mit_endspiel.o
+
+DIRECTORIES = 

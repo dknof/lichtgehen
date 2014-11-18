@@ -1,0 +1,10 @@
+OBJECTS = taktik.o \
+	  tot.o \
+	  einzigerweg.o \
+	  richtung.o \
+	  raum_ausfuellen.o \
+	  raum_ausfuellen_tiefensuche.o \
+	  groesster_raum.o \
+	  tiefensuche.o
+
+DIRECTORIES = 

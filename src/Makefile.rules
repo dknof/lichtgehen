@@ -1,0 +1,45 @@
+CXX = ccache g++
+CXXFLAGS ?= -Wall -Werror -Wno-parentheses -std=c++14 -O0 -ggdb
+DEPGEN_FLAGS ?= -MMD -MP -MT $@ -MF $(@:.o=.d)
+
+.PHONY: all
+
+# compile the objects
+.PHONY: objects
+objects: $(OBJECTS)
+
+%.o : %.cpp
+	@echo $(CXX) -c $(SUBDIR)/$<
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) $(DEPGEN_FLAGS) -o $@ -c $<
+
+.PHONY: lib
+lib: $(OBJECTS) $(DIRECTORIES)
+	ar rcs lib.a $(OBJECTS) $(DIRECTORIES:%=%/lib.a)
+
+-include $(OBJECTS:%.o=%.d)
+
+# call make for the subdirectories
+.PHONY: directories
+directories: $(DIRECTORIES)
+
+# call make for the subdirectories
+.PHONY : $(DIRECTORIES)
+$(DIRECTORIES) :
+	$(MAKE) -C $@
+
+# remove the object files in this directory and the subdirectories
+.PHONY : clean
+clean :
+	-$(RM) *.o
+	-$(RM) *.d
+	-$(RM) lib.a
+ifeq ($(DEPTH),.)
+	-$(RM) tronbot
+	-$(RM) core core.*
+	-$(RM) tags
+endif
+	-for d in $(DIRECTORIES); do $(MAKE) -C $$d $@; done
+
+# clean the directory
+.PHONY: delete
+delete : clean

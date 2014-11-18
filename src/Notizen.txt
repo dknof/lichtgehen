@@ -1,0 +1,31 @@
+// Feld auffüllen: Tiefensuche
+// Laufzeit: O(3^Raumgröße)
+// Verbesserung: In map Feld + Position speichern, bei Duplikat abbrechen
+int suche(Feld, Position)
+int weite = 0
+for (richtung)
+wenn frei(position + bewegung)
+Feld feld2 = feld;
+weiter bewegen
+weite = max(weite, suche(feld2, position))
+return weite + 1;
+
+* Strategie: Wechsel auf Endspiel
+
+Spielfelder
+* Säulenwald
+
+
+GUI
+* Bewegung per Pfeiltasten
+  - Umschalt + Pfeiltaste: bis zur Wand
+* Nummer davor: Anzahl Schritte (n) (wie in Vim)
+* Leertaste: Schritt von der Strategie
+* Rückschritt: einen (n) Schritte zurück (nur ohne Server)
+* Nicht gegen Wände laufen
+* Informationen
+  - Runde
+  - Größe des Raumes
+  - Entfernung des nächsten Bots
+  - zuerst erreichbare Felder
+  - Welche Taktik als nächstes greift
