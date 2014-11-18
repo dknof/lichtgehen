@@ -10,7 +10,7 @@ objects: $(OBJECTS)
 
 %.o : %.cpp
 	@echo $(CXX) -c $(SUBDIR)/$<
-	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) $(DEPGEN_FLAGS) -o $@ -c $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) $(DEPGEN_FLAGS) -o $@ -c $<
 
 .PHONY: lib
 lib: $(OBJECTS) $(DIRECTORIES)

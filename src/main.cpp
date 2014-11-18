@@ -38,6 +38,7 @@
 
 #include "spielraster/spielraster.h"
 #include "bot/bot.h"
+#include "gui/gui.h"
 
 #include <string>
 using std::string;
@@ -47,7 +48,7 @@ using std::string;
 std::ostream* cdebug_;
 
 void main_wettbewerb();
-void main_eigenes_spiel();
+void main_eigenes_spiel(int& argc, char* argv[]);
 
 /**
  ** Hauptfunktion
@@ -68,11 +69,10 @@ cdebug_ = &cerr;
 cdebug_ = new std::ostringstream;
 #endif
 
-
 #if 0
 main_wettbewerb();
 #else
-main_eigenes_spiel();
+main_eigenes_spiel(argc, argv);
 #endif
 
 return 0;
@@ -81,20 +81,23 @@ return 0;
 /**
  ** Hauptfunktion für ein eigenes Spiel (mit eigenen Bots)
  **
- ** @param     -
+ ** @param     argc   Anzahl der Argumente (-> GUI)
+ ** @param     argv   Argumente (-> GUI)
  **
  ** @return    -
  **
- ** @version   2014-11-11
+ ** @version   2014-11-18
  **
  ** @todo      Die Kollisionsabfrage zählt die Runden nicht genau (treffen sich zwei Bots schafft der erste einen Schritt mehr), so reicht es aber zum Testen aus.
  **/
 void
-main_eigenes_spiel()
+main_eigenes_spiel(int& argc, char* argv[])
 {
   Spielraster spielraster; // das Spielraster
-
   spielraster.einlesen(cin);
+
+  // GUI erzeugen
+  auto gui = make_unique<Gui>(argc, argv, spielraster);
 
   { // Positionen der Bots lesen
     while (cin.peek() && cin.good()) {
@@ -109,7 +112,7 @@ main_eigenes_spiel()
   vector<unique_ptr<Bot>> bots; // Die Bots
   // Bots erzeugen
   for (int i = 0; i < spielraster.bot_anz(); ++i) {
-    unique_ptr<Bot> bot = make_unique<Bot>(spielraster);
+    auto bot = make_unique<Bot>(spielraster);
     bot->setze_nummer(i);
     bot->setze_strategie(Strategie::create({"in größten Raum", "Raum ausfüllen"}));
     //bot->setze_strategie(Strategie::create({"Raum ausfüllen (Tiefensuche)"}));
@@ -118,7 +121,7 @@ main_eigenes_spiel()
 
   // Spielen
   int runde = 0;
-  vector<Bewegungsrichtung> naechster_schritt(spielraster.bot_anz());
+  auto naechster_schritt = vector<Bewegungsrichtung>(spielraster.bot_anz());
   while (spielraster.bots_im_spiel()) {
     runde += 1;
     // Schritte abfragen
@@ -133,7 +136,7 @@ main_eigenes_spiel()
     for (int b = 0; b < spielraster.bot_anz(); ++b) {
       if (!spielraster.position(b))
         continue;
-      BotPosition bp = spielraster.position(b) + naechster_schritt[b];
+      auto bp = spielraster.position(b) + naechster_schritt[b];
       if (spielraster(bp)) {
         for (int i = 0; i < b; ++i) {
           if (spielraster.position(i) == bp) {
@@ -158,7 +161,7 @@ main_eigenes_spiel()
   cout << spielraster;
 
   return ;
-} // void main_eigenes_spiel()
+} // void main_eigenes_spiel(int argc, char* argv[])
 
 
 /**
