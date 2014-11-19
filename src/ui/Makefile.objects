@@ -1,0 +1,3 @@
+OBJECTS = ui.o hauptfenster.o
+
+DIRECTORIES = 

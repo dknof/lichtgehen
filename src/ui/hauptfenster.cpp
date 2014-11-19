@@ -34,7 +34,7 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#include "gui.h"
+#include "hauptfenster.h"
 
 #include <gtkmm/main.h>
 #include <gtkmm/window.h>
@@ -42,43 +42,22 @@
 #include <gtkmm/box.h>
 #include <gtkmm/drawingarea.h>
 
-struct Gui::Pimpl {
-  unique_ptr<Gtk::Main> main; // Hauptroutine
-  unique_ptr<Gtk::Window> hauptfenster; // Hauptfenster
-  Gtk::DrawingArea* spielraster; // Spielraster
-}; // struct Gui::Pimpl
-
+namespace UI_Gtkmm {
 /**
  ** Konstruktor
  ** 
- ** @param     argc   Anzahl Kommandozeilenargumente
- ** @param     argv   Kommandozeilenargumente
- ** @param     spielraster   das Spielraster
+ ** @param     ui   das UI
  **
  ** @return    -
  **
- ** @version   2014-11-18
+ ** @version   2014-11-19
  **/
-Gui::Gui(int& argc, char* argv[], Spielraster const& spielraster) :
-  spielraster(spielraster),
-  pimpl{make_unique<Gui::Pimpl>()}
+Hauptfenster::Hauptfenster(UI const& ui) :
+  Gtk::Window(),
+  ui(ui)
 {
-  this->pimpl->main = make_unique<Gtk::Main>(argc, argv);
   this->init();
-} // Gui::Gui(int argc, char* argv[]) :
-
-/**
- ** Destruktor
- ** 
- ** @param     -
- **
- ** @return    -
- **
- ** @version   2014-11-18
- **/
-Gui::~Gui()
-{
-} // Gui::~Gui()
+} // Hauptfenster::Hauptfenster(UI const& ui)
 
 /**
  ** initializiere die GUI
@@ -90,22 +69,21 @@ Gui::~Gui()
  ** @version   2014-11-18
  **/
 void
-Gui::init()
+Hauptfenster::init()
 {
   // Das Hauptfenster
-  this->pimpl->hauptfenster = make_unique<Gtk::Window>();
-  this->pimpl->hauptfenster->set_title("Tronbot");
+  this->set_title("Tronbot");
 
   auto hauptbox = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL));
-  this->pimpl->hauptfenster->add(*hauptbox);
+  this->add(*hauptbox);
 
   { // Oberer Bereich 
     auto box_oben = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL, 20));
     hauptbox->add(*box_oben);
     // Spielfläche
-    this->pimpl->spielraster = Gtk::manage(new Gtk::DrawingArea());
-    box_oben->add(*this->pimpl->spielraster);
-    this->pimpl->spielraster->set_size_request(100, 100);
+    this->spielraster = Gtk::manage(new Gtk::DrawingArea());
+    box_oben->add(*this->spielraster);
+    this->spielraster->set_size_request(100, 100);
     { // Informationsbereich
       // Runde
       // Bots
@@ -131,13 +109,9 @@ Gui::init()
   } // Unterer Bereich 
 
 
-  this->pimpl->hauptfenster->show_all();
-
-  // Einen zweiten Thread eröffnen, um die GUI darzustellen.
-  // Der Thread wird benötigt, da ein Thread auf cin wartet.
-  while (true) {
-    this->pimpl->main->iteration();
-  }
+  this->show_all();
 
   return ;
-} // Gui::void()
+} // Hauptfenster::init()
+
+} // namespace UI_Gtkmm

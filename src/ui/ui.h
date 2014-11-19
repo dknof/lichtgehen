@@ -34,36 +34,42 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef GUI_H
-#define GUI_H
+#ifndef UI_H
+#define UI_H
 
 #include "constants.h"
+#include "../spielraster/richtung.h"
 class Spielraster;
 
-/** Die GUI
- ** @todo  Spielraster
- ** @todo  Hilfe
- ** @todo  Beenden
- ** @todo  Bedienung
- ** @todo  Informationen
+/** Die UI
  **/
-class Gui {
+class UI {
   public:
     // Konstruktor
-    Gui(int& argc, char* argv[], Spielraster const& spielraster);
+    UI(int& argc, char* argv[]);
     // Destruktor
-    ~Gui();
+    ~UI();
+
+    // das Spiel startet
+    void spiel_startet(Spielraster const& spielraster);
+    // neue Runde
+    void neue_runde();
+    // das Spiel ist zuende
+    void spiel_endet();
+
+    // gibt die nächste Richtung (Benutzereingabe) zurück
+    Richtung hole_richtung();
 
   private:
-    // initializiere die GUI
+    // initializiere die UI
     void init();
 
   private:
     // Das Spielraster
-    Spielraster const& spielraster;
-    // Die Elemente der GUI
+    Spielraster const* spielraster = nullptr;
+    // Die Elemente der UI
     struct Pimpl;
     unique_ptr<Pimpl> pimpl;
-}; // class Gui
+}; // class UI
 
-#endif // #ifndef GUI_H
+#endif // #ifndef UI_H

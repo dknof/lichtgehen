@@ -38,7 +38,7 @@
 
 #include "spielraster/spielraster.h"
 #include "bot/bot.h"
-#include "gui/gui.h"
+#include "ui/ui.h"
 
 #include <string>
 using std::string;
@@ -96,8 +96,8 @@ main_eigenes_spiel(int& argc, char* argv[])
   Spielraster spielraster; // das Spielraster
   spielraster.einlesen(cin);
 
-  // GUI erzeugen
-  auto gui = make_unique<Gui>(argc, argv, spielraster);
+  // UI erzeugen
+  auto ui = make_unique<UI>(argc, argv);
 
   { // Positionen der Bots lesen
     while (cin.peek() && cin.good()) {
@@ -122,8 +122,10 @@ main_eigenes_spiel(int& argc, char* argv[])
   // Spielen
   int runde = 0;
   auto naechster_schritt = vector<Bewegungsrichtung>(spielraster.bot_anz());
+  ui->spiel_startet(spielraster);
   while (spielraster.bots_im_spiel()) {
     runde += 1;
+    ui->neue_runde();
     // Schritte abfragen
     for (int b = 0; b < spielraster.bot_anz(); ++b) {
       if (spielraster.position(b)) {
@@ -156,6 +158,7 @@ main_eigenes_spiel(int& argc, char* argv[])
 #endif
   } // while (spielraster.bots_im_spiel())
 
+  ui->spiel_endet();
   // Ergebnis ausgeben
   cout << runde << " Runden\n";
   cout << spielraster;

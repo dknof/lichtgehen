@@ -25,8 +25,6 @@ tronbot : objects directories
 # Automatisch neu kompilieren, wenn sich eine Datei geändert hat
 .PHONY: watch
 watch :
-	@# Does not work, too many files?
-	@# auto_execute -e 'nice make -k' `find . -name "*.cpp" -o -name "*.h"`
 	@rm -f commands.sh
 	@echo '#!/bin/bash' >> commands.sh
 	@echo 'if [ -e ./tron ]; then' >> commands.sh
