@@ -40,11 +40,6 @@
 #include <gtkmm/main.h>
 
 namespace UI_Gtkmm {
-  struct UI_Gtkmm::Pimpl {
-    unique_ptr<Gtk::Main> main; // Hauptroutine
-    unique_ptr<Hauptfenster> hauptfenster; // Hauptfenster
-  }; // struct UI_Gtkmm::Pimpl
-
   /**
    ** Konstruktor
    ** 
@@ -56,17 +51,12 @@ namespace UI_Gtkmm {
    ** @version   2014-11-20
    **/
   UI_Gtkmm::UI_Gtkmm(int& argc, char* argv[]) :
-    pimpl{make_unique<UI_Gtkmm::Pimpl>()}
+    main{make_unique<Gtk::Main>(argc, argv)},
+    hauptfenster{make_unique<Hauptfenster>(*this)}
   {
-    this->pimpl->main = make_unique<Gtk::Main>(argc, argv);
-    this->pimpl->hauptfenster = make_unique<Hauptfenster>(*this);
 
-    // Einen zweiten Thread eröffnen, um die GUI darzustellen.
+    // @todo: Einen zweiten Thread eröffnen, um die GUI darzustellen.
     // Der Thread wird benötigt, da ein Thread auf cin wartet.
-    while (true) {
-      this->pimpl->main->iteration();
-    }
-
   } // UI_Gtkmm::UI_Gtkmm(int argc, char* argv[])
 
   /**
@@ -93,7 +83,7 @@ namespace UI_Gtkmm {
   void
     UI_Gtkmm::spiel_startet()
     {
-      this->pimpl->hauptfenster->aktualisiere_spielraster();
+      this->hauptfenster->aktualisiere_spielraster();
       return;
     } // void UI_Gtkmm::spiel_startet()
 
@@ -109,7 +99,7 @@ namespace UI_Gtkmm {
   void
     UI_Gtkmm::runde(int const n)
     {
-      this->pimpl->hauptfenster->aktualisiere_spielraster();
+      this->hauptfenster->aktualisiere_spielraster();
       return;
     } // void UI_Gtkmm::runde(int n)
 
@@ -125,7 +115,20 @@ namespace UI_Gtkmm {
   void
     UI_Gtkmm::spiel_endet()
     {
-      this->pimpl->hauptfenster->aktualisiere_spielraster();
+      this->main->run(*this->hauptfenster);
       return;
     } // void UI_Gtkmm::spiel_endet()
+
+  /**
+   ** gibt die nächste Richtung für die Bewegung zurück
+   ** 
+   ** @param     -
+   **
+   ** @return    Norden
+   **
+   ** @version   2014-11-20
+   **/
+  Richtung
+    UI_Gtkmm::hole_richtung()
+    { return Richtung::NORDEN; }
 } // namespace UI_Gtkmm

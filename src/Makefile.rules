@@ -14,7 +14,7 @@ objects: $(OBJECTS)
 
 .PHONY: lib
 lib: $(OBJECTS) $(DIRECTORIES)
-	ar rcs lib.a $(OBJECTS) $(DIRECTORIES:%=%/lib.a)
+	ld -o lib.a -r $(OBJECTS) $(DIRECTORIES:%=%/lib.a)
 
 -include $(OBJECTS:%.o=%.d)
 

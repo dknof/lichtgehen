@@ -35,12 +35,9 @@
    */
 
 #include "hauptfenster.h"
+#include "../../spielraster/spielraster.h"
 
-#include <gtkmm/main.h>
-#include <gtkmm/window.h>
-#include <gtkmm/button.h>
-#include <gtkmm/box.h>
-#include <gtkmm/drawingarea.h>
+#include <gtkmm.h>
 
 namespace UI_Gtkmm {
 /**
@@ -52,12 +49,12 @@ namespace UI_Gtkmm {
  **
  ** @version   2014-11-19
  **/
-Hauptfenster::Hauptfenster(UI_Gtkmm const& ui) :
+Hauptfenster::Hauptfenster(UI_Gtkmm& ui) :
   Gtk::Window(),
-  ui(ui)
+  ui(&ui)
 {
   this->init();
-} // Hauptfenster::Hauptfenster(UI_Gtkmm const& ui)
+} // Hauptfenster::Hauptfenster(UI_Gtkmm& ui)
 
 /**
  ** initializiere das UI
@@ -85,8 +82,16 @@ Hauptfenster::init()
     box_oben->add(*this->spielraster);
     this->spielraster->set_size_request(100, 100);
     { // Informationsbereich
+      auto box_info = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL, 20));
+      box_oben->pack_end(*box_info, Gtk::PACK_SHRINK);
       // Runde
+      this->runde = Gtk::manage(new Gtk::Label("Runde"));
+      box_info->add(*this->runde);
       // Bots
+      this->bot1 = Gtk::manage(new Gtk::Label("Bot1"));
+      this->bot2 = Gtk::manage(new Gtk::Label("Bot2"));
+      box_info->add(*this->bot1);
+      box_info->add(*this->bot2);
       // freie Felder
       // Größe Einflussbereich
     } // Informationsbereich
@@ -95,21 +100,24 @@ Hauptfenster::init()
   { // Unterer Bereich 
     auto box_unten = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL, 20));
     box_unten->set_homogeneous();
-    hauptbox->add(*box_unten);
+    hauptbox->pack_end(*box_unten, Gtk::PACK_SHRINK);
 
     // Hilfeschaltfläche + Hilfefenster
-    auto hilfe = Gtk::manage(new Gtk::Button("Hilfe"));
+    auto hilfe = Gtk::manage(new Gtk::Button(Gtk::Stock::HELP));
     box_unten->add(*hilfe);
-    //m_button.signal_clicked().connect(sigc::mem_fun(*this, &HelloWorld::on_button_clicked));
+    // @todo: Signal
 
     // Beenden-Schaltfläche
-    auto beenden = Gtk::manage(new Gtk::Button("Beenden"));
+    auto beenden = Gtk::manage(new Gtk::Button(Gtk::Stock::QUIT));
     box_unten->add(*beenden);
-    //m_button.signal_clicked().connect(sigc::mem_fun(*this, &HelloWorld::on_button_clicked));
+    beenden->signal_clicked().connect(sigc::ptr_fun(&Gtk::Main::quit));
   } // Unterer Bereich 
 
 
+  this->show_all_children();
+  this->aktualisiere_spielraster();
   this->show_all();
+  CLOG << endl;
 
   return ;
 } // Hauptfenster::init()
@@ -126,6 +134,23 @@ Hauptfenster::init()
 void
 Hauptfenster::aktualisiere_spielraster()
 {
+  if (!this->ui->spielraster)
+    return ;
+  auto const breite = this->spielraster->get_allocated_width();
+  auto const hoehe = this->spielraster->get_allocated_height();
+  // Felder malen
+  // Linien malen
+  for (int x = 0; x < this->ui->spielraster->breite(); ++x) {
+  } // for (x)
+  for (int y = 0; y < this->ui->spielraster->laenge(); ++y) {
+  } // for (y)
+  (void)breite;
+  (void)hoehe;
+  while (this->ui->main->events_pending()) {
+    this->ui->main->iteration(false);
+  }
+
+
   return ;
 } // void Hauptfenster::aktualisiere_spielraster()
 

@@ -54,9 +54,6 @@ class UI {
     // Destruktor
     virtual ~UI();
 
-    // Das Spielraster
-    Spielraster const& spielraster() const;
-
     // das Spiel startet
     void spiel_startet(Spielraster const& spielraster);
     virtual void spiel_startet();
@@ -72,9 +69,9 @@ class UI {
     // initializiere die UI
     void init();
 
-  private:
+  public:
     // Das Spielraster
-    Spielraster const* spielraster_ = nullptr;
+    Spielraster const* spielraster = nullptr;
 }; // class UI
 
 #endif // #ifndef UI_H

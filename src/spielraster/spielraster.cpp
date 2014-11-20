@@ -93,7 +93,13 @@ Spielraster::ausgeben(ostream& ostr) const
   richtung_symbol[RP(Richtung::WESTEN, Richtung::WESTEN)] = "─"; // = "←";
   richtung_symbol[RP(Richtung::WESTEN, Richtung::NORDEN)] = "└"; // = "⬑";
   richtung_symbol[RP(Richtung::WESTEN, Richtung::SUEDEN)] = "┌"; // = "⬐";
+
+  ostr << "┌";
+    for (int x = 0; x < this->breite(); ++x)
+      ostr << "─";
+  ostr << "┐\n";
   for (int y = 0; y < this->laenge(); ++y) {
+    ostr << "│";
     for (int x = 0; x < this->breite(); ++x) {
       if ((*this)(x, y)) {
 #if 1 // farbige Ausgabe
@@ -106,15 +112,15 @@ Spielraster::ausgeben(ostream& ostr) const
               break;
             }
           } // for (p)
-            if (pos != end(this->weg(n)))
-              break;
+          if (pos != end(this->weg(n)))
+            break;
         } // for (n)
         if (n < this->bot_anz()) {
           // Botverlauf ausgeben
           ostr << "\033[" << (31 + 3 * n) << ";1m";
           if (*pos == this->weg(n)[0]) { // Startposition
             switch (((this->weg(n).size() == 1) ? pos : pos + 1)->richtung()) {
-            //switch (pos->richtung()) { // ←↑→↓↧↦↥↤↱↲↳↴↵↩↪
+              //switch (pos->richtung()) // ←↑→↓↧↦↥↤↱↲↳↴↵↩↪
             case Richtung::NORDEN: ostr << "╵"; break; // ↥
             case Richtung::OSTEN:  ostr << "╶"; break; // ↦
             case Richtung::SUEDEN: ostr << "╷"; break; // ↧
@@ -122,7 +128,7 @@ Spielraster::ausgeben(ostream& ostr) const
             } // switch (pos->richtung())
           } else if ((*pos == this->position(n))
                      || !*(pos + 1))
-                     { // aktuelle Position
+          { // aktuelle Position
             switch (pos->richtung()) { // ←↑→↓↧↦↥↤↱↲↳↴↵↩↪
             case Richtung::NORDEN: ostr << "╷"; break; // ↑
             case Richtung::OSTEN:  ostr << "╴"; break; // →
@@ -142,9 +148,14 @@ Spielraster::ausgeben(ostream& ostr) const
       } else {
         ostr << "·";
       }
-    }
+    } // for (x)
+    ostr << "│";
     ostr << '\n';
-  }
+  } // for (y)
+  ostr << "└";
+    for (int x = 0; x < this->breite(); ++x)
+      ostr << "─";
+  ostr << "┘\n";
   // Positionen/Rundenanzahl der Bots ausgeben
   for (int n = 0; n < this->bot_anz(); ++n) 
     if (this->position(n))
@@ -201,7 +212,7 @@ Spielraster::bots_im_spiel() const
 bool
 Spielraster::bot_im_spiel(int const bot) const
 {
-    return this->position(bot);
+  return this->position(bot);
 } // bool Spielraster::bots_im_spiel(int const bot) const
 
 /**

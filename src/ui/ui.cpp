@@ -91,19 +91,6 @@ UI::~UI()
 { }
 
 /**
- ** -> Rückgabe
- ** 
- ** @param     -
- **
- ** @return    das Spielraster
- **
- ** @version   2014-11-20
- **/
-Spielraster const& 
-UI::spielraster() const
-{ return *this->spielraster_; }
-
-/**
  ** Ein Spiel startet
  ** 
  ** @param     spielraster    das Spielraster
@@ -115,7 +102,7 @@ UI::spielraster() const
 void
 UI::spiel_startet(Spielraster const& spielraster)
 {
-  this->spielraster_ = &spielraster;
+  this->spielraster = &spielraster;
   this->spiel_startet();
   return;
 } // void UI::spiel_startet(Spielraster const& spielraster)

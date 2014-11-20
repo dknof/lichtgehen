@@ -98,9 +98,9 @@ main_eigenes_spiel(int& argc, char* argv[])
 
   // UI erzeugen
   //auto ui = UI::create("none", argc, argv);
-  auto ui = UI::create("cout", argc, argv);
+  //auto ui = UI::create("cout", argc, argv);
   //auto ui = UI::create("cerr", argc, argv);
-  //auto ui = UI::create("gtkmm", argc, argv);
+  auto ui = UI::create("gtkmm", argc, argv);
 
   { // Positionen der Bots lesen
     while (cin.peek() && cin.good()) {

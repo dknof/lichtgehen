@@ -42,7 +42,11 @@
 #include "../../spielraster/richtung.h"
 class Spielraster;
 
+namespace Gtk {
+  class Main;
+}
 namespace UI_Gtkmm {
+  class Hauptfenster;
   /** Die UI
    **/
   class UI_Gtkmm : public UI {
@@ -66,10 +70,10 @@ namespace UI_Gtkmm {
       // initializiere die UI
       void init();
 
-    private:
-      // Die Elemente der UI
-      struct Pimpl;
-      unique_ptr<Pimpl> pimpl;
+    public:
+      unique_ptr<Gtk::Main> main; // Hauptroutine
+    private: // Die Elemente der UI
+      unique_ptr<Hauptfenster> hauptfenster; // Hauptfenster
   }; // class UI_Gtkmm : public UI
 } // namespace UI_Gktmm
 

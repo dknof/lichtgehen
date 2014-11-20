@@ -35,6 +35,7 @@
    */
 
 #include "text.h"
+#include "../spielraster/spielraster.h"
 
 /**
  ** Konstruktor
@@ -61,11 +62,9 @@ UI_Text::UI_Text(ostream& ostr) :
 void
 UI_Text::runde(int const n)
 {
-  this->ostr << "---\n";
-    this->ostr << "Runde ";
-     this->ostr << n ;
-     this->ostr << '\n';
-    //this->ostr << this->spielraster();
+  this->ostr << "---\n"
+    << "Runde " << n << '\n'
+    << *this->spielraster;
   return;
 } // void UI_Text::runde(int n)
 
@@ -81,9 +80,9 @@ UI_Text::runde(int const n)
 void
 UI_Text::spiel_endet()
 {
-  this->ostr << "---\n";
-    this->ostr << "Spiel zuende\n";
-    //this->ostr << this->spielraster();
+  this->ostr << "---\n"
+    << "Spiel zuende\n"
+    << *this->spielraster;
   return;
 } // void UI_Text::spiel_endet()
 

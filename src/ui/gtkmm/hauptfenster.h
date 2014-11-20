@@ -41,6 +41,7 @@
 #include <gtkmm/window.h>
 namespace Gtk {
   class DrawingArea;
+  class Label;
 }
 
 namespace UI_Gtkmm {
@@ -54,7 +55,7 @@ namespace UI_Gtkmm {
   class Hauptfenster : public Gtk::Window {
     public:
       // Konstruktor
-      Hauptfenster(UI_Gtkmm const& ui);
+      Hauptfenster(UI_Gtkmm& ui);
 
       // aktualisiere das Spielraster
       void aktualisiere_spielraster();
@@ -64,9 +65,14 @@ namespace UI_Gtkmm {
 
     private:
       // Verweis auf die UI
-      UI_Gtkmm const& ui;
+      UI_Gtkmm* const ui;
       // Spielraster
       Gtk::DrawingArea* spielraster = nullptr;
+      // Rundenanzeige
+      Gtk::Label* runde = nullptr;
+      // Botinfo
+      Gtk::Label* bot1 = nullptr;
+      Gtk::Label* bot2 = nullptr;
   }; // class Hauptfenster : public Gtk::Window
 } // namespace UI_Gtkmm
 
