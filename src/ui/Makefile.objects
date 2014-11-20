@@ -1,3 +1,3 @@
-OBJECTS = ui.o hauptfenster.o
+OBJECTS = ui.o text.o
 
-DIRECTORIES = 
+DIRECTORIES = gtkmm

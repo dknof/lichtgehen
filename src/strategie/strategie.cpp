@@ -50,7 +50,7 @@
  ** @version   2014-10-30
  **/
 unique_ptr<Strategie>
-Strategie::create(string const& name)
+Strategie::create(string const name)
 {
   using namespace StrategieNS;
 
@@ -62,7 +62,7 @@ Strategie::create(string const& name)
 
   cerr << "Strategie '" << name << "' unbekannt\n";
   return nullptr;
-} // static unique_ptr<Strategie> Strategie::create(string const& name)
+} // static unique_ptr<Strategie> Strategie::create(string const name)
 
 /**
  ** erstellt eine Strategie entsprechend dem Namen
@@ -89,7 +89,7 @@ Strategie::create(std::initializer_list<string> namen)
  **
  ** @version   2014-10-25
  **/
-Strategie::Strategie(string const& name, string const& beschreibung) :
+Strategie::Strategie(string const name, string const beschreibung) :
   name{name},
   beschreibung{beschreibung}
 { }
@@ -150,9 +150,9 @@ Strategie::ausgeben(ostream& ostr) const
  ** @version   2014-11-11
  **/
 void
-Strategie::setze_name(string const& name, string const& beschreibung)
+Strategie::setze_name(string const name, string const beschreibung)
 {
   this->name = name;
   this->beschreibung = beschreibung;
   return ;
-} // void Strategie::setze_name(string const& name, string const& beschreibung)
+} // void Strategie::setze_name(string const name, string const beschreibung)

@@ -101,12 +101,12 @@ Spielraster::ausgeben(ostream& ostr) const
         int n; // Nummer des Bots
         BotWeg::const_iterator pos; // Position des Bots
         for (n = 0; n < this->bot_anz(); ++n) {
-          for (pos = this->weg(n).begin(); pos != this->weg(n).end(); ++pos) {
+          for (pos = begin(this->weg(n)); pos != end(this->weg(n)); ++pos) {
             if (*pos == Position(x, y)) {
               break;
             }
           } // for (p)
-            if (pos != this->weg(n).end())
+            if (pos != end(this->weg(n)))
               break;
         } // for (n)
         if (n < this->bot_anz()) {

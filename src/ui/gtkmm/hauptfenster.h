@@ -34,49 +34,40 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef STRATEGIE_H
-#define STRATEGIE_H
+#ifndef UI_GTKMM_HAUPTFENSTER_H
+#define UI_GTKMM_HAUPTFENSTER_H
 
-#include "constants.h"
-#include "../spielraster/spielraster.h"
+#include "gtkmm.h"
+#include <gtkmm/window.h>
+namespace Gtk {
+  class DrawingArea;
+}
 
-/** Basisklasse für Strategieen
- ** Eine Strategie gibt eine Bewegung zurück.
- ** Im Vergleich zur Taktik kann sie Informationen über den Spielverlauf sammeln.
- **/
-class Strategie {
-  public:
-    // erstellt eine Strategie entsprechend dem Namen
-    static unique_ptr<Strategie> create(string name);
-    static unique_ptr<Strategie> create(std::initializer_list<string> name);
+namespace UI_Gtkmm {
+  /** das Hauptfenster
+   ** @todo  Spielraster
+   ** @todo  Hilfe
+   ** @todo  Beenden
+   ** @todo  Bedienung
+   ** @todo  Informationen
+   **/
+  class Hauptfenster : public Gtk::Window {
+    public:
+      // Konstruktor
+      Hauptfenster(UI_Gtkmm const& ui);
 
-  protected:
-    // Konstruktor
-    Strategie(string name, string beschreibung);
+      // aktualisiere das Spielraster
+      void aktualisiere_spielraster();
+    private:
+      // initializiere das Hauptfenster
+      void init();
 
-  public:
-    // Destruktor
-    virtual ~Strategie();
+    private:
+      // Verweis auf die UI
+      UI_Gtkmm const& ui;
+      // Spielraster
+      Gtk::DrawingArea* spielraster = nullptr;
+  }; // class Hauptfenster : public Gtk::Window
+} // namespace UI_Gtkmm
 
-    // die Strategie ausgeben
-    virtual ostream& ausgeben(ostream& ostr) const;
-
-    // Die Bewegungsrichtung nach der Strategie ermitteln
-    virtual Bewegungsrichtung bewegung(Spielraster const& spielraster,
-                                       int bot_nummer) = 0;
-
-  protected:
-    // setzt Namen und Beschreibung
-    void setze_name(string name, string beschreibung);
-
-  public:
-    // Der Name der Strategie
-    string name;
-    // Der Beschreibung der Strategie
-    string beschreibung;
-}; // class Strategie
-
-// die Strategie ausgeben
-ostream& operator<<(ostream& ostr, Strategie const& strategie);
-
-#endif // #ifndef STRATEGIE_H
+#endif // #ifndef UI_GTKMM_HAUPTFENSTER_H

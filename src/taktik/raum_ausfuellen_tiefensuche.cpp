@@ -199,7 +199,7 @@ namespace TaktikNS {
         return 0;
       raster.belege(bp);
       auto fbp = std::pair<Raster, Position>{raster, bp};
-      if (bekannte_raster.find(fbp) != bekannte_raster.end())
+      if (bekannte_raster.find(fbp) != end(bekannte_raster))
         return 0;
       bekannte_raster.insert(fbp);
 

@@ -34,9 +34,9 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef CONSTANTS_HAUPTFENSTER_H
-#define CONSTANTS_HAUPTFENSTER_H
+#ifndef CONSTANTS_UI_H
+#define CONSTANTS_UI_H
 
 #include "../constants.h"
 
-#endif // #ifndef CONSTANTS_HAUPTFENSTER_H
+#endif // #ifndef CONSTANTS_UI_H

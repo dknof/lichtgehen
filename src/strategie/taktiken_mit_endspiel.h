@@ -55,7 +55,7 @@ class TaktikenMitEndspiel : public Taktiken {
     // Konstruktor
     TaktikenMitEndspiel();
     // Konstruktor mit einer Taktik
-    TaktikenMitEndspiel(string const& name);
+    TaktikenMitEndspiel(string name);
     // Konstruktor mit mehreren Taktiken
     TaktikenMitEndspiel(std::initializer_list<string> name);
 

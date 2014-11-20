@@ -52,15 +52,15 @@ namespace UI_Gtkmm {
  **
  ** @version   2014-11-19
  **/
-Hauptfenster::Hauptfenster(UI const& ui) :
+Hauptfenster::Hauptfenster(UI_Gtkmm const& ui) :
   Gtk::Window(),
   ui(ui)
 {
   this->init();
-} // Hauptfenster::Hauptfenster(UI const& ui)
+} // Hauptfenster::Hauptfenster(UI_Gtkmm const& ui)
 
 /**
- ** initializiere die GUI
+ ** initializiere das UI
  ** 
  ** @param     -
  **
@@ -113,5 +113,20 @@ Hauptfenster::init()
 
   return ;
 } // Hauptfenster::init()
+
+/**
+ ** aktualisiert das Spielraster, d.h. malt es neu
+ ** 
+ ** @param     -
+ **
+ ** @return    -
+ **
+ ** @version   2014-11-20
+ **/
+void
+Hauptfenster::aktualisiere_spielraster()
+{
+  return ;
+} // void Hauptfenster::aktualisiere_spielraster()
 
 } // namespace UI_Gtkmm

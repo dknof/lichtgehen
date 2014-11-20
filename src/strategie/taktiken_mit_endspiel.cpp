@@ -62,11 +62,11 @@ namespace StrategieNS {
    **
    ** @version   2014-11-11
    **/
-  TaktikenMitEndspiel::TaktikenMitEndspiel(string const& name) :
+  TaktikenMitEndspiel::TaktikenMitEndspiel(string const name) :
     Taktiken{name}
   {
     this->setze_name("Taktiken mit Endspiel", "verschiedene Taktiken durchgehen, zum Spielende auf Endspieltaktiken wechseln");
-  } // TaktikenMitEndspiel::TaktikenMitEndspiel(string const& name)
+  } // TaktikenMitEndspiel::TaktikenMitEndspiel(string name)
 
   /**
    ** Standardkonstruktor mit mehreren TaktikenMitEndspiel
@@ -132,7 +132,7 @@ namespace StrategieNS {
     {
       this->teste_spielstatus(spielraster, bot_nummer);
       return this->Taktiken::bewegung(spielraster, bot_nummer);
-    } // Bewegungsrichtung TaktikenMitEndspiel::bewegung(Spielraster const& spielraster, int const bot_nummer)
+    } // Bewegungsrichtung TaktikenMitEndspiel::bewegung(Spielraster spielraster, int bot_nummer)
 
   /**
    ** Teste die Änderung des Spielstatus
@@ -147,9 +147,9 @@ namespace StrategieNS {
     TaktikenMitEndspiel::teste_spielstatus(Spielraster const& spielraster,
                                            int const bot_nummer)
     {
-      int neuer_status = this->spielstatus;
+      auto neuer_status = this->spielstatus;
 
-      Spielraster::RaumInfo const rauminfo = spielraster.rauminfo(bot_nummer);
+      auto const rauminfo = spielraster.rauminfo(bot_nummer);
 
       // Teste, auf letzte Felder
       if (!(this->spielstatus & LETZTE_FELDER)) {
@@ -193,6 +193,6 @@ namespace StrategieNS {
       this->spielstatus = neuer_status;
 
       return ;
-    } // void TaktikenMitEndspiel::teste_spielstatus()
+    } // void TaktikenMitEndspiel::teste_spielstatus(Spielraster spielraster, int bot_nummer)
 
 } // namespace StrategieNS

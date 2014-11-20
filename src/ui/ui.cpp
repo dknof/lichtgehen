@@ -36,13 +36,8 @@
 
 #include "ui.h"
 
-#include "hauptfenster.h"
-#include <gtkmm/main.h>
-
-struct UI::Pimpl {
-  unique_ptr<Gtk::Main> main; // Hauptroutine
-  unique_ptr<UI_Gtkmm::Hauptfenster> hauptfenster; // Hauptfenster
-}; // struct UI::Pimpl
+#include "text.h"
+#include "gtkmm/gtkmm.h"
 
 /**
  ** Konstruktor
@@ -52,21 +47,36 @@ struct UI::Pimpl {
  **
  ** @return    -
  **
- ** @version   2014-11-18
+ ** @version   2014-11-20
  **/
-UI::UI(int& argc, char* argv[]) :
-  pimpl{make_unique<UI::Pimpl>()}
+unique_ptr<UI>
+UI::create(string const name, int& argc, char* argv[])
 {
-  this->pimpl->main = make_unique<Gtk::Main>(argc, argv);
-  this->pimpl->hauptfenster = make_unique<UI_Gtkmm::Hauptfenster>(*this);
+  if (name == "none")
+    return make_unique<UI>();
+  else if (name == "text")
+    return make_unique<UI_Text>(cout);
+  else if (name == "cout")
+    return make_unique<UI_Text>(cout);
+  else if (name == "cerr")
+    return make_unique<UI_Text>(cerr);
+  else if (name == "gtkmm")
+    return make_unique<UI_Gtkmm::UI_Gtkmm>(argc, argv);
+  else
+    return nullptr;
+} // static unique_ptr<UI> UI::create(string const name, int& argc, char* argv[])
 
-  // Einen zweiten Thread eröffnen, um die GUI darzustellen.
-  // Der Thread wird benötigt, da ein Thread auf cin wartet.
-  while (true) {
-    this->pimpl->main->iteration();
-  }
-
-} // UI::UI(int argc, char* argv[])
+/**
+ ** Konstruktor
+ ** 
+ ** @param     -
+ **
+ ** @return    -
+ **
+ ** @version   2014-11-20
+ **/
+UI::UI()
+{ }
 
 /**
  ** Destruktor
@@ -75,11 +85,23 @@ UI::UI(int& argc, char* argv[]) :
  **
  ** @return    -
  **
- ** @version   2014-11-18
+ ** @version   2014-11-20
  **/
 UI::~UI()
-{
-} // UI::~UI()
+{ }
+
+/**
+ ** -> Rückgabe
+ ** 
+ ** @param     -
+ **
+ ** @return    das Spielraster
+ **
+ ** @version   2014-11-20
+ **/
+Spielraster const& 
+UI::spielraster() const
+{ return *this->spielraster_; }
 
 /**
  ** Ein Spiel startet
@@ -88,31 +110,41 @@ UI::~UI()
  **
  ** @return    -
  **
- ** @version   2014-11-19
+ ** @version   2014-11-20
  **/
 void
 UI::spiel_startet(Spielraster const& spielraster)
 {
-  this->spielraster = &spielraster;
-  this->pimpl->hauptfenster->aktualisiere_spielraster();
+  this->spielraster_ = &spielraster;
+  this->spiel_startet();
   return;
 } // void UI::spiel_startet(Spielraster const& spielraster)
 
 /**
- ** Eine neue Runde startet
+ ** Ein Spiel startet
  ** 
  ** @param     -
  **
  ** @return    -
  **
- ** @version   2014-11-19
+ ** @version   2014-11-20
  **/
 void
-UI::neue_runde()
-{
-  this->pimpl->hauptfenster->aktualisiere_spielraster();
-  return;
-} // void UI::neue_runde()
+UI::spiel_startet()
+{ }
+
+/**
+ ** Eine neue Runde startet
+ ** 
+ ** @param     n   Nummer der Runde
+ **
+ ** @return    -
+ **
+ ** @version   2014-11-20
+ **/
+void
+UI::runde(int const n)
+{ }
 
 /**
  ** Das Spiel ist zuende
@@ -121,11 +153,21 @@ UI::neue_runde()
  **
  ** @return    -
  **
- ** @version   2014-11-19
+ ** @version   2014-11-20
  **/
 void
 UI::spiel_endet()
-{
-  this->pimpl->hauptfenster->aktualisiere_spielraster();
-  return;
-} // void UI::nspiel_endeteue_runde()
+{ }
+
+/**
+ ** gibt die nächste Richtung für die Bewegung zurück
+ ** 
+ ** @param     -
+ **
+ ** @return    Norden
+ **
+ ** @version   2014-11-20
+ **/
+Richtung
+UI::hole_richtung()
+{ return Richtung::NORDEN; }

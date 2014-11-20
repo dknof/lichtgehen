@@ -45,20 +45,28 @@ class Spielraster;
  **/
 class UI {
   public:
+    // Ersteller
+    static unique_ptr<UI> create(string text, int& argc, char* argv[]);
+
+  public:
     // Konstruktor
-    UI(int& argc, char* argv[]);
+    UI();
     // Destruktor
-    ~UI();
+    virtual ~UI();
+
+    // Das Spielraster
+    Spielraster const& spielraster() const;
 
     // das Spiel startet
     void spiel_startet(Spielraster const& spielraster);
+    virtual void spiel_startet();
     // neue Runde
-    void neue_runde();
+    virtual void runde(int n);
     // das Spiel ist zuende
-    void spiel_endet();
+    virtual void spiel_endet();
 
     // gibt die nächste Richtung (Benutzereingabe) zurück
-    Richtung hole_richtung();
+    virtual Richtung hole_richtung();
 
   private:
     // initializiere die UI
@@ -66,10 +74,7 @@ class UI {
 
   private:
     // Das Spielraster
-    Spielraster const* spielraster = nullptr;
-    // Die Elemente der UI
-    struct Pimpl;
-    unique_ptr<Pimpl> pimpl;
+    Spielraster const* spielraster_ = nullptr;
 }; // class UI
 
 #endif // #ifndef UI_H

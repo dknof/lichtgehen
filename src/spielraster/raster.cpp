@@ -302,7 +302,7 @@ Raster::raumgroesse(Position const& position,
   positionen.insert(position);
   int n = 1; // Anzahl der Rasterer
   while (!positionen.empty()) {
-    auto p = positionen.begin();
+    auto p = begin(positionen);
     for (auto r : ::richtungen) {
       Position const p2 = *p + r;
       if (!raster(p2)) {

@@ -34,49 +34,43 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef STRATEGIE_H
-#define STRATEGIE_H
+#ifndef UI_GTKMM_H
+#define UI_GTKMM_H
 
 #include "constants.h"
-#include "../spielraster/spielraster.h"
+#include "../ui.h"
+#include "../../spielraster/richtung.h"
+class Spielraster;
 
-/** Basisklasse für Strategieen
- ** Eine Strategie gibt eine Bewegung zurück.
- ** Im Vergleich zur Taktik kann sie Informationen über den Spielverlauf sammeln.
- **/
-class Strategie {
-  public:
-    // erstellt eine Strategie entsprechend dem Namen
-    static unique_ptr<Strategie> create(string name);
-    static unique_ptr<Strategie> create(std::initializer_list<string> name);
+namespace UI_Gtkmm {
+  /** Die UI
+   **/
+  class UI_Gtkmm : public UI {
+    public:
+      // Konstruktor
+      UI_Gtkmm(int& argc, char* argv[]);
+      // Destruktor
+      ~UI_Gtkmm();
 
-  protected:
-    // Konstruktor
-    Strategie(string name, string beschreibung);
+      // das Spiel startet
+      void spiel_startet();
+      // neue Runde
+      void runde(int n);
+      // das Spiel ist zuende
+      void spiel_endet();
 
-  public:
-    // Destruktor
-    virtual ~Strategie();
+      // gibt die nächste Richtung (Benutzereingabe) zurück
+      Richtung hole_richtung();
 
-    // die Strategie ausgeben
-    virtual ostream& ausgeben(ostream& ostr) const;
+    private:
+      // initializiere die UI
+      void init();
 
-    // Die Bewegungsrichtung nach der Strategie ermitteln
-    virtual Bewegungsrichtung bewegung(Spielraster const& spielraster,
-                                       int bot_nummer) = 0;
+    private:
+      // Die Elemente der UI
+      struct Pimpl;
+      unique_ptr<Pimpl> pimpl;
+  }; // class UI_Gtkmm : public UI
+} // namespace UI_Gktmm
 
-  protected:
-    // setzt Namen und Beschreibung
-    void setze_name(string name, string beschreibung);
-
-  public:
-    // Der Name der Strategie
-    string name;
-    // Der Beschreibung der Strategie
-    string beschreibung;
-}; // class Strategie
-
-// die Strategie ausgeben
-ostream& operator<<(ostream& ostr, Strategie const& strategie);
-
-#endif // #ifndef STRATEGIE_H
+#endif // #ifndef UI_GTKMM_H

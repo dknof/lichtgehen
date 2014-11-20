@@ -50,7 +50,7 @@ class Taktiken : public Strategie {
     // Konstruktor
     Taktiken();
     // Konstruktor mit einer Taktik
-    Taktiken(string const& name);
+    Taktiken(string name);
     // Konstruktor mit mehreren Taktiken
     Taktiken(std::initializer_list<string> name);
 

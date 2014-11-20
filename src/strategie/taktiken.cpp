@@ -64,14 +64,14 @@ namespace StrategieNS {
    **
    ** @version   2014-10-30
    **/
-  Taktiken::Taktiken(string const& name) :
+  Taktiken::Taktiken(string const name) :
     Strategie{"Taktiken", "verschiedene Taktiken durchgehen"}
   {
     // ganz simple Taktiken ohne richtige Wahl direkt hinzufügen
     this->hinzufuegen(Taktik::create("Tot"));
     this->hinzufuegen(Taktik::create("Einziger Weg"));
     this->hinzufuegen(Taktik::create(name));
-  } // Taktiken::Taktiken(string const& name)
+  } // Taktiken::Taktiken(string name)
 
   /**
    ** Standardkonstruktor mit mehreren Taktiken
@@ -88,9 +88,9 @@ namespace StrategieNS {
     // ganz simple Taktiken ohne richtige Wahl direkt hinzufügen
     this->hinzufuegen(Taktik::create("Tot"));
     this->hinzufuegen(Taktik::create("Einziger Weg"));
-    for (auto const& n : name)
+    for (auto const n : name)
       this->hinzufuegen(Taktik::create(n));
-  } // Taktiken::Taktiken(string const& name)
+  } // Taktiken::Taktiken(string name)
 
   /**
    ** Standarddestruktor
@@ -163,13 +163,13 @@ namespace StrategieNS {
           return ergebnis.richtung;
         }
       }
-      BotPosition const bp{spielraster.position(bot_nummer)};
+      auto const bp = BotPosition{spielraster.position(bot_nummer)};
       if (!spielraster(bp + Bewegungsrichtung::VORWAERTS))
         return Bewegungsrichtung::VORWAERTS;
       else if (!spielraster(bp + Bewegungsrichtung::LINKS))
         return Bewegungsrichtung::LINKS;
       else
         return Bewegungsrichtung::RECHTS;
-    } // Bewegungsrichtung Taktiken::bewegung(Spielraster const& spielraster, int const bot_nummer)
+    } // Bewegungsrichtung Taktiken::bewegung(Spielraster spielraster, int bot_nummer)
 
 } // namespace StrategieNS

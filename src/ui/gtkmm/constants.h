@@ -34,40 +34,9 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef UI_HAUPTFENSTER_H
-#define UI_HAUPTFENSTER_H
+#ifndef CONSTANTS_UI_GTKMM_H
+#define CONSTANTS_UI_GTKMM_H
 
-#include "ui.h"
-#include <gtkmm/window.h>
-namespace Gtk {
-  class DrawingArea;
-}
+#include "../constants.h"
 
-namespace UI_Gtkmm {
-  /** das Hauptfenster
-   ** @todo  Spielraster
-   ** @todo  Hilfe
-   ** @todo  Beenden
-   ** @todo  Bedienung
-   ** @todo  Informationen
-   **/
-  class Hauptfenster : public Gtk::Window {
-    public:
-      // Konstruktor
-      Hauptfenster(UI const& ui);
-
-      // aktualisiere das Spielraster
-      void aktualisiere_spielraster();
-    private:
-      // initializiere das Hauptfenster
-      void init();
-
-    private:
-      // Verweis auf die UI
-      UI const& ui;
-      // Spielraster
-      Gtk::DrawingArea* spielraster = nullptr;
-  }; // class Hauptfenster : public Gtk::Window
-} // namespace UI_Gtkmm
-
-#endif // #ifndef UI_HAUPTFENSTER_H
+#endif // #ifndef CONSTANTS_UI_GTKMM_H

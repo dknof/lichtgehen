@@ -97,7 +97,10 @@ main_eigenes_spiel(int& argc, char* argv[])
   spielraster.einlesen(cin);
 
   // UI erzeugen
-  auto ui = make_unique<UI>(argc, argv);
+  //auto ui = UI::create("none", argc, argv);
+  auto ui = UI::create("cout", argc, argv);
+  //auto ui = UI::create("cerr", argc, argv);
+  //auto ui = UI::create("gtkmm", argc, argv);
 
   { // Positionen der Bots lesen
     while (cin.peek() && cin.good()) {
@@ -125,12 +128,11 @@ main_eigenes_spiel(int& argc, char* argv[])
   ui->spiel_startet(spielraster);
   while (spielraster.bots_im_spiel()) {
     runde += 1;
-    ui->neue_runde();
+    ui->runde(runde);
     // Schritte abfragen
     for (int b = 0; b < spielraster.bot_anz(); ++b) {
       if (spielraster.position(b)) {
         naechster_schritt[b] = bots[b]->bewegung();
-        cout << b << " -> " << (spielraster.position(b).richtung() + naechster_schritt[b]) << '\n';
       }
     }
 
@@ -151,17 +153,9 @@ main_eigenes_spiel(int& argc, char* argv[])
         spielraster.setze_bot(b, bp);
       }
     }
-#if 0
-  cout << "---\n";
-  cout << runde << ". Runde\n";
-  cout << spielraster;
-#endif
   } // while (spielraster.bots_im_spiel())
 
   ui->spiel_endet();
-  // Ergebnis ausgeben
-  cout << runde << " Runden\n";
-  cout << spielraster;
 
   return ;
 } // void main_eigenes_spiel(int argc, char* argv[])

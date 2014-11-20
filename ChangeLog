@@ -1,5 +1,8 @@
+2014-11-20
+	- UI weiter aufgeteilt (Text und Gtkmm)
+
 2014-11-18
-	- Mit GUI begonnen
+	- Mit UI begonnen
 
 2014-11-13
 	- Tiefensuche implementiert, einfache Bewertung
