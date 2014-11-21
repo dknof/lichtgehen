@@ -48,8 +48,19 @@
  ** @version   2014-10-25
  **/
 Bot::Bot(Spielraster const& spielraster) :
-  spielraster_(spielraster),
-  nummer_(0)
+  spielraster_(spielraster)
+{ }
+
+/**
+ ** Destruktor
+ ** 
+ ** @param     -
+ **
+ ** @return    -
+ **
+ ** @version   2014-11-21
+ **/
+Bot::~Bot()
 { }
 
 /**
@@ -112,5 +123,4 @@ Bewegungsrichtung
 Bot::bewegung()
 {
   return this->strategie_->bewegung(this->spielraster_, this->nummer_);
-  return Bewegungsrichtung::VORWAERTS;
 } // Bewegungsrichtung Bot::bewegung()

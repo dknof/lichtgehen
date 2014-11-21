@@ -48,6 +48,8 @@ class Bot {
   public:
     // Konstruktor
     Bot(Spielraster const& spielraster);
+    // Destruktor
+    virtual ~Bot();
 
     // die Nummer
     int nummer() const;
@@ -57,15 +59,16 @@ class Bot {
     void setze_strategie(unique_ptr<Strategie> strategie);
 
     // die Bewegung
-    Bewegungsrichtung bewegung();
+    virtual Bewegungsrichtung bewegung();
 
-  private:
+  protected:
     // Feld
     Spielraster const& spielraster_;
+  private:
     // Nummer
-    int nummer_;
+    int nummer_ = -1;
     // die Strategie
-    unique_ptr<Strategie> strategie_;
+    unique_ptr<Strategie> strategie_ = nullptr;
 }; // class Bot
 
 #endif // #ifndef BOT_H

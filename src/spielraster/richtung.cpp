@@ -101,6 +101,35 @@ operator++(Richtung& richtung)
 } // Richtung& operator++(Richtung& richtung)
 
 /**
+ ** Verändert die Richtung gegen den Uhrzeigersinn
+ ** 
+ ** @param     richtung    Richtung 
+ **
+ ** @return    die geänderte Richtung
+ **
+ ** @version   2014-10-25
+ **/
+Richtung&
+operator--(Richtung& richtung)
+{
+  switch (richtung) {
+  case Richtung::NORDEN:
+    richtung = Richtung::WESTEN;
+    break;
+  case Richtung::OSTEN:
+    richtung = Richtung::NORDEN;
+    break;
+  case Richtung::SUEDEN:
+    richtung = Richtung::OSTEN;
+    break;
+  case Richtung::WESTEN:
+    richtung = Richtung::SUEDEN;
+    break;
+  };
+  return richtung;
+} // Richtung& operator--(Richtung& richtung)
+
+/**
  ** Ändert richtung entsprechend bewegungsrichtung
  ** 
  ** @param     richtung            Richtung 
@@ -141,33 +170,27 @@ operator+(Richtung richtung, Bewegungsrichtung const bewegungsrichtung)
 } // Richtung operator+(Richtung richtung, Bewegungsrichtung const bewegungsrichtung)
 
 /**
- ** Verändert die Richtung gegen den Uhrzeigersinn
+ ** -> Rückgabe
  ** 
- ** @param     richtung    Richtung 
+ ** @param     lhs   aktuelle Richtung
+ ** @param     rhs   vorige Richtung
  **
- ** @return    die geänderte Richtung
+ ** @return    die Bewegungsrichtung von rhs nach lhs
  **
- ** @version   2014-10-25
+ ** @version   2014-11-13
  **/
-Richtung&
-operator--(Richtung& richtung)
+Bewegungsrichtung
+operator-(Richtung const lhs, Richtung const rhs)
 {
-  switch (richtung) {
-  case Richtung::NORDEN:
-    richtung = Richtung::WESTEN;
-    break;
-  case Richtung::OSTEN:
-    richtung = Richtung::NORDEN;
-    break;
-  case Richtung::SUEDEN:
-    richtung = Richtung::OSTEN;
-    break;
-  case Richtung::WESTEN:
-    richtung = Richtung::SUEDEN;
-    break;
-  };
-  return richtung;
-} // Richtung& operator--(Richtung& richtung)
+  if (lhs == rhs)
+    return Bewegungsrichtung::VORWAERTS;
+  else if (lhs == rhs + Bewegungsrichtung::LINKS)
+    return Bewegungsrichtung::LINKS;
+  else if (lhs == rhs + Bewegungsrichtung::RECHTS)
+    return Bewegungsrichtung::RECHTS;
+  else // Fehler, rückwärts gegangen
+    return Bewegungsrichtung::VORWAERTS;
+} // Bewegungsrichtung operator-(Richtung const lhs, Richtung const rhs)
 
 /**
  ** Die Bewegungsrichtung auf ostr ausgeben

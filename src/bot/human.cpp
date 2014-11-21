@@ -34,48 +34,37 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef UI_GTKMM_HAUPTFENSTER_H
-#define UI_GTKMM_HAUPTFENSTER_H
+#include "human.h"
 
-#include "gtkmm.h"
-#include <gtkmm/window.h>
-namespace Gtk {
-  class DrawingArea;
-  class Label;
-}
+#include "../ui/ui.h"
 
-namespace UI_Gtkmm {
-  /** das Hauptfenster
-   ** @todo  Spielraster
-   ** @todo  Hilfe
-   ** @todo  Beenden
-   ** @todo  Bedienung
-   ** @todo  Informationen
-   **/
-  class Hauptfenster : public Gtk::Window {
-    public:
-      // Konstruktor
-      Hauptfenster(UI_Gtkmm& ui);
+/**
+ ** Standardkonstruktor
+ ** 
+ ** @param     spielraster   Spielraster
+ ** @param     ui            UI
+ **
+ ** @return    -
+ **
+ ** @version   2014-11-21
+ **/
+Human::Human(Spielraster const& spielraster, UI& ui) :
+  Bot(spielraster),
+  ui(ui)
+{ }
 
-      // aktualisiere alle Elemente
-      void aktualisiere();
-    private:
-      // initializiere das Hauptfenster
-      void init();
-      // aktualisiere das Spielraster
-      bool aktualisiere_spielraster(Cairo::RefPtr<Cairo::Context> const& cr);
-
-    private:
-      // Verweis auf die UI
-      UI_Gtkmm* const ui;
-      // Spielraster
-      Gtk::DrawingArea* spielraster = nullptr;
-      // Rundenanzeige
-      Gtk::Label* runde = nullptr;
-      // Botinfo
-      Gtk::Label* bot1 = nullptr;
-      Gtk::Label* bot2 = nullptr;
-  }; // class Hauptfenster : public Gtk::Window
-} // namespace UI_Gtkmm
-
-#endif // #ifndef UI_GTKMM_HAUPTFENSTER_H
+/**
+ ** setzt die Nummer
+ ** 
+ ** @param     nummer    die Nummer
+ **
+ ** @return    -
+ **
+ ** @version   2014-11-21
+ **/
+Bewegungsrichtung
+Human::bewegung()
+{
+  return (this->ui.hole_richtung()
+          - this->spielraster_.position(this->nummer()).richtung());
+} // Bewegungsrichtung Human::bewegung()

@@ -34,48 +34,27 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef UI_GTKMM_HAUPTFENSTER_H
-#define UI_GTKMM_HAUPTFENSTER_H
+#ifndef HUMAN_H
+#define HUMAN_H
 
-#include "gtkmm.h"
-#include <gtkmm/window.h>
-namespace Gtk {
-  class DrawingArea;
-  class Label;
-}
+#include "constants.h"
+#include "bot.h"
 
-namespace UI_Gtkmm {
-  /** das Hauptfenster
-   ** @todo  Spielraster
-   ** @todo  Hilfe
-   ** @todo  Beenden
-   ** @todo  Bedienung
-   ** @todo  Informationen
-   **/
-  class Hauptfenster : public Gtk::Window {
-    public:
-      // Konstruktor
-      Hauptfenster(UI_Gtkmm& ui);
+class UI;
 
-      // aktualisiere alle Elemente
-      void aktualisiere();
-    private:
-      // initializiere das Hauptfenster
-      void init();
-      // aktualisiere das Spielraster
-      bool aktualisiere_spielraster(Cairo::RefPtr<Cairo::Context> const& cr);
+/** Ein Mensch
+ **/
+class Human : public Bot {
+  public:
+    // Konstruktor
+    Human(Spielraster const& spielraster, UI& ui);
 
-    private:
-      // Verweis auf die UI
-      UI_Gtkmm* const ui;
-      // Spielraster
-      Gtk::DrawingArea* spielraster = nullptr;
-      // Rundenanzeige
-      Gtk::Label* runde = nullptr;
-      // Botinfo
-      Gtk::Label* bot1 = nullptr;
-      Gtk::Label* bot2 = nullptr;
-  }; // class Hauptfenster : public Gtk::Window
-} // namespace UI_Gtkmm
+    // die Bewegung
+    Bewegungsrichtung bewegung();
 
-#endif // #ifndef UI_GTKMM_HAUPTFENSTER_H
+  private:
+    // UI
+    UI& ui;
+}; // class Human : public Bot
+
+#endif // #ifndef HUMAN_H

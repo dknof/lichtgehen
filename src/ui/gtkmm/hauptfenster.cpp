@@ -76,16 +76,19 @@ Hauptfenster::init()
 
   { // Oberer Bereich 
     auto box_oben = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL, 20));
-    hauptbox->add(*box_oben);
+    hauptbox->pack_start(*box_oben, Gtk::PACK_EXPAND_WIDGET);
     // Spielfläche
     this->spielraster = Gtk::manage(new Gtk::DrawingArea());
-    box_oben->add(*this->spielraster);
-    this->spielraster->set_size_request(100, 100);
+    box_oben->pack_start(*this->spielraster, Gtk::PACK_EXPAND_WIDGET);
+    this->spielraster->set_size_request(600, 600);
+    this->spielraster->signal_draw().connect(sigc::mem_fun(*this, &Hauptfenster::aktualisiere_spielraster), false);
     { // Informationsbereich
       auto box_info = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL, 20));
+      box_info->set_border_width(20);
       box_oben->pack_end(*box_info, Gtk::PACK_SHRINK);
       // Runde
-      this->runde = Gtk::manage(new Gtk::Label("Runde"));
+      this->runde = Gtk::manage(new Gtk::Label("<big><b>Runde</b></big>", Gtk::ALIGN_CENTER));
+      this->runde->set_use_markup();
       box_info->add(*this->runde);
       // Bots
       this->bot1 = Gtk::manage(new Gtk::Label("Bot1"));
@@ -98,8 +101,7 @@ Hauptfenster::init()
   } // Oberer Bereich 
 
   { // Unterer Bereich 
-    auto box_unten = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL, 20));
-    box_unten->set_homogeneous();
+    auto box_unten = Gtk::manage(new Gtk::ButtonBox(Gtk::ORIENTATION_HORIZONTAL));
     hauptbox->pack_end(*box_unten, Gtk::PACK_SHRINK);
 
     // Hilfeschaltfläche + Hilfefenster
@@ -115,43 +117,155 @@ Hauptfenster::init()
 
 
   this->show_all_children();
-  this->aktualisiere_spielraster();
   this->show_all();
-  CLOG << endl;
 
   return ;
 } // Hauptfenster::init()
 
 /**
- ** aktualisiert das Spielraster, d.h. malt es neu
+ ** aktualisiert alle Elemente
  ** 
  ** @param     -
  **
  ** @return    -
  **
- ** @version   2014-11-20
+ ** @version   2014-11-21
  **/
 void
-Hauptfenster::aktualisiere_spielraster()
+Hauptfenster::aktualisiere()
 {
   if (!this->ui->spielraster)
     return ;
-  auto const breite = this->spielraster->get_allocated_width();
-  auto const hoehe = this->spielraster->get_allocated_height();
-  // Felder malen
-  // Linien malen
-  for (int x = 0; x < this->ui->spielraster->breite(); ++x) {
-  } // for (x)
-  for (int y = 0; y < this->ui->spielraster->laenge(); ++y) {
-  } // for (y)
-  (void)breite;
-  (void)hoehe;
-  while (this->ui->main->events_pending()) {
-    this->ui->main->iteration(false);
-  }
 
+  // Runde
+  // Bots
+  // Weitere Informationen
 
   return ;
-} // void Hauptfenster::aktualisiere_spielraster()
+} // void Hauptfenster::aktualisiere()
+
+/**
+ ** aktualisiert das Spielraster, d.h. malt es neu
+ ** 
+ ** @param     cr    Schnittstelle zum Zeichnen
+ **
+ ** @return    -
+ **
+ ** @version   2014-11-21
+ **/
+bool
+Hauptfenster::aktualisiere_spielraster(Cairo::RefPtr<Cairo::Context> const& cr)
+{
+  if (!this->ui->spielraster)
+    return false;
+  auto const spielraster = *this->ui->spielraster;
+  auto const breite = spielraster.breite();
+  auto const laenge = spielraster.laenge();
+
+  auto const allocation = this->spielraster->get_allocation();
+  cr->scale(static_cast<double>(allocation.get_width()) / breite,
+            static_cast<double>(allocation.get_height()) / laenge);
+
+  cr->save();
+  cr->set_source_rgb(1, 1, 1);
+  cr->paint();
+  cr->restore();
+
+  // Felder malen
+  cr->save();
+  cr->set_source_rgb(0, 0, 0);
+  for (int x = 0; x < breite; ++x) {
+    for (int y = 0; y < laenge; ++y) {
+      if (spielraster(x, y))
+        cr->rectangle(x, y, 1, 1);
+    } // for (y)
+  } // for (x)
+  cr->fill();
+  cr->restore();
+
+  // Pfade der Bots wieder freimachen
+    cr->save();
+  cr->set_source_rgb(1, 1, 1);
+  for (int b = 0; b < spielraster.bot_anz(); ++b)
+    for (auto const f : spielraster.weg(b))
+      cr->rectangle(f.x(), f.y(), 1, 1);
+    cr->fill();
+    cr->restore();
+
+  cr->save();
+  cr->set_source_rgb(0.5, 0.5, 0.5);
+  cr->set_line_width(breite / static_cast<double>(allocation.get_width()));
+  // Linien malen
+  for (int x = 0; x <= breite; ++x)
+    cr->move_to(x, 0), cr->line_to(x, laenge);
+  cr->stroke();
+  cr->restore();
+  cr->save();
+  cr->set_source_rgb(0.5, 0.5, 0.5);
+  cr->set_line_width(laenge / static_cast<double>(allocation.get_height()));
+  for (int y = 0; y <= laenge; ++y)
+    cr->move_to(0, y), cr->line_to(breite, y);
+  cr->stroke();
+  cr->restore();
+
+  // Pfade der Bots malen
+  for (int b = 0; b < spielraster.bot_anz(); ++b) {
+    cr->save();
+    switch (b) {
+    case 0: cr->set_source_rgb(1, 0, 0); break;
+    case 1: cr->set_source_rgb(0, 1, 0); break;
+    case 2: cr->set_source_rgb(0, 0, 1); break;
+    case 3: cr->set_source_rgb(1, 1, 0); break;
+    case 4: cr->set_source_rgb(1, 0, 1); break;
+    case 5: cr->set_source_rgb(0, 1, 1); break;
+    default: cr->set_source_rgb(0.5, 0.5, 0.5); break;
+    } // switch (b)
+    auto const weg = spielraster.weg(b);
+    if (weg.size() == 1) {
+      auto const p = spielraster.position(b);
+      switch (p.richtung()) {
+      case Richtung::NORDEN:
+        cr->rectangle(p.x() + 0.2, p.y() + 0.2, 0.6, 0.8);
+        break;
+      case Richtung::SUEDEN:
+        cr->rectangle(p.x() + 0.2, p.y(), 0.6, 0.8);
+        break;
+      case Richtung::OSTEN:
+        cr->rectangle(p.x() + 0.2, p.y() + 0.2, 0.8, 0.6);
+        break;
+      case Richtung::WESTEN:
+        cr->rectangle(p.x(), p.y() + 0.2, 0.8, 0.6);
+        break;
+      } // switch (p.richtung())
+    } else {
+      for (auto f = begin(weg); f+1 != end(weg); ++f) {
+        auto const p = *f;
+        switch ((f+1)->richtung()) {
+        case Richtung::NORDEN:
+          cr->rectangle(p.x() + 0.2, p.y() - 0.2, 0.6, 1);
+          break;
+        case Richtung::SUEDEN:
+          cr->rectangle(p.x() + 0.2, p.y() + 0.2, 0.6, 1);
+          break;
+        case Richtung::OSTEN:
+          cr->rectangle(p.x() + 0.2, p.y() + 0.2, 1, 0.6);
+          break;
+        case Richtung::WESTEN:
+          cr->rectangle(p.x() - 0.2, p.y() + 0.2, 1, 0.6);
+          break;
+        } // switch (p.richtung())
+      } // for (f)
+    } // if !(weg.size() == 1)
+    //for (auto const f : spielraster.weg(b))
+    //cr->rectangle(f.x(), f.y(), 1, 1);
+    cr->fill();
+    cr->restore();
+
+    // @todo: Einflussbereich darstellen
+  } // for (b)
+
+
+  return true;
+} // bool Hauptfenster::aktualisiere_spielraster()
 
 } // namespace UI_Gtkmm

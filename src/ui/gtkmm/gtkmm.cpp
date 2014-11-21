@@ -83,7 +83,7 @@ namespace UI_Gtkmm {
   void
     UI_Gtkmm::spiel_startet()
     {
-      this->hauptfenster->aktualisiere_spielraster();
+      this->hauptfenster->aktualisiere();
       return;
     } // void UI_Gtkmm::spiel_startet()
 
@@ -99,7 +99,7 @@ namespace UI_Gtkmm {
   void
     UI_Gtkmm::runde(int const n)
     {
-      this->hauptfenster->aktualisiere_spielraster();
+      this->hauptfenster->aktualisiere();
       return;
     } // void UI_Gtkmm::runde(int n)
 

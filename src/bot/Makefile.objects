@@ -1,3 +1,3 @@
-OBJECTS = bot.o
+OBJECTS = bot.o human.o
 
 DIRECTORIES = 
