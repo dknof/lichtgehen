@@ -25,11 +25,11 @@ tronbot : objects directories
 # Automatisch neu kompilieren, wenn sich eine Datei geändert hat
 .PHONY: watch
 watch :
-	@rm -f commands.sh
+	@$(RM) commands.sh
 	@echo '#!/bin/bash' >> commands.sh
-	@echo 'if [ -e ./tron ]; then' >> commands.sh
+	@echo 'if [ -e ./tronbot ]; then' >> commands.sh
 	@echo '  for f in $$(find . -name "*.cpp"); do' >> commands.sh
-	@echo '    if [ $$f -nt ./tron ]; then rm ./tron; break; fi' >> commands.sh
+	@echo '    if [ $$f -nt ./tronbot ]; then rm ./tronbot; break; fi' >> commands.sh
 	@echo '  done' >> commands.sh
 	@echo 'fi' >> commands.sh
 	@echo 'if [ $$(grep -c processor /proc/cpuinfo) -gt 1 ]; then' >> commands.sh
@@ -41,6 +41,13 @@ watch :
 	  find . -name '*.cpp' -o -name '*.h' -o -name 'Makefile*' | inotifywait -e modify --fromfile -; \
 	  sh ./commands.sh; \
 	  done
-	@rm -f commands.sh
+	@$(RM) commands.sh
 
 include $(DEPTH)/Makefile.rules
+
+.PHONY: tgz
+tgz : clean
+	$(RM) commands.sh
+	cd ../..; \
+	  $(RM) tronbot_Diether_Knof.tgz; \
+	tar czvf tronbot_Diether_Knof.tgz tronbot --exclude .git --exclude .gitignore --exclude freiesmagazin-2014-10-contest --exclude tronbot.vimsession --exclude src/tronbot

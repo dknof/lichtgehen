@@ -128,7 +128,7 @@ namespace UI_Gtkmm {
             {
               auto color = Pango::Color();
               color.parse(bot_colors[std::min(b, static_cast<int>(bot_colors.size()) - 1)].to_string());
-              auto attr = Pango::Attribute::create_attr_foreground(0.5, 0.5, 0.5);
+              auto attr = Pango::Attribute::create_attr_foreground(0, 0, 0);
               attr.set_color(color);
               attrlist.insert(attr);
             }

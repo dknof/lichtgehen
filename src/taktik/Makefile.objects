@@ -5,6 +5,7 @@ OBJECTS = taktik.o \
 	  raum_ausfuellen.o \
 	  raum_ausfuellen_tiefensuche.o \
 	  groesster_raum.o \
+	  groesstes_einflussgebiet.o \
 	  tiefensuche.o
 
 DIRECTORIES = 

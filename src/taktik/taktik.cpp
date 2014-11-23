@@ -41,6 +41,7 @@
 #include "einzigerweg.h"
 #include "richtung.h"
 #include "groesster_raum.h"
+#include "groesstes_einflussgebiet.h"
 
 // Endspiel
 #include "tiefensuche.h"
@@ -83,6 +84,8 @@ Taktik::create(string const& name)
   }
   else if (name == "in größten Raum")
     return make_unique<GroessterRaum>();
+  else if (name == "zum größten Einflussgebiet")
+    return make_unique<GroesstesEinflussgebiet>();
   else if (name == "zur Mitte")
     return nullptr; // Gehe Richtung Mitte (Schwerpunkt der freien Felder)
   else if (name == "Abstand wahren")

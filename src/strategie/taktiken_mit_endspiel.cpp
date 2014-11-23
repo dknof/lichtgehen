@@ -153,7 +153,7 @@ namespace StrategieNS {
 
       // Teste, auf letzte Felder
       if (!(this->spielstatus & LETZTE_FELDER)) {
-        if (rauminfo.groesse <= 25)
+        if (rauminfo.groesse <= 30)
           neuer_status |= LETZTE_FELDER;
       } // if (!(this->spielstatus & LETZTE_FELDER))
 
@@ -175,6 +175,7 @@ namespace StrategieNS {
       this->taktiken.clear();
       this->hinzufuegen(Taktik::create("Tot"));
       this->hinzufuegen(Taktik::create("Einziger Weg"));
+      this->hinzufuegen(Taktik::create("in größten Raum"));
       switch (neuer_status) {
       case LETZTE_FELDER:
         this->hinzufuegen(Taktik::create("Tiefensuche"));

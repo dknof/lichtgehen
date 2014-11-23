@@ -54,7 +54,6 @@
 unique_ptr<UI>
 UI::create(string const name, int& argc, char* argv[])
 {
-  CLOG << name << endl;
   if (name == "none")
     return make_unique<UI>();
   else if (name == "text")
@@ -156,13 +155,14 @@ UI::spiel_endet()
  ** 
  ** @param     -
  **
- ** @return    Norden
+ ** @return    alle Richtungen abwechselnd
  **
  ** @version   2014-11-20
  **/
 Richtung
 UI::naechste_richtung()
 {
+  // alle durchgehen, falls eine belegt is
   static int n = 0;
   n += 1;
   n %= ::richtungen.size();

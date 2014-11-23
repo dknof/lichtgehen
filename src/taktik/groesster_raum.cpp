@@ -52,12 +52,13 @@ namespace TaktikNS {
 
   /**
    ** -> Rückgabe
-   ** Gehe in die Richtung von den Felden mit den wenigsten freien Nachbarn. Ignoriere aber Sackgassen.
+   ** Gehe in die größten Raum
+   ** Greift nur, wenn sich der Bot für einen Raum entscheiden muss.
    ** 
    ** @param     spielraster   das Spielraster
    ** @param     bot_nummer   die Nummer des Bots
    **
-   ** @return    Entlang dem Weg mit den meisten Wänden
+   ** @return    Richtung mit dem größten Raum
    **
    ** @version   2014-11-01
    **/

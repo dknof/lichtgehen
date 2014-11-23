@@ -2,4 +2,11 @@ tronbot
 Ein Programm für den siebten Programmierwettbewerb 2014 vom freiesMagazin, siehe (http://www.freiesmagazin.de/siebter_programmierwettbewerb)
 
 Zum Kompilieren: einfach 'make' ausführen sollte reichen.
-Benötigt wird C++14, getestet ist mit dem Compiler gcc version 4.9.1
+Benötigt wird C++14, getestet ist mit dem Compiler gcc version 4.9.1 und clang++ 3.5.0-6
+
+In der Datei src/Makefile.rules werden der Compiler sowie die Parameter für den Compiler gesetzt (sofern nicht bereits CXX und CXXFLAGS gesetzt sind).
+
+In der Datei src/Makefile.local lassen sich zwei Module anschalten:
+* gtkmm: eine graphische Ausgabe
+* human: bei der graphischen Ausgabe kann ein Bot gesteuert werden
+Sind beide Module aktiv, kann über den Spielserver gegen einen eigenen Bot getestet werden.

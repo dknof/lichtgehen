@@ -70,7 +70,7 @@ cdebug_ = &cerr;
 cdebug_ = new std::ostringstream;
 #endif
 
-#if 0
+#if 1
 main_wettbewerb(argc, argv);
 #else
 main_eigenes_spiel(argc, argv);
@@ -128,7 +128,8 @@ main_eigenes_spiel(int& argc, char* argv[])
                 ? make_unique<Human>(spielraster, *ui)
                 : make_unique<Bot>(spielraster));
     bot->setze_nummer(i);
-    bot->setze_strategie(Strategie::create({"in größten Raum", "Raum ausfüllen"}));
+    //bot->setze_strategie(Strategie::create({"in größten Raum", "zum größten Einflussgebiet"}));
+    bot->setze_strategie(Strategie::create({"zum größten Einflussgebiet"}));
     //bot->setze_strategie(Strategie::create({"Raum ausfüllen (Tiefensuche)"}));
     bots.push_back(std::move(bot));
   }
@@ -167,8 +168,6 @@ main_eigenes_spiel(int& argc, char* argv[])
     }
   } // while (spielraster.bots_im_spiel())
 
-    for (int b = 0; b < spielraster.bot_anz(); ++b)
-      cout << b << ": " << spielraster.position(b) << endl;
   ui->spiel_endet();
 
   return ;
@@ -197,9 +196,9 @@ main_wettbewerb(int& argc, char* argv[])
   //auto ui = UI::create("cerr", argc, argv);
 #endif
 #ifdef USE_HUMAN
-  Bot bot(spielraster);
-#else
   Human bot(spielraster, *ui);
+#else
+  Bot bot(spielraster);
 #endif
   //bot.setze_strategie(Strategie::create("Vorwärts"));
   //bot.setze_strategie(Strategie::create("Linksherum"));
@@ -242,12 +241,6 @@ main_wettbewerb(int& argc, char* argv[])
     } else if (zeile.compare( 0, 6, "ROUND ") == 0) {
       // ROUND R - Runde R beginnt.  Das Spielbrett beginnt links oben bei (1,1).  Nach diesem Befehl erwartet der Server eine Antwort vom Client.
 
-#if 0
-      //if (cdebug_ == &cerr) usleep(100*1000);
-      cdebug << "___\n";
-      cdebug << "Entfernung: " << spielraster.kuerzeste_entfernung(spielraster.position(0), spielraster.position(1)) << '\n';
-      cdebug << spielraster;
-#endif
       if (spielraster.runde() == 1)
         ui->spiel_startet(spielraster);
       ui->runde(spielraster.runde());

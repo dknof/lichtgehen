@@ -472,6 +472,22 @@ Spielraster::einflussbereich_groesse(int const bot) const
 
 /**
  ** -> Rückgabe
+ ** 
+ ** @param     bot   Nummer des Bots
+ ** @param     br    Richtung, für die geprüft wird
+ **
+ ** @return    Groesse des Einflussbereichs in dem Feld Richtung br
+ **
+ ** @version   2014-11-22
+ **/
+int 
+Spielraster::einflussbereich_groesse(int const bot, Bewegungsrichtung const br) const
+{
+  return this->einflussbereich(bot, br).felder_belegt();
+} // int Spielraster::einflussbereich_groesse(int bot, Bewegungsrichtung const br) const
+
+/**
+ ** -> Rückgabe
  ** Ermittelt den Einflussbereich eines Bots
  ** 
  ** @param     bot       Nummer des Bots
@@ -481,8 +497,45 @@ Spielraster::einflussbereich_groesse(int const bot) const
  ** @version   2014-11-22
  **/
 Raster 
-Spielraster::einflussbereich(int bot) const
+Spielraster::einflussbereich(int const bot) const
 {
+  return einflussbereich(bot, this->position(bot));
+} // Raster Spielraster::einflussbereich(int const bot) const
+
+/**
+ ** -> Rückgabe
+ ** Ermittelt den Einflussbereich eines Bots
+ ** 
+ ** @param     bot       Nummer des Bots
+ ** @param     br    Richtung, für die geprüft wird
+ **
+ ** @return    Einflussbereich des Bots
+ **
+ ** @version   2014-11-22
+ **/
+Raster 
+Spielraster::einflussbereich(int const bot, Bewegungsrichtung const br) const
+{
+  return einflussbereich(bot, this->position(bot) + br);
+} // Raster Spielraster::einflussbereich(int bot, Bewegungsrichtung br) const
+
+/**
+ ** -> Rückgabe
+ ** Ermittelt den Einflussbereich eines Bots
+ ** 
+ ** @param     bot       Nummer des Bots
+ ** @param     position  Position des Bots
+ **
+ ** @return    Einflussbereich des Bots
+ **
+ ** @version   2014-11-22
+ **/
+Raster 
+Spielraster::einflussbereich(int const bot, Position const position) const
+{
+  if (  (*this)(position)
+      && (position != this->position(bot)) )
+    return Raster{this->breite(), this->laenge()};
   auto raster = static_cast<Raster>(*this);
   auto raster_bot = Raster{this->breite(), this->laenge()};
 
@@ -493,7 +546,7 @@ Spielraster::einflussbereich(int bot) const
     if (!p)
       continue;
     if (b == bot)
-      offene_positionen_bot.insert(p);
+      offene_positionen_bot.insert(position);
     else
       offene_positionen_sonst.insert(p);
   } // for (b)
@@ -527,4 +580,4 @@ Spielraster::einflussbereich(int bot) const
   } // while (offene_positionen_bot || offene_positionen_sonst)
 
   return raster_bot;
-} // Raster Spielraster::einflussbereich(int bot) const
+} // Raster Spielraster::einflussbereich(int bot, Position position) const

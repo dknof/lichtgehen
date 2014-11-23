@@ -1,5 +1,7 @@
-CXX = ccache g++
-CXXFLAGS ?= -Wall -Werror -Wno-parentheses -std=c++14 -O0 -ggdb
+CXX ?= g++
+#CXXFLAGS ?= -Wall -Werror -Wno-parentheses -std=c++14 -O0 -ggdb
+CXXFLAGS ?= -Wall -Werror -Wno-parentheses -std=c++14 -O2
+
 DEPGEN_FLAGS ?= -MMD -MP -MT $@ -MF $(@:.o=.d)
 ifeq ($(USE_UI_GTKMM), true)
   CPPFLAGS += -DUSE_UI_GTKMM

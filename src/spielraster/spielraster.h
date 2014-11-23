@@ -99,8 +99,14 @@ class Spielraster : public Raster {
 
   // Größe des Einflussbereichs ermitteln
   int einflussbereich_groesse(int bot) const;
+  // Größe des Einflussbereichs ermitteln
+  int einflussbereich_groesse(int bot, Bewegungsrichtung br) const;
   // Einflussbereich ermitteln
   Raster einflussbereich(int bot) const;
+  // Einflussbereich ermitteln
+  Raster einflussbereich(int bot, Bewegungsrichtung br) const;
+  // Einflussbereich ermitteln
+  Raster einflussbereich(int bot, Position p) const;
 
   private:
   // Anzahl der Bots

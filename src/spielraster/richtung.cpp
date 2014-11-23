@@ -37,9 +37,9 @@
 #include "richtung.h"
 
 // alle Richtungen
-std::array<Richtung, 4> const richtungen = {Richtung::NORDEN, Richtung::OSTEN, Richtung::SUEDEN, Richtung::WESTEN};
+std::array<Richtung, 4> const richtungen = {{Richtung::NORDEN, Richtung::OSTEN, Richtung::SUEDEN, Richtung::WESTEN}};
 // alle Bewegungsrichtungen
-std::array<Bewegungsrichtung, 3> const bewegungsrichtungen = {Bewegungsrichtung::VORWAERTS, Bewegungsrichtung::LINKS, Bewegungsrichtung::RECHTS};
+std::array<Bewegungsrichtung, 3> const bewegungsrichtungen = {{Bewegungsrichtung::VORWAERTS, Bewegungsrichtung::LINKS, Bewegungsrichtung::RECHTS}};
 
 /**
  ** Die Richtung auf ostr ausgeben
