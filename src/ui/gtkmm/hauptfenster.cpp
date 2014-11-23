@@ -192,15 +192,6 @@ namespace UI_Gtkmm {
       if (!this->ui->spielraster)
         return ;
 
-      auto const spielraster = this->ui->spielraster->historie(this->historie->get_value() - 1);
-
-      // Runde
-      if (this->ui->spielraster->runde() == this->historie->get_value())
-        this->runde->set_label("Runde " + std::to_string(spielraster.runde()));
-      else
-        this->runde->set_label("Runde "
-                               + std::to_string(static_cast<int>(this->historie->get_value()))
-                               + " (" + std::to_string(this->ui->spielraster->runde()) + ")");
       { // die Historie gegebenenfalls erweitern, dabei den Wert weiterschieben
         int r = this->historie->get_value();
         if (r == this->ui->spielraster->runde() - 1) {
@@ -212,6 +203,15 @@ namespace UI_Gtkmm {
         this->historie->set_value(r);
       }
 
+      auto const spielraster = this->ui->spielraster->historie(this->historie->get_value() - 1);
+
+      // Runde
+      if (this->ui->spielraster->runde() == this->historie->get_value())
+        this->runde->set_label("Runde " + std::to_string(spielraster.runde()));
+      else
+        this->runde->set_label("Runde "
+                               + std::to_string(static_cast<int>(this->historie->get_value()))
+                               + " (" + std::to_string(this->ui->spielraster->runde()) + ")");
       // Felder frei
       this->felder_frei->set_label(std::to_string(spielraster.felder_frei()) + " Felder frei");
 
@@ -306,10 +306,10 @@ namespace UI_Gtkmm {
       } // for (b)
       cr->restore();
 
+      // Linien malen
       cr->save();
       cr->set_source_rgb(0.5, 0.5, 0.5);
       cr->set_line_width(breite / static_cast<double>(allocation.get_width()));
-      // Linien malen
       for (int x = 0; x <= breite; ++x)
         cr->move_to(x, 0), cr->line_to(x, laenge);
       cr->stroke();
@@ -326,7 +326,7 @@ namespace UI_Gtkmm {
       cr->save();
       cr->set_line_width(0.6);
       cr->set_line_join(Cairo::LINE_JOIN_ROUND);
-      cr->set_line_cap(Cairo::LINE_CAP_ROUND);
+      //cr->set_line_cap(Cairo::LINE_CAP_ROUND);
 
       for (int b = 0; b < spielraster.bot_anz(); ++b) {
         auto const& color = bot_colors[std::min(b, static_cast<int>(bot_colors.size()) - 1)];
@@ -334,7 +334,7 @@ namespace UI_Gtkmm {
                            color.get_green_p(),
                            color.get_blue_p());
         auto const p = spielraster.weg(b)[0];
-        switch (p.richtung()) {
+        switch (spielraster.weg(b).size() == 1 ? p.richtung() : spielraster.weg(b)[1].richtung()) {
         case Richtung::NORDEN:
           cr->move_to(p.x() + 0.5, p.y() + 0.7);
           break;
@@ -352,6 +352,44 @@ namespace UI_Gtkmm {
           if (p)
             cr->line_to(p.x() + 0.5, p.y() + 0.5);
         cr->stroke();
+      } // for (b)
+      cr->restore();
+      cr->save();
+      cr->set_line_width(0.01);
+      cr->set_line_join(Cairo::LINE_JOIN_ROUND);
+      for (int b = 0; b < spielraster.bot_anz(); ++b) {
+        auto const& color = bot_colors[std::min(b, static_cast<int>(bot_colors.size()) - 1)];
+        cr->set_source_rgb(color.get_red_p(),
+                           color.get_green_p(),
+                           color.get_blue_p());
+        auto const p = spielraster.weg(b).back();
+        if (!p)
+          continue;
+          cr->move_to(p.x() + 0.5, p.y() + 0.5);
+        switch (p.richtung()) {
+        case Richtung::NORDEN:
+          cr->rel_line_to(-0.4, 0);
+          cr->rel_line_to(0.4, -0.4);
+          cr->rel_line_to(0.4, 0.4);
+          break;
+        case Richtung::SUEDEN:
+          cr->rel_line_to(-0.4, 0);
+          cr->rel_line_to(0.4, 0.4);
+          cr->rel_line_to(0.4, -0.4);
+          break;
+        case Richtung::OSTEN:
+          cr->rel_line_to(0, -0.4);
+          cr->rel_line_to(0.4, 0.4);
+          cr->rel_line_to(-0.4, 0.4);
+          break;
+        case Richtung::WESTEN:
+          cr->rel_line_to(0, -0.4);
+          cr->rel_line_to(-0.4, 0.4);
+          cr->rel_line_to(0.4, 0.4);
+          break;
+        } // switch (p.richtung())
+          cr->close_path();
+          cr->fill();
       } // for (b)
       cr->restore();
 

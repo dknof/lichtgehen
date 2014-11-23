@@ -37,7 +37,9 @@
 #include "ui.h"
 
 #include "text.h"
+#ifdef USE_UI_GTKMM
 #include "gtkmm/gtkmm.h"
+#endif
 
 /**
  ** Konstruktor
@@ -52,6 +54,7 @@
 unique_ptr<UI>
 UI::create(string const name, int& argc, char* argv[])
 {
+  CLOG << name << endl;
   if (name == "none")
     return make_unique<UI>();
   else if (name == "text")
@@ -60,8 +63,10 @@ UI::create(string const name, int& argc, char* argv[])
     return make_unique<UI_Text>(cout);
   else if (name == "cerr")
     return make_unique<UI_Text>(cerr);
+#ifdef USE_UI_GTKMM
   else if (name == "gtkmm")
     return make_unique<UI_Gtkmm::UI_Gtkmm>(argc, argv);
+#endif
   else
     return nullptr;
 } // static unique_ptr<UI> UI::create(string const name, int& argc, char* argv[])
@@ -157,4 +162,9 @@ UI::spiel_endet()
  **/
 Richtung
 UI::naechste_richtung()
-{ return Richtung::NORDEN; }
+{
+  static int n = 0;
+  n += 1;
+  n %= ::richtungen.size();
+  return ::richtungen[n];
+}

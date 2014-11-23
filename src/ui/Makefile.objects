@@ -1,3 +1,5 @@
 OBJECTS = ui.o text.o
 
+ifeq ($(USE_UI_GTKMM), true)
 DIRECTORIES =  gtkmm
+endif

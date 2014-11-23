@@ -48,7 +48,7 @@ using std::string;
 
 std::ostream* cdebug_;
 
-void main_wettbewerb();
+void main_wettbewerb(int& argc, char* argv[]);
 void main_eigenes_spiel(int& argc, char* argv[]);
 
 /**
@@ -64,14 +64,14 @@ void main_eigenes_spiel(int& argc, char* argv[]);
 int
 main(int argc, char* argv[])
 {
-#if 1 // debug
+#if 0 // debug
 cdebug_ = &cerr;
 #else // no debug
 cdebug_ = new std::ostringstream;
 #endif
 
 #if 0
-main_wettbewerb();
+main_wettbewerb(argc, argv);
 #else
 main_eigenes_spiel(argc, argv);
 #endif
@@ -98,10 +98,13 @@ main_eigenes_spiel(int& argc, char* argv[])
   spielraster.einlesen(cin);
 
   // UI erzeugen
-  //auto ui = UI::create("none", argc, argv);
+#ifdef USE_UI_GTKMM
+  auto ui = UI::create("gtkmm", argc, argv);
+#else
+  auto ui = UI::create("none", argc, argv);
   //auto ui = UI::create("cout", argc, argv);
   //auto ui = UI::create("cerr", argc, argv);
-  auto ui = UI::create("gtkmm", argc, argv);
+#endif
 
   { // Positionen der Bots lesen
     while (cin.peek() && cin.good()) {
@@ -116,7 +119,12 @@ main_eigenes_spiel(int& argc, char* argv[])
   vector<unique_ptr<Bot>> bots; // Die Bots
   // Bots erzeugen
   for (int i = 0; i < spielraster.bot_anz(); ++i) {
-    auto bot = ((i == 0)
+    auto bot = (
+#ifdef USE_HUMAN
+                (i == 0)
+#else
+                false
+#endif
                 ? make_unique<Human>(spielraster, *ui)
                 : make_unique<Bot>(spielraster));
     bot->setze_nummer(i);
@@ -170,17 +178,29 @@ main_eigenes_spiel(int& argc, char* argv[])
 /**
  ** Hauptroutine für den Wettbewerb
  **
- ** @param     -
+ ** @param     argc   Anzahl der Argumente (-> GUI)
+ ** @param     argv   Argumente (-> GUI)
  **
  ** @return    -
  **
  ** @version   2014-11-08
  **/
 void
-main_wettbewerb()
+main_wettbewerb(int& argc, char* argv[])
 {
   Spielraster spielraster;
+#ifdef USE_UI_GTKMM
+  auto ui = UI::create("gtkmm", argc, argv);
+#else
+  auto ui = UI::create("none", argc, argv);
+  //auto ui = UI::create("cout", argc, argv);
+  //auto ui = UI::create("cerr", argc, argv);
+#endif
+#ifdef USE_HUMAN
   Bot bot(spielraster);
+#else
+  Human bot(spielraster, *ui);
+#endif
   //bot.setze_strategie(Strategie::create("Vorwärts"));
   //bot.setze_strategie(Strategie::create("Linksherum"));
   //bot.setze_strategie(Strategie::create({"vorwärts 0.1", "links 0.5"}));
@@ -228,6 +248,9 @@ main_wettbewerb()
       cdebug << "Entfernung: " << spielraster.kuerzeste_entfernung(spielraster.position(0), spielraster.position(1)) << '\n';
       cdebug << spielraster;
 #endif
+      if (spielraster.runde() == 1)
+        ui->spiel_startet(spielraster);
+      ui->runde(spielraster.runde());
       if (spielraster.bot_im_spiel(bot.nummer()))
         cout << bot.bewegung() << '\n';
 
@@ -237,6 +260,7 @@ main_wettbewerb()
       spielraster.entferne_bot(std::stoi(string(zeile, 4)) - 1);
     } else if (zeile == "END") {
       // END - Das Spiel ist zu Ende.
+      ui->spiel_endet();
       break;
 
     } else {

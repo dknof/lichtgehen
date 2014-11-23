@@ -467,7 +467,7 @@ Spielraster::historie(int const runde) const
 int 
 Spielraster::einflussbereich_groesse(int const bot) const
 {
-  return this->einflussbereich(bot).felder_belegt() - 1;
+  return this->einflussbereich(bot).felder_belegt();
 } // int Spielraster::einflussbereich_groesse(int bot) const
 
 /**

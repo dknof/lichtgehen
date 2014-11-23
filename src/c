@@ -17,12 +17,12 @@ BOTA="../src/tronbot"
 #BOTB="../src/tronbot"
 BOTB="bots/dummybot/bot"
 
-#SPIELRASTER="../Spielraster/simple.txt"
+SPIELRASTER="../Spielraster/simple.txt"
 #SPIELRASTER="../Spielraster/50x50.txt"
 #SPIELRASTER="../Spielraster/5x5.txt"
 #SPIELRASTER="../Spielraster/10x10.txt"
 #SPIELRASTER="../Spielraster/Ring.txt"
-SPIELRASTER="../Spielraster/Ring4.txt"
+#SPIELRASTER="../Spielraster/Ring4.txt"
 #SPIELRASTER="../Spielraster/Labyrinth.txt"
 #SPIELRASTER="../Spielraster/Raumfüllen_1.txt"
 #SPIELRASTER="../Spielraster/Raumfüllen_2.txt"
@@ -31,12 +31,10 @@ SPIELRASTER="../Spielraster/Ring4.txt"
 #SPIELRASTER="../Spielraster/5x5_1.txt"
 
 # Eigenes Spiel
-time ./tronbot <"$SPIELRASTER"
-
-exit
+time ./tronbot <"$SPIELRASTER"; exit
 
 # Spiel über den Server
 pushd ../freiesmagazin-2014-10-contest
-#./start.sh "$SPIELRASTER" "$BOTA" "$BOTB"
- ./start.sh "$SPIELRASTER" "$BOTA" "$BOTB" --log > bot.log 2>&1
+./start.sh "$SPIELRASTER" "$BOTA" "$BOTB"
+#./start.sh "$SPIELRASTER" "$BOTA" "$BOTB" --log > bot.log 2>&1
 popd 

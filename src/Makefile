@@ -1,7 +1,7 @@
 DEPTH = .
 DIRECTORY = .
 
-USE_UI_GTKMM = true
+include Makefile.modules
 
 LIBS_ALL = 
 ifeq ($(USE_UI_GTKMM), true)

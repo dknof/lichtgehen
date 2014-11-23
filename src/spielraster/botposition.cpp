@@ -116,7 +116,7 @@ BotPosition::operator string() const
   case Richtung::WESTEN: r = "←"; break;
   } // switch (this->richtung())
   if (*this)
-    return ("(" + std::to_string(this->x()) + ", " + std::to_string(this->x())
+    return ("(" + std::to_string(this->x()) + ", " + std::to_string(this->y())
             + ", " + r + ")");
   else
     return "(--)";

@@ -93,7 +93,7 @@ Position::Position(istream& istr)
 Position::operator string() const
 { 
   if (*this)
-    return "(" + std::to_string(this->x()) + ", " + std::to_string(this->x()) + ")";
+    return "(" + std::to_string(this->x()) + ", " + std::to_string(this->y()) + ")";
   else
     return "(--)";
 } // Position::operator string() const

@@ -1,6 +1,12 @@
 CXX = ccache g++
 CXXFLAGS ?= -Wall -Werror -Wno-parentheses -std=c++14 -O0 -ggdb
 DEPGEN_FLAGS ?= -MMD -MP -MT $@ -MF $(@:.o=.d)
+ifeq ($(USE_UI_GTKMM), true)
+  CPPFLAGS += -DUSE_UI_GTKMM
+endif
+ifeq ($(USE_HUMAN), true)
+  CPPFLAGS += -DUSE_HUMAN
+endif
 
 .PHONY: all
 
@@ -8,7 +14,7 @@ DEPGEN_FLAGS ?= -MMD -MP -MT $@ -MF $(@:.o=.d)
 .PHONY: objects
 objects: $(OBJECTS)
 
-%.o : %.cpp
+%.o : %.cpp $(DEPTH)/Makefile.modules
 	@echo $(CXX) -c $(SUBDIR)/$<
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) $(DEPGEN_FLAGS) -o $@ -c $<
 
