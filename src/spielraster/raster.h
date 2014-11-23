@@ -49,6 +49,8 @@ friend bool operator<(Raster const& raster1, Raster const& raster2);
   public:
   // Konstruktor
   Raster();
+  // Konstruktor
+  Raster(int breite, int laenge);
   // Destruktor
   virtual ~Raster();
 
@@ -68,13 +70,18 @@ friend bool operator<(Raster const& raster1, Raster const& raster2);
   bool operator()(Position const& position) const;
 
   // belegt das Raster
-  void belege(int x, int y);
+  void belege(int x, int y, bool wert = true);
   // belegt das Raster
-  void belege(Position const& position);
+  void belege(Position const& position, bool wert = true);
 
   //
   // Informationen über das Raster
   //
+
+  // Anzahl der belegten Felder
+  int felder_belegt() const;
+  // Anzahl der freien Felder
+  int felder_frei() const;
 
   // Die Anzahl der freien Nachbarraster
   int nachbarn_frei(Position const& position) const;

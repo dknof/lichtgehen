@@ -34,56 +34,46 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef UI_GTKMM_HAUPTFENSTER_H
-#define UI_GTKMM_HAUPTFENSTER_H
-
-#include "gtkmm.h"
-#include <gtkmm/window.h>
-namespace Gtk {
-  class DrawingArea;
-  class Label;
-  class Scale;
-}
+#include "constants.h"
+#include "ueber.h"
 
 namespace UI_Gtkmm {
-  /** das Hauptfenster
-   ** @todo  Spielraster
-   ** @todo  Hilfe
-   ** @todo  Beenden
-   ** @todo  Bedienung
-   ** @todo  Informationen
+
+  /**
+   ** Konstruktor
+   ** 
+   ** @param     -
+   **
+   ** @return    -
+   **
+   ** @version   2014-11-22
    **/
-  class Hauptfenster : public Gtk::Window {
-    public:
-      // Konstruktor
-      Hauptfenster(UI_Gtkmm& ui);
+  Ueber::Ueber() :
+    Gtk::AboutDialog()
+  {
+    this->signal_realize().connect(sigc::mem_fun(*this, &Ueber::init));
+    this->signal_response().connect(sigc::hide(sigc::mem_fun(*this, &Ueber::hide)));
+  } // Ueber::Ueber()
 
-      // aktualisiere alle Elemente
-      void aktualisiere();
-    private:
-      // initializiere das Hauptfenster
-      void init();
-      // aktualisiere das Spielraster
-      bool aktualisiere_spielraster(Cairo::RefPtr<Cairo::Context> const& cr);
-      // Tastendruck
-      bool on_key_press_event(GdkEventKey* key);
+  /**
+   ** initializiere das UI
+   ** 
+   ** @param     -
+   **
+   ** @return    -
+   **
+   ** @version   2014-11-21
+   **/
+  void
+    Ueber::init()
+    {
+      this->set_program_name("tronbot");
+      //this->set_version(__DATE__);
+      this->set_comments("Für den Programmierwettbewerb vom freiesMagazin");
+      this->set_license_type(Gtk::LICENSE_GPL_3_0);
+      this->set_authors({"Dr. Diether Knof"});
 
-    private:
-      // Verweis auf die UI
-      UI_Gtkmm* const ui;
-      // Nummer, die eingegeben wurde
-      int nummer_eingabe = 0;
-      // Spielraster
-      Gtk::DrawingArea* spielraster = nullptr;
-      // Historie
-      Gtk::Scale* historie;
-      // Rundenanzeige
-      Gtk::Label* runde = nullptr;
-      // Freie Felder
-      Gtk::Label* felder_frei = nullptr;
-      // Botinfo
-      vector<Gtk::Label*> bot;
-  }; // class Hauptfenster : public Gtk::Window
+      return ;
+    } // Ueber::init()
+
 } // namespace UI_Gtkmm
-
-#endif // #ifndef UI_GTKMM_HAUPTFENSTER_H

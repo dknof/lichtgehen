@@ -71,7 +71,7 @@ Richtung& operator--(Richtung& richtung);
 Richtung& operator+=(Richtung& richtung, Bewegungsrichtung bewegungsrichtung);
 // Richtung entsprechend Bewegungsrichtung verändert
 Richtung operator+(Richtung richtung, Bewegungsrichtung bewegungsrichtung);
-// die Bewegungsrichtung von lhs nach rhs
+// die Bewegungsrichtung von rhs nach lhs
 Bewegungsrichtung operator-(Richtung lhs, Richtung rhs);
 
 // Bewegungsrichtung ausgeben

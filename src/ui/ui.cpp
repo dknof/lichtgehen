@@ -156,5 +156,5 @@ UI::spiel_endet()
  ** @version   2014-11-20
  **/
 Richtung
-UI::hole_richtung()
+UI::naechste_richtung()
 { return Richtung::NORDEN; }

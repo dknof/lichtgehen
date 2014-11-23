@@ -63,7 +63,7 @@ class UI {
     virtual void spiel_endet();
 
     // gibt die nächste Richtung (Benutzereingabe) zurück
-    virtual Richtung hole_richtung();
+    virtual Richtung naechste_richtung();
 
   private:
     // initializiere die UI

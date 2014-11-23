@@ -38,6 +38,7 @@
 
 #include "spielraster/spielraster.h"
 #include "bot/bot.h"
+#include "bot/human.h"
 #include "ui/ui.h"
 
 #include <string>
@@ -115,7 +116,9 @@ main_eigenes_spiel(int& argc, char* argv[])
   vector<unique_ptr<Bot>> bots; // Die Bots
   // Bots erzeugen
   for (int i = 0; i < spielraster.bot_anz(); ++i) {
-    auto bot = make_unique<Bot>(spielraster);
+    auto bot = ((i == 0)
+                ? make_unique<Human>(spielraster, *ui)
+                : make_unique<Bot>(spielraster));
     bot->setze_nummer(i);
     bot->setze_strategie(Strategie::create({"in größten Raum", "Raum ausfüllen"}));
     //bot->setze_strategie(Strategie::create({"Raum ausfüllen (Tiefensuche)"}));
@@ -128,6 +131,7 @@ main_eigenes_spiel(int& argc, char* argv[])
   ui->spiel_startet(spielraster);
   while (spielraster.bots_im_spiel()) {
     runde += 1;
+    usleep(10000);
     ui->runde(runde);
     // Schritte abfragen
     for (int b = 0; b < spielraster.bot_anz(); ++b) {
@@ -155,6 +159,8 @@ main_eigenes_spiel(int& argc, char* argv[])
     }
   } // while (spielraster.bots_im_spiel())
 
+    for (int b = 0; b < spielraster.bot_anz(); ++b)
+      cout << b << ": " << spielraster.position(b) << endl;
   ui->spiel_endet();
 
   return ;

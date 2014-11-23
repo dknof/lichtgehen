@@ -65,6 +65,12 @@ Human::Human(Spielraster const& spielraster, UI& ui) :
 Bewegungsrichtung
 Human::bewegung()
 {
-  return (this->ui.hole_richtung()
-          - this->spielraster_.position(this->nummer()).richtung());
+  auto const bp = this->spielraster_.position(this->nummer()); // Position
+  auto const bw = (this->ui.naechste_richtung() - bp.richtung()); // Bewegung
+  if (!this->spielraster_.nachbarn_frei(bp))
+    return bw;
+  // Wenn das Feld belegt ist, nehme das nächste
+  if (this->spielraster_(bp + bw))
+    return this->bewegung();
+  return bw;
 } // Bewegungsrichtung Human::bewegung()

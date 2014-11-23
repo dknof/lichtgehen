@@ -39,6 +39,19 @@
 /**
  ** Konstruktor
  ** 
+ ** @param     -
+ **
+ ** @return    -
+ **
+ ** @version   2014-11-22
+ **/
+BotPosition::BotPosition() :
+  Position(), richtung_(Richtung::NORDEN)
+{ }
+
+/**
+ ** Konstruktor
+ ** 
  ** @param     position        Position
  ** @param     richtung   Richtung
  **
@@ -83,6 +96,31 @@ BotPosition::BotPosition(istream& istr) :
     cerr << "Richtung '" << c << "' unbekannt.\n";
   } // switch (c)
 } // BotPosition::BotPosition(istream& istr)
+
+/**
+ ** Text-Repräsentation
+ ** 
+ ** @param     -
+ **
+ ** @return    Position als Text
+ **
+ ** @version   2014-11-22
+ **/
+BotPosition::operator string() const
+{ 
+  string r;
+  switch (this->richtung()) {
+  case Richtung::NORDEN: r = "↑"; break;
+  case Richtung::OSTEN:  r = "→"; break;
+  case Richtung::SUEDEN: r = "↓"; break;
+  case Richtung::WESTEN: r = "←"; break;
+  } // switch (this->richtung())
+  if (*this)
+    return ("(" + std::to_string(this->x()) + ", " + std::to_string(this->x())
+            + ", " + r + ")");
+  else
+    return "(--)";
+} // BotPosition::operator string() const
 
 /**
  ** Die BotPosition auf ostr ausgeben

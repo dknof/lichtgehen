@@ -34,56 +34,23 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef UI_GTKMM_HAUPTFENSTER_H
-#define UI_GTKMM_HAUPTFENSTER_H
+#ifndef UI_GTKMM_UEBER_H
+#define UI_GTKMM_UEBER_H
 
-#include "gtkmm.h"
-#include <gtkmm/window.h>
-namespace Gtk {
-  class DrawingArea;
-  class Label;
-  class Scale;
-}
+#include <gtkmm/aboutdialog.h>
 
 namespace UI_Gtkmm {
-  /** das Hauptfenster
-   ** @todo  Spielraster
-   ** @todo  Hilfe
-   ** @todo  Beenden
-   ** @todo  Bedienung
-   ** @todo  Informationen
+  /** das Über-Fenster
    **/
-  class Hauptfenster : public Gtk::Window {
+  class Ueber : public Gtk::AboutDialog {
     public:
       // Konstruktor
-      Hauptfenster(UI_Gtkmm& ui);
+      Ueber();
 
-      // aktualisiere alle Elemente
-      void aktualisiere();
     private:
-      // initializiere das Hauptfenster
+      // initializiere das Über-Fenster
       void init();
-      // aktualisiere das Spielraster
-      bool aktualisiere_spielraster(Cairo::RefPtr<Cairo::Context> const& cr);
-      // Tastendruck
-      bool on_key_press_event(GdkEventKey* key);
-
-    private:
-      // Verweis auf die UI
-      UI_Gtkmm* const ui;
-      // Nummer, die eingegeben wurde
-      int nummer_eingabe = 0;
-      // Spielraster
-      Gtk::DrawingArea* spielraster = nullptr;
-      // Historie
-      Gtk::Scale* historie;
-      // Rundenanzeige
-      Gtk::Label* runde = nullptr;
-      // Freie Felder
-      Gtk::Label* felder_frei = nullptr;
-      // Botinfo
-      vector<Gtk::Label*> bot;
-  }; // class Hauptfenster : public Gtk::Window
+  }; // class Ueber : public Gtk::AboutDialog
 } // namespace UI_Gtkmm
 
-#endif // #ifndef UI_GTKMM_HAUPTFENSTER_H
+#endif // #ifndef UI_GTKMM_UEBER_H

@@ -1,3 +1,3 @@
-OBJECTS = gtkmm.o hauptfenster.o
+OBJECTS = gtkmm.o hauptfenster.o hilfe.o ueber.o
 
 DIRECTORIES = 

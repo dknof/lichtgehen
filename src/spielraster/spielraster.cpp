@@ -38,6 +38,7 @@
 
 #include <sstream>
 #include <map>
+#include <set>
 
 /**
  ** Standardkonstruktor
@@ -351,6 +352,8 @@ Spielraster::rauminfo(int const bot) const
   RaumInfo rauminfo;
   rauminfo.groesse = this->raumgroesse(this->position(bot), false);
   rauminfo.bot_anz = 0;
+
+  // Entfernung zum nächsten Bot
   rauminfo.entfernung_naechster_bot = this->breite() * this->laenge() + 1;
   for (int b = 0; b < this->bot_anz(); ++b) {
     if (b == bot)
@@ -404,3 +407,122 @@ Spielraster::rauminfo(int const bot,
   return rauminfo;
 } // Spielraster::RaumInfo Spielraster::rauminfo(int const bot, Bewegungsrichtung const bewegungsrichtung) const
 
+/**
+ ** -> Rückgabe
+ ** 
+ ** @param     -
+ **
+ ** @return    die Runde
+ **
+ ** @version   2014-11-22
+ **/
+int 
+Spielraster::runde() const
+{
+  auto r = this->bot_weg_[0].size();
+  for (auto const& w : this->bot_weg_)
+    r = std::max(r, w.size());
+
+  return r;
+} // int Spielraster::runde() const
+
+/**
+ ** -> Rückgabe
+ ** 
+ ** @param     runde   Runde
+ **
+ ** @return    das Spielraster in der angegebenen Runde
+ **
+ ** @version   2014-11-22
+ **/
+Spielraster 
+Spielraster::historie(int const runde) const
+{
+  if (runde >= this->runde())
+    return *this;
+
+  auto sr = *this;
+  // Felder wieder freisetzen
+  for (auto const& w : sr.bot_weg_)
+    for (auto f = (begin(w) + runde + 1); f != end(w); ++f)
+      sr.belege(*f, false);
+  // Weg der Bots beschneiden
+  for (auto& w : sr.bot_weg_)
+    w.resize(runde + 1);
+
+  return sr;
+} // int Spielraster::runde() const
+
+/**
+ ** -> Rückgabe
+ ** 
+ ** @param     bot       Nummer des Bots
+ **
+ ** @return    Groesse des Einflussbereichs
+ **
+ ** @version   2014-11-22
+ **/
+int 
+Spielraster::einflussbereich_groesse(int const bot) const
+{
+  return this->einflussbereich(bot).felder_belegt() - 1;
+} // int Spielraster::einflussbereich_groesse(int bot) const
+
+/**
+ ** -> Rückgabe
+ ** Ermittelt den Einflussbereich eines Bots
+ ** 
+ ** @param     bot       Nummer des Bots
+ **
+ ** @return    Einflussbereich des Bots
+ **
+ ** @version   2014-11-22
+ **/
+Raster 
+Spielraster::einflussbereich(int bot) const
+{
+  auto raster = static_cast<Raster>(*this);
+  auto raster_bot = Raster{this->breite(), this->laenge()};
+
+  std::set<Position> offene_positionen_bot; // offene Positionen des Bots
+  std::set<Position> offene_positionen_sonst; // offene Positionen der anderen Bots
+  for (int b = 0; b < this->bot_anz(); ++b) {
+    auto const p = this->position(b);
+    if (!p)
+      continue;
+    if (b == bot)
+      offene_positionen_bot.insert(p);
+    else
+      offene_positionen_sonst.insert(p);
+  } // for (b)
+
+  std::set<Position> offene_positionen_bot_neu; // neue offene Positionen des Bots
+  std::set<Position> offene_positionen_sonst_neu; // neue offene Positionen der anderen Bots
+  while (   !offene_positionen_bot.empty()
+         || !offene_positionen_sonst.empty()) {
+    offene_positionen_bot_neu.clear();
+    offene_positionen_sonst_neu.clear();
+    // Erst den Einflussbereich der anderen Bots erweitern, anschließend den eigenen
+    for (auto p : offene_positionen_sonst) {
+      for (auto r : ::richtungen) {
+        if (!raster(p + r)) {
+          raster.belege(p + r);
+          offene_positionen_sonst_neu.insert(p + r);
+        }
+      }
+    } // for (p)
+    for (auto p : offene_positionen_bot) {
+      for (auto r : ::richtungen) {
+        if (!raster(p + r)) {
+      raster.belege(p + r);
+      raster_bot.belege(p + r);
+          offene_positionen_bot_neu.insert(p + r);
+        }
+      }
+    } // for (p)
+    offene_positionen_bot = offene_positionen_bot_neu;
+    offene_positionen_sonst = offene_positionen_sonst_neu;
+  } // while (offene_positionen_bot || offene_positionen_sonst)
+
+  return raster_bot;
+} // Raster Spielraster::einflussbereich(int bot) const

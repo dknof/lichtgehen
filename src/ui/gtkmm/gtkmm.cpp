@@ -37,6 +37,8 @@
 #include "gtkmm.h"
 
 #include "hauptfenster.h"
+#include "hilfe.h"
+#include "ueber.h"
 #include <gtkmm/main.h>
 
 namespace UI_Gtkmm {
@@ -52,8 +54,12 @@ namespace UI_Gtkmm {
    **/
   UI_Gtkmm::UI_Gtkmm(int& argc, char* argv[]) :
     main{make_unique<Gtk::Main>(argc, argv)},
-    hauptfenster{make_unique<Hauptfenster>(*this)}
+    hauptfenster{make_unique<Hauptfenster>(*this)},
+    hilfe{make_unique<Hilfe>()},
+    ueber{make_unique<Ueber>()}
   {
+    this->hilfe->set_transient_for(*this->hauptfenster);
+    this->ueber->set_transient_for(*this->hauptfenster);
 
     // @todo: Einen zweiten Thread eröffnen, um die GUI darzustellen.
     // Der Thread wird benötigt, da ein Thread auf cin wartet.
@@ -83,7 +89,7 @@ namespace UI_Gtkmm {
   void
     UI_Gtkmm::spiel_startet()
     {
-      this->hauptfenster->aktualisiere();
+      this->hauptfenster->present();
       return;
     } // void UI_Gtkmm::spiel_startet()
 
@@ -115,7 +121,9 @@ namespace UI_Gtkmm {
   void
     UI_Gtkmm::spiel_endet()
     {
-      this->main->run(*this->hauptfenster);
+      this->hauptfenster->aktualisiere();
+      if (this->hauptfenster->is_visible())
+        this->main->run(*this->hauptfenster);
       return;
     } // void UI_Gtkmm::spiel_endet()
 
@@ -129,6 +137,18 @@ namespace UI_Gtkmm {
    ** @version   2014-11-20
    **/
   Richtung
-    UI_Gtkmm::hole_richtung()
-    { return Richtung::NORDEN; }
+    UI_Gtkmm::naechste_richtung()
+    { 
+      while (   this->schwebende_richtungen.empty()
+             && this->hauptfenster->is_visible()) {
+        this->main->iteration(false);
+        usleep(10000);
+      };
+      if (!this->hauptfenster->is_visible())
+        return Richtung::NORDEN;
+      auto const r = this->schwebende_richtungen.front();
+      this->schwebende_richtungen.pop_front();
+      return r;
+    } // Richtung UI_Gtkmm::naechste_richtung()
+
 } // namespace UI_Gtkmm

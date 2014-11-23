@@ -48,6 +48,8 @@
 class Position {
   public:
     // Konstruktor
+    Position();
+    // Konstruktor
     Position(int x, int y);
     // Konstruktor
     Position(istream& istr);
@@ -59,6 +61,8 @@ class Position {
 
     // ob dies eine gültige Position ist
     operator bool() const;
+    // Text
+    operator string() const;
 
     // Ein Schritt in der Richtung bewegen
     Position& operator+=(Richtung richtung);
@@ -78,5 +82,10 @@ bool operator==(Position const& pa, Position const& pb);
 bool operator<(Position const& pa, Position const& pb);
 // Ein Schritt weiter in der Richtung
 Position operator+(Position lhs, Richtung rhs);
+
+namespace std {
+  inline string to_string(Position const p)
+  { return static_cast<string>(p); }
+}
 
 #endif // #ifndef POSITION_H

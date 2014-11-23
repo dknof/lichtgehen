@@ -42,14 +42,20 @@
 #include "../../spielraster/richtung.h"
 class Spielraster;
 
+#include <deque>
+
 namespace Gtk {
   class Main;
 }
 namespace UI_Gtkmm {
   class Hauptfenster;
+  class Hilfe;
+  class Ueber;
+
   /** Die UI
    **/
   class UI_Gtkmm : public UI {
+    friend class Hauptfenster;
     public:
       // Konstruktor
       UI_Gtkmm(int& argc, char* argv[]);
@@ -64,7 +70,7 @@ namespace UI_Gtkmm {
       void spiel_endet();
 
       // gibt die nächste Richtung (Benutzereingabe) zurück
-      Richtung hole_richtung();
+      Richtung naechste_richtung();
 
     private:
       // initializiere die UI
@@ -74,6 +80,11 @@ namespace UI_Gtkmm {
       unique_ptr<Gtk::Main> main; // Hauptroutine
     private: // Die Elemente der UI
       unique_ptr<Hauptfenster> hauptfenster; // Hauptfenster
+      unique_ptr<Hilfe> hilfe; // Hilfefenster
+      unique_ptr<Ueber> ueber; // Über-Fenster
+
+      // die Schwebenden Richtungsanweisungen
+      std::deque<Richtung> schwebende_richtungen;
   }; // class UI_Gtkmm : public UI
 } // namespace UI_Gktmm
 

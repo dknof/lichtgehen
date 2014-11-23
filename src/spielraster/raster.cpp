@@ -52,6 +52,22 @@ Raster::Raster()
 { }
 
 /**
+ ** Konstruktor
+ ** 
+ ** @param     breite   Breite des Rasters
+ ** @param     laenge   Länge des Rasters
+ **
+ ** @return    -
+ **
+ ** @version   2014-11-22
+ **/
+Raster::Raster(int const breite, int const laenge) :
+  breite_{breite},
+  laenge_{laenge},
+  felder_(breite * laenge, false)
+{ }
+
+/**
  ** Standardkonstruktor
  ** 
  ** @param     -
@@ -93,9 +109,9 @@ Raster::einlesen(istream& istr)
   string zeile;
 
   std::getline(istr, zeile);
-  // Größe des Rasteres einlesen
+  // Größe des Rasters einlesen
   if (zeile.compare(0, 14, "GAMEBOARDSTART")) {
-    cerr << "Fehler beim Laden des Rasteres. Erwarte GAMEBOARDSTART:\n"
+    cerr << "Fehler beim Laden des Rasters. Erwarte GAMEBOARDSTART:\n"
       << zeile << endl;
     return istr;
   }
@@ -105,7 +121,7 @@ Raster::einlesen(istream& istr)
   isstr >> laenge_;
   this->felder_ = vector<bool>(this->breite() * this->laenge());
 
-  // Die einzelnen Rasterer einlesen
+  // Die einzelnen Rasters einlesen
   for (int y = 0; y < this->laenge(); ++y) {
     for (int x = 0; x < this->breite(); ++x) {
       this->felder_[x + y * this->breite()] = (istr.get() == '#');
@@ -115,10 +131,10 @@ Raster::einlesen(istream& istr)
       istr.get();
   }
 
-  // Abschluss des Rasteres
+  // Abschluss des Rasters
   std::getline(istr, zeile);
   if (zeile.compare(0, 12, "GAMEBOARDEND")) {
-    cerr << "Fehler beim Laden des Rasteres. Erwarte GAMEBOARDEND:\n"
+    cerr << "Fehler beim Laden des Rasters. Erwarte GAMEBOARDEND:\n"
       << zeile << endl;
     return istr;
   }
@@ -168,7 +184,7 @@ Raster::ausgeben(ostream& ostr) const
  ** 
  ** @param     -
  **
- ** @return    die Breite des Rasteres
+ ** @return    die Breite des Rasters
  **
  ** @version   2014-10-25
  **/
@@ -183,7 +199,7 @@ Raster::breite() const
  ** 
  ** @param     -
  **
- ** @return    die Länge des Rasteres
+ ** @return    die Länge des Rasters
  **
  ** @version   2014-10-25
  **/
@@ -217,8 +233,8 @@ Raster::operator()(int const x, int const y) const
 /**
  ** -> Rückgabe
  ** 
- ** @param     x  x-Position des Rasteres
- ** @param     y  y-Position des Rasteres
+ ** @param     x  x-Position des Rasters
+ ** @param     y  y-Position des Rasters
  **
  ** @return    Die Belegung an der Position
  **
@@ -235,32 +251,68 @@ Raster::operator()(Position const& position) const
  ** 
  ** @param     x  x-Position
  ** @param     y  y-Position
+ ** @param     wert   wert für des Feld, Vorgabe: belegt
  **
  ** @return    -
  **
  ** @version   2014-10-25
  **/
 void
-Raster::belege(int const x, int const y)
+Raster::belege(int const x, int const y, bool const wert)
 {
-  this->felder_[x + y * this->breite()] = true;
+  this->felder_[x + y * this->breite()] = wert;
   return;
-} // void Raster::operator()(int const x, int const y)
+} // void Raster::operator()(int const x, int const y, bool const wert)
 
 /**
  ** setzt die Position auf besetzt
  ** 
- ** @param     position   Position des Rasteres
+ ** @param     position   Position des Feldes
+ ** @param     wert   wert für des Feld, Vorgabe: belegt
  **
  ** @return    -
  **
  ** @version   2014-10-25
  **/
 void
-Raster::belege(Position const& position)
+Raster::belege(Position const& position, bool const wert)
 {
-  return this->belege(position.x(), position.y());
-} // void Raster::operator()(Position const& position)
+  return this->belege(position.x(), position.y(), wert);
+} // void Raster::operator()(Position const& position, bool const wert)
+
+/**
+ ** -> Rückgabe
+ ** 
+ ** @param     -
+ **
+ ** @return    Anzahl der belegten Felder
+ **
+ ** @version   2014-11-22
+ **/
+int
+Raster::felder_belegt() const
+{
+  int n = 0;
+  for (auto const& f : this->felder_)
+    if (f)
+      ++n;
+  return n;
+} // int Raster::felder_belegt() const
+
+/**
+ ** -> Rückgabe
+ ** 
+ ** @param     -
+ **
+ ** @return    Anzahl der freien Felder
+ **
+ ** @version   2014-11-22
+ **/
+int
+Raster::felder_frei() const
+{
+  return (this->breite() * this->laenge() - this->felder_belegt());
+} // int Raster::felder_frei() const
 
 /**
  ** -> Rückgabe
@@ -300,7 +352,7 @@ Raster::raumgroesse(Position const& position,
   Raster raster(*this); // Raster, das gefüllt wird
   std::set<Position> positionen; // Noch zu betrachtende Positionen
   positionen.insert(position);
-  int n = 1; // Anzahl der Rasterer
+  int n = 1; // Anzahl der Felder
   while (!positionen.empty()) {
     auto p = begin(positionen);
     for (auto r : ::richtungen) {

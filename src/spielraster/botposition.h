@@ -49,12 +49,17 @@
 class BotPosition : public Position {
   public:
     // Konstruktor
+    BotPosition();
+    // Konstruktor
     BotPosition(Position const& position, Richtung const richtung);
     // Konstruktor
     BotPosition(istream& istr);
 
     // Die Richtung
     Richtung richtung() const;
+
+    // Text
+    operator string() const;
 
     // Ein Schritt in der Bewegungsrichtung bewegen
     BotPosition& operator+=(Bewegungsrichtung bewegungsrichtung);
@@ -71,5 +76,10 @@ typedef vector<BotPosition> BotWeg;
 ostream& operator<<(ostream& ostr, BotPosition const& botposition);
 // Ein Schritt in der Bewegungsrichtung weiter
 BotPosition operator+(BotPosition lhs, Bewegungsrichtung rhs);
+
+namespace std {
+  inline string to_string(BotPosition const bp)
+  { return static_cast<string>(bp); }
+}
 
 #endif // #ifndef BOTPOSITION_H

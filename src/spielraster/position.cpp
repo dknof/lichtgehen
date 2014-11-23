@@ -45,6 +45,20 @@
  **
  ** @version   2014-10-25
  **/
+Position::Position() :
+  x_{0}, y_{0}
+{ }
+
+/**
+ ** Konstruktor
+ ** 
+ ** @param     x  x-Position
+ ** @param     y  y-Position
+ **
+ ** @return    -
+ **
+ ** @version   2014-10-25
+ **/
 Position::Position(int const x, int const y) :
   x_{x}, y_{y}
 { }
@@ -68,6 +82,23 @@ Position::Position(istream& istr)
 } // Position::Position(istream& istr)
 
 /**
+ ** Text-Repräsentation
+ ** 
+ ** @param     -
+ **
+ ** @return    Position als Text
+ **
+ ** @version   2014-11-22
+ **/
+Position::operator string() const
+{ 
+  if (*this)
+    return "(" + std::to_string(this->x()) + ", " + std::to_string(this->x()) + ")";
+  else
+    return "(--)";
+} // Position::operator string() const
+
+/**
  ** Die Position auf ostr ausgeben
  ** 
  ** @param     ostr   Ausgabestrom
@@ -80,7 +111,7 @@ Position::Position(istream& istr)
 ostream&
 operator<<(ostream& ostr, Position const& position)
 { 
-  ostr << position.x() << ',' << position.y();
+  ostr << "(" << position.x() << ',' << position.y() << ")";
   return ostr;
 } // ostream& operator<<(ostream& ostr, Position const& position)
 
