@@ -355,7 +355,6 @@ namespace UI_Gtkmm {
       } // for (b)
       cr->restore();
 
-
       return true;
     } // bool Hauptfenster::aktualisiere_spielraster(Cairo::RefPtr<Cairo::Context> const& cr)
 

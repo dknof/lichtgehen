@@ -443,12 +443,14 @@ Spielraster::historie(int const runde) const
 
   auto sr = *this;
   // Felder wieder freisetzen
-  for (auto const& w : sr.bot_weg_)
+  for (auto const& w : sr.bot_weg_) {
+    if (static_cast<int>(w.size()) >= runde + 2)
     for (auto f = (begin(w) + runde + 1); f != end(w); ++f)
       sr.belege(*f, false);
+  }
   // Weg der Bots beschneiden
   for (auto& w : sr.bot_weg_)
-    w.resize(runde + 1);
+    w.resize(std::min(static_cast<int>(w.size()), runde + 1));
 
   return sr;
 } // int Spielraster::runde() const

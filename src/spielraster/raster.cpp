@@ -260,6 +260,7 @@ Raster::operator()(Position const& position) const
 void
 Raster::belege(int const x, int const y, bool const wert)
 {
+  if (Position{x, y})
   this->felder_[x + y * this->breite()] = wert;
   return;
 } // void Raster::operator()(int const x, int const y, bool const wert)
@@ -277,6 +278,7 @@ Raster::belege(int const x, int const y, bool const wert)
 void
 Raster::belege(Position const& position, bool const wert)
 {
+  if (position)
   return this->belege(position.x(), position.y(), wert);
 } // void Raster::operator()(Position const& position, bool const wert)
 
