@@ -64,15 +64,15 @@ void main_eigenes_spiel(int& argc, char* argv[]);
 int
 main(int argc, char* argv[])
 {
+#if 0 // Wettbewerb
 #if 0 // debug
 cdebug_ = &cerr;
 #else // no debug
 cdebug_ = new std::ostringstream;
 #endif
-
-#if 1
 main_wettbewerb(argc, argv);
 #else
+cdebug_ = &cerr;
 main_eigenes_spiel(argc, argv);
 #endif
 
@@ -101,8 +101,8 @@ main_eigenes_spiel(int& argc, char* argv[])
 #ifdef USE_UI_GTKMM
   auto ui = UI::create("gtkmm", argc, argv);
 #else
-  auto ui = UI::create("none", argc, argv);
-  //auto ui = UI::create("cout", argc, argv);
+  //auto ui = UI::create("none", argc, argv);
+  auto ui = UI::create("cout", argc, argv);
   //auto ui = UI::create("cerr", argc, argv);
 #endif
 

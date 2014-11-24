@@ -141,7 +141,7 @@ namespace UI_Gtkmm {
     { 
       while (   this->schwebende_richtungen.empty()
              && this->hauptfenster->is_visible()) {
-        this->main->iteration(false);
+        this->main->iteration();
         usleep(10000);
       };
       if (!this->hauptfenster->is_visible())

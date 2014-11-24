@@ -165,7 +165,8 @@ namespace UI_Gtkmm {
         // Beenden-Schaltfläche
         auto beenden = Gtk::manage(new Gtk::Button(Gtk::Stock::QUIT));
         box_unten->add(*beenden);
-        beenden->signal_clicked().connect(sigc::ptr_fun(&Gtk::Main::quit));
+        beenden->signal_clicked().connect(sigc::mem_fun0(*this,
+                                                         &Gtk::Window::hide));
       } // Unterer Bereich 
 
 

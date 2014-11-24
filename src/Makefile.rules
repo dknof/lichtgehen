@@ -21,7 +21,9 @@ objects: $(OBJECTS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) $(DEPGEN_FLAGS) -o $@ -c $<
 
 .PHONY: lib
-lib: $(OBJECTS) $(DIRECTORIES)
+lib: lib.a
+
+lib.a: $(OBJECTS) $(DIRECTORIES)
 	ld -o lib.a -r $(OBJECTS) $(DIRECTORIES:%=%/lib.a)
 
 -include $(OBJECTS:%.o=%.d)
