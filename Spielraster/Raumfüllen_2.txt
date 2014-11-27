@@ -18,4 +18,3 @@ GAMEBOARDSTART 21,17
 ######.......########
 GAMEBOARDEND
 POS 1 10,15 N
-POS 2 1,1 S

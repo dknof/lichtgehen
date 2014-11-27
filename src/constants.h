@@ -53,6 +53,8 @@ using std::vector;
 using std::unique_ptr;
 using std::make_unique;
 
+#include <cassert>
+
 extern std::ostream* cdebug_;
 #define cdebug (*cdebug_)
 #define CLOG cdebug << __FILE__ << '#' << __LINE__ << ' '

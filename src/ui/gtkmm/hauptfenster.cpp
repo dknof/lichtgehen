@@ -429,28 +429,28 @@ namespace UI_Gtkmm {
           switch (key->keyval) {
           case GDK_KEY_Up:
           case GDK_KEY_j:
-            for (int i = 0; i < this->ui->spielraster->felder_frei(); ++i)
+            for (int i = 0; i < this->ui->spielraster->laenge(); ++i)
               this->ui->schwebende_richtungen.push_back(Richtung::NORDEN);
             this->nummer_eingabe = 0;
             this->historie->set_value(this->ui->spielraster->runde());
             return true;
           case GDK_KEY_Right:
           case GDK_KEY_l:
-            for (int i = 0; i < this->ui->spielraster->felder_frei(); ++i)
+            for (int i = 0; i < this->ui->spielraster->breite(); ++i)
               this->ui->schwebende_richtungen.push_back(Richtung::OSTEN);
             this->nummer_eingabe = 0;
             this->historie->set_value(this->ui->spielraster->runde());
             return true;
           case GDK_KEY_Down:
           case GDK_KEY_k:
-            for (int i = 0; i < this->ui->spielraster->felder_frei(); ++i)
+            for (int i = 0; i < this->ui->spielraster->laenge(); ++i)
               this->ui->schwebende_richtungen.push_back(Richtung::SUEDEN);
             this->nummer_eingabe = 0;
             this->historie->set_value(this->ui->spielraster->runde());
             return true;
           case GDK_KEY_Left:
           case GDK_KEY_h:
-            for (int i = 0; i < this->ui->spielraster->felder_frei(); ++i)
+            for (int i = 0; i < this->ui->spielraster->breite(); ++i)
               this->ui->schwebende_richtungen.push_back(Richtung::WESTEN);
             this->nummer_eingabe = 0;
             this->historie->set_value(this->ui->spielraster->runde());

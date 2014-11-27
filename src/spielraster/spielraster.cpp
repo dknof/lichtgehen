@@ -581,3 +581,21 @@ Spielraster::einflussbereich(int const bot, Position const position) const
 
   return raster_bot;
 } // Raster Spielraster::einflussbereich(int bot, Position position) const
+
+/**
+ ** -> Rückgabe
+ ** Ermittelt, wie viele Felder vom Einflussbereich durch einen Durchlauf erreicht werden können.
+ ** 
+ ** @param     bot       Nummer des Bots
+ **
+ ** @return    Anzahl der Felder, die der Bot aus seinem Einflussbereich und nur über den Einflussbereich erreichen kann
+ **
+ ** @version   2014-11-28
+ **/
+int 
+Spielraster::einflussbereich_groesse_erreichbar(int const bot) const
+{
+  Raster r = *this;
+  r.belege(this->einflussbereich(bot).invertiert());
+  return r.raumgroesse_erreichbar(this->position(bot));
+} // int Spielraster::einflussbereich_groesse_erreichbar(int bot) const

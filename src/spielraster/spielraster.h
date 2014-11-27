@@ -92,10 +92,13 @@ class Spielraster : public Raster {
   int runde() const;
   // das Spielraster in der angegeben Runde
   Spielraster historie(int runde) const;
+
   // Informationen über den Raum des Bots
   Spielraster::RaumInfo rauminfo(int bot) const;
   Spielraster::RaumInfo rauminfo(int bot,
                                  Bewegungsrichtung bewegungsrichtung) const;
+
+  // Einflussbereich
 
   // Größe des Einflussbereichs ermitteln
   int einflussbereich_groesse(int bot) const;
@@ -107,6 +110,8 @@ class Spielraster : public Raster {
   Raster einflussbereich(int bot, Bewegungsrichtung br) const;
   // Einflussbereich ermitteln
   Raster einflussbereich(int bot, Position p) const;
+  // Die Größe des erreichbaren Einflussbereich
+  int einflussbereich_groesse_erreichbar(int bot) const;
 
   private:
   // Anzahl der Bots

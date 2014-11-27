@@ -44,6 +44,7 @@
 #include <string>
 using std::string;
 #include <sstream>
+#include <algorithm>
 #include <unistd.h>
 
 std::ostream* cdebug_;
@@ -72,7 +73,11 @@ cdebug_ = new std::ostringstream;
 #endif
 main_wettbewerb(argc, argv);
 #else
+#if 0 // debug
 cdebug_ = &cerr;
+#else // no debug
+cdebug_ = new std::ostringstream;
+#endif
 main_eigenes_spiel(argc, argv);
 #endif
 
@@ -150,22 +155,21 @@ main_eigenes_spiel(int& argc, char* argv[])
     }
 
     // Schritte gehen
+    auto pos_neu = vector<Position>(spielraster.bot_anz());
+    for (int b = 0; b < spielraster.bot_anz(); ++b) {
+      if (spielraster.position(b))
+        pos_neu[b] = spielraster.position(b) + naechster_schritt[b];
+    }
     for (int b = 0; b < spielraster.bot_anz(); ++b) {
       if (!spielraster.position(b))
         continue;
-      auto bp = spielraster.position(b) + naechster_schritt[b];
-      if (spielraster(bp)) {
-        for (int i = 0; i < b; ++i) {
-          if (spielraster.position(i) == bp) {
-            spielraster.entferne_bot(i);
-            spielraster.bewege_bot(b, naechster_schritt[b]);
-          }
-        }
+      if (std::count(begin(pos_neu), end(pos_neu), pos_neu[b]) > 1) {
         spielraster.entferne_bot(b);
+        spielraster.belege(pos_neu[b]);
       } else {
-        spielraster.setze_bot(b, bp);
+        spielraster.bewege_bot(b, naechster_schritt[b]);
       }
-    }
+    } // for (b)
   } // while (spielraster.bots_im_spiel())
 
   ui->spiel_endet();

@@ -40,12 +40,21 @@
 #include "constants.h"
 
 #include "position.h"
+#include <bitset>
+// Maximale Größe des Rasters
+#define RASTER_MAX_GROESSE (128*128)
+#define USE_BITSET
 
 /** Ein Raster
  ** Die einzelnen Punkte sind besetzt oder nicht besetzt
  **/
 class Raster {
 friend bool operator<(Raster const& raster1, Raster const& raster2);
+#ifdef USE_BITSET
+typedef std::bitset<RASTER_MAX_GROESSE> Felder;
+#else
+typedef vector<bool> Felder;
+#endif
   public:
   // Konstruktor
   Raster();
@@ -73,6 +82,13 @@ friend bool operator<(Raster const& raster1, Raster const& raster2);
   void belege(int x, int y, bool wert = true);
   // belegt das Raster
   void belege(Position const& position, bool wert = true);
+  // belegt das Raster
+  void belege(Raster const& raster);
+
+  // invertiere das Raster
+  void invertiere();
+  // invertiertes Raster
+  Raster invertiert() const;
 
   //
   // Informationen über das Raster
@@ -88,6 +104,9 @@ friend bool operator<(Raster const& raster1, Raster const& raster2);
   // Die Größe des Raumes unter position
   int raumgroesse(Position const& position,
                   bool position_uberpruefen = true) const;
+  // Die Größe von position erreichbaren Raumes
+  int raumgroesse_erreichbar(Position const& position,
+                             bool position_uberpruefen = true) const;
   // Kürzeste Entfernun zwischen beiden Positionen
   int kuerzeste_entfernung(Position const& pa, Position const& pb) const;
 
@@ -97,7 +116,7 @@ friend bool operator<(Raster const& raster1, Raster const& raster2);
   // Länge des Rasters
   int laenge_;
   // Die einzelnen Felder
-  vector<bool> felder_;
+  Felder felder_;
 }; // class Raster
 
 // Raster ausgeben

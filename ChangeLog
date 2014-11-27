@@ -1,3 +1,6 @@
+2014-11-27
+	- Raster ist wahlweise vector<bool> oder bitset
+
 2014-11-24
 	- Fehler beim Beenden des Programms im Spiel korrigiert
 

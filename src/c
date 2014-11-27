@@ -19,13 +19,14 @@ BOTB="bots/dummybot/bot"
 
 #SPIELRASTER="../Spielraster/simple.txt"
 #SPIELRASTER="../Spielraster/50x50.txt"
-#SPIELRASTER="../Spielraster/5x5.txt"
-SPIELRASTER="../Spielraster/10x10.txt"
+SPIELRASTER="../Spielraster/5x5.txt"
+#SPIELRASTER="../Spielraster/10x10.txt"
 #SPIELRASTER="../Spielraster/Ring.txt"
 #SPIELRASTER="../Spielraster/Ring4.txt"
 #SPIELRASTER="../Spielraster/Labyrinth.txt"
 #SPIELRASTER="../Spielraster/Raumfüllen_1.txt"
 #SPIELRASTER="../Spielraster/Raumfüllen_2.txt"
+#SPIELRASTER="../Spielraster/Raumfüllen_3.txt"
 
 # nur ein Bot
 #SPIELRASTER="../Spielraster/5x5_1.txt"

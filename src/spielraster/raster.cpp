@@ -63,9 +63,15 @@ Raster::Raster()
  **/
 Raster::Raster(int const breite, int const laenge) :
   breite_{breite},
-  laenge_{laenge},
-  felder_(breite * laenge, false)
-{ }
+  laenge_{laenge}
+#ifndef USE_BITSET
+  ,felder_(breite * laenge, false)
+#endif
+{
+#ifndef USE_BITSET
+  assert(breite * laenge <= RASTER_MAX_GROESSE);
+#endif
+}
 
 /**
  ** Standardkonstruktor
@@ -119,7 +125,10 @@ Raster::einlesen(istream& istr)
   isstr >> breite_;
   isstr.get();
   isstr >> laenge_;
+  assert(this->breite() * this->laenge() <= RASTER_MAX_GROESSE);
+#ifndef USE_BITSET
   this->felder_ = vector<bool>(this->breite() * this->laenge());
+#endif
 
   // Die einzelnen Rasters einlesen
   for (int y = 0; y < this->laenge(); ++y) {
@@ -263,7 +272,8 @@ Raster::belege(int const x, int const y, bool const wert)
   if (Position{x, y})
   this->felder_[x + y * this->breite()] = wert;
   return;
-} // void Raster::operator()(int const x, int const y, bool const wert)
+} // void Raster::belege(int const x, int const y, bool const wert)
+
 
 /**
  ** setzt die Position auf besetzt
@@ -280,7 +290,66 @@ Raster::belege(Position const& position, bool const wert)
 {
   if (position)
   return this->belege(position.x(), position.y(), wert);
-} // void Raster::operator()(Position const& position, bool const wert)
+} // void Raster::belege(Position const& position, bool const wert)
+
+/**
+ ** Übernimmt die besetzten Felder von raster
+ ** 
+ ** @param     raster   zu übernehmendes Raster
+ **
+ ** @return    -
+ **
+ ** @version   2014-10-25
+ **/
+void
+Raster::belege(Raster const& raster)
+{
+  assert((this->breite() == raster.breite())
+         && (this->laenge() == raster.laenge()));
+
+#ifdef USE_BITSET
+  this->felder_ |= raster.felder_;
+#else
+  auto f2 = begin(raster.felder_);
+  for (auto f1 = begin(this->felder_); f1 != end(this->felder_); ++f1)
+    *f1 = (*f1 || *f2), ++f2;
+#endif
+
+  return ;
+} // void Raster::belege(Raster const& raster)
+
+/**
+ ** Invertiere das Raster
+ ** 
+ ** @param     -
+ **
+ ** @return    -
+ **
+ ** @version   2014-11-27
+ **/
+void
+Raster::invertiere()
+{
+  this->felder_.flip();
+  return;
+} // void Raster::invertiere()
+
+/**
+ ** -> Rückgabe
+ ** 
+ ** @param     -
+ **
+ ** @return    invertiertes Raster
+ **
+ ** @version   2014-11-27
+ **/
+Raster
+Raster::invertiert() const
+{
+  auto r = *this;
+  r.invertiere();
+  return r;
+} // Raster Raster::invertiert() const
 
 /**
  ** -> Rückgabe
@@ -289,16 +358,23 @@ Raster::belege(Position const& position, bool const wert)
  **
  ** @return    Anzahl der belegten Felder
  **
- ** @version   2014-11-22
+ ** @version   2014-11-27
  **/
 int
 Raster::felder_belegt() const
 {
+#ifdef USE_BITSET
+  Felder f;
+  f.set();
+  f << (RASTER_MAX_GROESSE - this->breite() * this->laenge());
+  return static_cast<int>((this->felder_ & f).count());
+#else
   int n = 0;
   for (auto const& f : this->felder_)
     if (f)
       ++n;
   return n;
+#endif
 } // int Raster::felder_belegt() const
 
 /**
@@ -370,6 +446,45 @@ Raster::raumgroesse(Position const& position,
 
   return n;
 }  // int Raster::raumgroesse(Position const& position, bool const position_ueberpruelfen = true) const
+
+/**
+ ** -> Rückgabe
+ ** Im Unterschied zu 'raumgroesse' wird von Sackgassen nur eine berücksichtigt.
+ ** es gilt: raumgroesse_erreichbar <= raumgroesse
+ ** 
+ ** @param     position           Position
+ ** @param     position_ueberprüfen   ob die Position überprüft werden soll (default: true)
+ **
+ ** @return    Größe des erreichbaren Raumes; ist position belegt und position_ueberpruefen = true (default), ist die Größe 0
+ **
+ ** @version   2014-11-11
+ **/
+int
+Raster::raumgroesse_erreichbar(Position const& position,
+                    bool const position_ueberpruefen) const
+{
+  if (position_ueberpruefen && (*this)(position))
+    return 0;
+
+  Raster raster(*this); // Raster, das gefüllt wird
+  std::set<Position> positionen; // Noch zu betrachtende Positionen
+  positionen.insert(position);
+  int n = 1; // Anzahl der Felder
+  while (!positionen.empty()) {
+    auto p = begin(positionen);
+    for (auto r : ::richtungen) {
+      Position const p2 = *p + r;
+      if (!raster(p2)) {
+        raster.belege(p2);
+        n += 1;
+        positionen.insert(p2);
+      }
+    } // for (auto r : ::richtungen)
+    positionen.erase(p);
+  } // while (!positionen.empty())
+
+  return n;
+}  // int Raster::raumgroesse_erreichbar(Position const& position, bool const position_ueberpruelfen = true) const
 
 /**
  ** -> Rückgabe
