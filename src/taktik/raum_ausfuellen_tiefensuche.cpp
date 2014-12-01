@@ -214,4 +214,5 @@ namespace TaktikNS {
       }
       return wegweite_max;
     } // int RaumAusfuellenTiefensuche::wegweite_ohne_duplikate(Raster raster, Position const& bp, std::set<std::pair<Raster, Position>>& bekannte_raster) const
+
 } // namespace TaktikNS

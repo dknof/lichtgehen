@@ -51,9 +51,9 @@
 class Raster {
 friend bool operator<(Raster const& raster1, Raster const& raster2);
 #ifdef USE_BITSET
-typedef std::bitset<RASTER_MAX_GROESSE> Felder;
+using Felder = std::bitset<RASTER_MAX_GROESSE>;
 #else
-typedef vector<bool> Felder;
+using Felder = vector<bool>;
 #endif
   public:
   // Konstruktor

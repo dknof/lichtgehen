@@ -73,7 +73,7 @@ cdebug_ = new std::ostringstream;
 #endif
 main_wettbewerb(argc, argv);
 #else
-#if 0 // debug
+#if 1 // debug
 cdebug_ = &cerr;
 #else // no debug
 cdebug_ = new std::ostringstream;
@@ -134,7 +134,8 @@ main_eigenes_spiel(int& argc, char* argv[])
                 : make_unique<Bot>(spielraster));
     bot->setze_nummer(i);
     //bot->setze_strategie(Strategie::create({"in größten Raum", "zum größten Einflussgebiet"}));
-    bot->setze_strategie(Strategie::create({"zum größten Einflussgebiet"}));
+    //bot->setze_strategie(Strategie::create({"zum größten Einflussgebiet"}));
+    bot->setze_strategie(Strategie::create({"Tiefensuche"}));
     //bot->setze_strategie(Strategie::create({"Raum ausfüllen (Tiefensuche)"}));
     bots.push_back(std::move(bot));
   }
@@ -145,7 +146,8 @@ main_eigenes_spiel(int& argc, char* argv[])
   ui->spiel_startet(spielraster);
   while (spielraster.bots_im_spiel()) {
     runde += 1;
-    usleep(10000);
+    cdebug << runde << '\n';
+    //usleep(10000);
     ui->runde(runde);
     // Schritte abfragen
     for (int b = 0; b < spielraster.bot_anz(); ++b) {
@@ -170,6 +172,8 @@ main_eigenes_spiel(int& argc, char* argv[])
         spielraster.bewege_bot(b, naechster_schritt[b]);
       }
     } // for (b)
+    if (spielraster.bots_im_spiel() == 1)
+      break;
   } // while (spielraster.bots_im_spiel())
 
   ui->spiel_endet();

@@ -1,3 +1,8 @@
+2014-12-01
+	- Aus der UI kann mit <r> das Spielfeld ausgegeben werden (für Testzwecke)
+	- Fehlerkorrektur bei der Tiefensuche
+	- Tiefensuche geht nur 3 Schritte weit
+
 2014-11-27
 	- Raster ist wahlweise vector<bool> oder bitset
 

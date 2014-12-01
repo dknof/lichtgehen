@@ -95,6 +95,8 @@ namespace UI_Gtkmm {
                                "Bild ↑: in der Historie eine Runde zurück gehen\n"
                                "Pos1: in der Historie zur ersten Runde springen\n"
                                "Ende: in der Historie zur aktuellen Runde springen\n"
+                               "r: angezeigtes Spielfeld ausgeben (für Eingabe als Testfall)\n"
+                               "R: angezeigtes Spielfeld „schön“ ausgeben\n"
                                "\n"
                                "<b>Sonstiges</b>\n"
                                "* Schritte gegen eine Wand werden ignoriert (außer es gibt keine andere Möglichkeit)\n"

@@ -60,14 +60,12 @@ extern std::ostream* cdebug_;
 #define CLOG cdebug << __FILE__ << '#' << __LINE__ << ' '
 
 namespace std {
-inline double min(double const a, double const b, double const c)
+  template<class X>
+inline X min(X const& a, X const& b, X const& c)
 { return std::min(a, std::min(b, c)); }
-inline double min(double const a, double const b, double const c, double const d)
-{ return std::min(a, std::min(b, c, d)); }
-inline double max(double const a, double const b, double const c)
+  template<class X>
+inline X max(X const& a, X const& b, X const& c)
 { return std::max(a, std::max(b, c)); }
-inline double max(double const a, double const b, double const c, double const d)
-{ return std::max(a, std::max(b, c, d)); }
 }
 
 

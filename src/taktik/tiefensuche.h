@@ -47,18 +47,51 @@ namespace TaktikNS {
  **/
 class Tiefensuche : public Taktik {
   public:
+    // Ergebniswert der Rekursion
+    struct Bewertung {
+      using Wert = double;
+      enum class Spielstand {
+        VERLOREN, GEWONNEN, UNENTSCHIEDEN, OFFEN
+      } spielstand;
+      int tiefe;
+      Wert wert = 0;
+      // Konstruktoren
+      Bewertung(Spielstand const s, int const t) : spielstand(s), tiefe(t) {}
+      Bewertung(Spielstand const s, int const t, double const w) : spielstand(s), tiefe(t), wert(w) {}
+    }; // struct Bewertung
+  public:
     // Konstruktor
     Tiefensuche();
+    // Destruktor
+    virtual ~Tiefensuche();
 
     // gibt das Ergebnis der Taktik zurück (ob sie greift und die Richtung)
     Ergebnis ergebnis(Spielraster const& spielraster,
                       int bot) override;
 
+  protected:
+    // bewertet das Spielfeld
+    virtual Bewertung::Wert bewertung(Spielraster const& spielraster,
+                                      int bot1, int bot2) const;
+
   private:
     // bewertet rekursiv die Schritte
-    double wert(Spielraster const& spielraster, int bot1, int bot2,
-                Bewegungsrichtung r1, Bewegungsrichtung r2) const;
+    Bewertung tiefensuche(Spielraster const& spielraster, int bot1, int bot2,
+                          Bewegungsrichtung r1, Bewegungsrichtung r2,
+                          int tiefe) const;
 }; // class Tiefensuche : public Taktik
+
+// Vergleich von den Ergebnissen
+bool operator<(Tiefensuche::Bewertung const& lhs,
+               Tiefensuche::Bewertung const& rhs);
+// Vergleich von den Ergebnissen
+bool operator>(Tiefensuche::Bewertung const& lhs,
+               Tiefensuche::Bewertung const& rhs);
+// Vergleich von den Ergebnissen
+bool operator==(Tiefensuche::Bewertung const& lhs,
+                Tiefensuche::Bewertung const& rhs);
+// Ausgabe der Bewertung
+ostream& operator<<(ostream& ostr, Tiefensuche::Bewertung const& b);
 
 } // namespace TaktikNS
 

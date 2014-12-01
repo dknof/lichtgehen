@@ -156,7 +156,7 @@ namespace StrategieNS {
     Taktiken::bewegung(Spielraster const& spielraster, int const bot_nummer)
     {
       for (auto& t : this->taktiken) {
-        cdebug << "Teste Taktik " << *t << '\n';
+        //cdebug << "Teste Taktik " << *t << '\n';
         auto ergebnis = t->ergebnis(spielraster, bot_nummer);
         if (ergebnis) {
           cdebug << bot_nummer << ": " << ergebnis.richtung << ": " << *t << '\n';

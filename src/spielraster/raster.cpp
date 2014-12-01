@@ -452,7 +452,7 @@ Raster::raumgroesse(Position const& position,
  ** Im Unterschied zu 'raumgroesse' wird von Sackgassen nur eine berücksichtigt.
  ** es gilt: raumgroesse_erreichbar <= raumgroesse
  ** 
- ** @param     position           Position
+ ** @param     position               Position
  ** @param     position_ueberprüfen   ob die Position überprüft werden soll (default: true)
  **
  ** @return    Größe des erreichbaren Raumes; ist position belegt und position_ueberpruefen = true (default), ist die Größe 0
@@ -461,7 +461,7 @@ Raster::raumgroesse(Position const& position,
  **/
 int
 Raster::raumgroesse_erreichbar(Position const& position,
-                    bool const position_ueberpruefen) const
+                               bool const position_ueberpruefen) const
 {
   if (position_ueberpruefen && (*this)(position))
     return 0;

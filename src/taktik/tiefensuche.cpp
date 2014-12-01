@@ -37,6 +37,8 @@
 #include "tiefensuche.h"
 #include <cstdlib>
 
+#define TIEFE_MAX 3
+
 namespace TaktikNS {
   /**
    ** Standardkonstruktor
@@ -52,13 +54,25 @@ namespace TaktikNS {
   { }
 
   /**
+   ** Destruktor
+   ** 
+   ** @param     -
+   **
+   ** @return    -
+   **
+   ** @version   2014-11-29
+   **/
+  Tiefensuche::~Tiefensuche()
+  { }
+
+  /**
    ** -> Rückgabe
-   ** Suche mit Tiefensuche den längsten Weg.
+   ** Suche mit Tiefensuche die „beste“ Richtung
    ** 
    ** @param     spielraster   das Spielraster
    ** @param     bot   die Nummer des Bots
    **
-   ** @return    Richtung mit dem längsten Weg
+   ** @return    Richtung mit dem „besten“ Wert
    **
    ** @version   2014-11-08
    **/
@@ -83,56 +97,75 @@ namespace TaktikNS {
       if (bot2 == spielraster.bot_anz())
         return false;
 
-      auto const bewertung_vv = this->wert(spielraster, bot, bot2,
-                                             Bewegungsrichtung::VORWAERTS,
-                                             Bewegungsrichtung::VORWAERTS);
-      auto const bewertung_vl = this->wert(spielraster, bot, bot2,
-                                             Bewegungsrichtung::VORWAERTS,
-                                             Bewegungsrichtung::LINKS);
-      auto const bewertung_vr = this->wert(spielraster, bot, bot2,
-                                             Bewegungsrichtung::VORWAERTS,
-                                             Bewegungsrichtung::RECHTS);
-      auto const bewertung_lv = this->wert(spielraster, bot, bot2,
-                                             Bewegungsrichtung::LINKS,
-                                             Bewegungsrichtung::VORWAERTS);
-      auto const bewertung_ll = this->wert(spielraster, bot, bot2,
-                                             Bewegungsrichtung::LINKS,
-                                             Bewegungsrichtung::LINKS);
-      auto const bewertung_lr = this->wert(spielraster, bot, bot2,
-                                             Bewegungsrichtung::LINKS,
-                                             Bewegungsrichtung::RECHTS);
-      auto const bewertung_rv = this->wert(spielraster, bot, bot2,
-                                             Bewegungsrichtung::RECHTS,
-                                             Bewegungsrichtung::VORWAERTS);
-      auto const bewertung_rl = this->wert(spielraster, bot, bot2,
-                                             Bewegungsrichtung::RECHTS,
-                                             Bewegungsrichtung::LINKS);
-      auto const bewertung_rr = this->wert(spielraster, bot, bot2,
-                                             Bewegungsrichtung::RECHTS,
-                                             Bewegungsrichtung::RECHTS);
+      auto const bewertung_vv = this->tiefensuche(spielraster, bot, bot2,
+                                                  Bewegungsrichtung::VORWAERTS,
+                                                  Bewegungsrichtung::VORWAERTS,
+                                                  1);
+      auto const bewertung_vl = this->tiefensuche(spielraster, bot, bot2,
+                                                  Bewegungsrichtung::VORWAERTS,
+                                                  Bewegungsrichtung::LINKS,
+                                                  1);
+      auto const bewertung_vr = this->tiefensuche(spielraster, bot, bot2,
+                                                  Bewegungsrichtung::VORWAERTS,
+                                                  Bewegungsrichtung::RECHTS,
+                                                  1);
+      auto const bewertung_lv = this->tiefensuche(spielraster, bot, bot2,
+                                                  Bewegungsrichtung::LINKS,
+                                                  Bewegungsrichtung::VORWAERTS,
+                                                  1);
+      auto const bewertung_ll = this->tiefensuche(spielraster, bot, bot2,
+                                                  Bewegungsrichtung::LINKS,
+                                                  Bewegungsrichtung::LINKS,
+                                                  1);
+      auto const bewertung_lr = this->tiefensuche(spielraster, bot, bot2,
+                                                  Bewegungsrichtung::LINKS,
+                                                  Bewegungsrichtung::RECHTS,
+                                                  1);
+      auto const bewertung_rv = this->tiefensuche(spielraster, bot, bot2,
+                                                  Bewegungsrichtung::RECHTS,
+                                                  Bewegungsrichtung::VORWAERTS,
+                                                  1);
+      auto const bewertung_rl = this->tiefensuche(spielraster, bot, bot2,
+                                                  Bewegungsrichtung::RECHTS,
+                                                  Bewegungsrichtung::LINKS,
+                                                  1);
+      auto const bewertung_rr = this->tiefensuche(spielraster, bot, bot2,
+                                                  Bewegungsrichtung::RECHTS,
+                                                  Bewegungsrichtung::RECHTS,
+                                                  1);
 
       // Minimiere den Verlust
-      auto const bewertung_v = std::min(std::min(bewertung_vv, bewertung_vl), bewertung_vr);
-      auto const bewertung_l = std::min(std::min(bewertung_lv, bewertung_ll), bewertung_lr);
-      auto const bewertung_r = std::min(std::min(bewertung_rv, bewertung_rl), bewertung_rr);
+      auto const bewertung_v = std::min(bewertung_vv, bewertung_vl, bewertung_vr);
+      auto const bewertung_l = std::min(bewertung_lv, bewertung_ll, bewertung_lr);
+      auto const bewertung_r = std::min(bewertung_rv, bewertung_rl, bewertung_rr);
 
-      if (   (bewertung_v == -1)
-          && (bewertung_l == -1)
-          && (bewertung_r == -1) )
-        return false;
+#if 1
+#if 0
+      cdebug << "vv: " << bewertung_vv << '\n';
+      cdebug << "vl: " << bewertung_vl << '\n';
+      cdebug << "vr: " << bewertung_vr << '\n';
+      cdebug << "lv: " << bewertung_lv << '\n';
+      cdebug << "ll: " << bewertung_ll << '\n';
+      cdebug << "lr: " << bewertung_lr << '\n';
+      cdebug << "rv: " << bewertung_rv << '\n';
+      cdebug << "rl: " << bewertung_rl << '\n';
+      cdebug << "rr: " << bewertung_rr << '\n';
+#endif
 
-      cout << bot << ": "
+      cdebug << bot << ": "
         << "V = " << bewertung_v << ", "
         << "L = " << bewertung_l << ", "
         << "R = " << bewertung_r << "\n";
+#endif
 
+      auto zufall = 1 * rand();
       if (bewertung_v > bewertung_l) {
         if (bewertung_v > bewertung_r)
           return Bewegungsrichtung::VORWAERTS;
         else if (bewertung_v < bewertung_r)
           return Bewegungsrichtung::RECHTS;
         else // (bewertung_v == bewertung_r)
-          return ((rand() <= RAND_MAX / 2)
+          return ((zufall <= RAND_MAX / 2)
                   ? Bewegungsrichtung::VORWAERTS
                   : Bewegungsrichtung::RECHTS);
       } else if (bewertung_v < bewertung_l) {
@@ -141,20 +174,20 @@ namespace TaktikNS {
         else if (bewertung_l < bewertung_r)
           return Bewegungsrichtung::RECHTS;
         else // (bewertung_l == bewertung_r)
-          return ((rand() <= RAND_MAX / 2)
+          return ((zufall <= RAND_MAX / 2)
                   ? Bewegungsrichtung::LINKS
                   : Bewegungsrichtung::RECHTS);
       } else { // (bewertung_v == bewertung_l)
         if (bewertung_v < bewertung_r)
           return Bewegungsrichtung::RECHTS;
         else if (bewertung_v > bewertung_r)
-          return ((rand() <= RAND_MAX / 2)
+          return ((zufall <= RAND_MAX / 2)
                   ? Bewegungsrichtung::VORWAERTS
                   : Bewegungsrichtung::LINKS);
         else // (bewertung_v == bewertung_l == bewertung_r)
-          return ((rand() <= RAND_MAX / 3)
+          return ((zufall <= RAND_MAX / 3)
                   ? Bewegungsrichtung::VORWAERTS
-                  : (rand() <= RAND_MAX / 2)
+                  : (zufall <= RAND_MAX / 3 * 2)
                   ? Bewegungsrichtung::LINKS
                   : Bewegungsrichtung::RECHTS);
       }
@@ -169,119 +202,304 @@ namespace TaktikNS {
    ** 1: er gewinnt, -1: er verliert, 0: unentschieden
    ** 
    ** @param     spielraster   das Spielraster
-   ** @param     bot1   die Nummer des ersten Bots
-   ** @param     bot2   die Nummer des zweiten Bots
-   ** @param     r1     die Bewegungsrichtung des ersten Bots
-   ** @param     r2     die Bewegungsrichtung des zweiten Bots
+   ** @param     bot1          die Nummer des ersten Bots
+   ** @param     bot2          die Nummer des zweiten Bots
+   ** @param     r1            die Bewegungsrichtung des ersten Bots
+   ** @param     r2            die Bewegungsrichtung des zweiten Bots
    **
    ** @return    Wert der Bewegungen
    **
-   ** @version   2014-11-08
+   ** @version   2014-11-29
+   **/
+  Tiefensuche::Bewertung
+    Tiefensuche::tiefensuche(Spielraster const& spielraster,
+                             int const bot1, int const bot2,
+                             Bewegungsrichtung const r1,
+                             Bewegungsrichtung const r2,
+                             int const tiefe) const
+    {
+      BotPosition const bp1 = spielraster.position(bot1);
+      BotPosition const bp2 = spielraster.position(bot2);
+
+      if (bp1 + r1 == bp2 + r2) // ineinander gelaufen
+        return Bewertung(Bewertung::Spielstand::UNENTSCHIEDEN, tiefe);
+      if (spielraster(bp1 + r1)) {
+        if (spielraster(bp2 + r2)) // beide gegen die Wand gelaufen
+          return Bewertung(Bewertung::Spielstand::UNENTSCHIEDEN, tiefe);
+        else // alleine gegen eine Wand gelaufen :-(
+          return Bewertung(Bewertung::Spielstand::VERLOREN, tiefe);
+      } else if (spielraster(bp2 + r2)) { // Gegner gegen eine Wand gelaufen :-)
+        return Bewertung(Bewertung::Spielstand::GEWONNEN, tiefe);
+      }
+
+      // Beide Bots konnten einen Schritt machen
+
+      // die Schritte durchführen
+      Spielraster sr{spielraster};
+      sr.bewege_bot(bot1, r1);
+      sr.bewege_bot(bot2, r2);
+
+      if (tiefe == TIEFE_MAX)
+        return Bewertung(Bewertung::Spielstand::OFFEN,
+                         tiefe,
+                         this->bewertung(spielraster, bot1, bot2));
+
+      // rekursiver Aufruf (aufwendig)
+      auto const bewertung_vv = this->tiefensuche(sr, bot1, bot2,
+                                                  Bewegungsrichtung::VORWAERTS,
+                                                  Bewegungsrichtung::VORWAERTS,
+                                                  tiefe + 1);
+      auto const bewertung_vl = this->tiefensuche(sr, bot1, bot2,
+                                                  Bewegungsrichtung::VORWAERTS,
+                                                  Bewegungsrichtung::LINKS,
+                                                  tiefe + 1);
+      auto const bewertung_vr = this->tiefensuche(sr, bot1, bot2,
+                                                  Bewegungsrichtung::VORWAERTS,
+                                                  Bewegungsrichtung::RECHTS,
+                                                  tiefe + 1);
+      auto const bewertung_lv = this->tiefensuche(sr, bot1, bot2,
+                                                  Bewegungsrichtung::LINKS,
+                                                  Bewegungsrichtung::VORWAERTS,
+                                                  tiefe + 1);
+      auto const bewertung_ll = this->tiefensuche(sr, bot1, bot2,
+                                                  Bewegungsrichtung::LINKS,
+                                                  Bewegungsrichtung::LINKS,
+                                                  tiefe + 1);
+      auto const bewertung_lr = this->tiefensuche(sr, bot1, bot2,
+                                                  Bewegungsrichtung::LINKS,
+                                                  Bewegungsrichtung::RECHTS,
+                                                  tiefe + 1);
+      auto const bewertung_rv = this->tiefensuche(sr, bot1, bot2,
+                                                  Bewegungsrichtung::RECHTS,
+                                                  Bewegungsrichtung::VORWAERTS,
+                                                  tiefe + 1);
+      auto const bewertung_rl = this->tiefensuche(sr, bot1, bot2,
+                                                  Bewegungsrichtung::RECHTS,
+                                                  Bewegungsrichtung::LINKS,
+                                                  tiefe + 1);
+      auto const bewertung_rr = this->tiefensuche(sr, bot1, bot2,
+                                                  Bewegungsrichtung::RECHTS,
+                                                  Bewegungsrichtung::RECHTS,
+                                                  tiefe + 1);
+
+#if 0
+      { // Variante A: Mein Gegner verhält sich möglichst schlecht für mich
+        // (pessimistisch)
+        // Minimiere den Verlust
+        auto const bewertung_v = std::min(bewertung_vv, bewertung_vl, bewertung_vr);
+        auto const bewertung_l = std::min(bewertung_lv, bewertung_ll, bewertung_lr);
+        auto const bewertung_r = std::min(bewertung_rv, bewertung_rl, bewertung_rr);
+
+        return std::max(bewertung_v, bewertung_l, bewertung_r);
+      } // Variante A (Pessimist)
+#endif
+
+
+#if 1
+      { // Variante B: Mein Gegner verhält sich möglichst gut für sich (er verfolgt Variante 1)
+        // (optimistisch)
+        // Minimiere seinen Verlust
+        auto const bewertung_v = std::max(bewertung_vv, bewertung_lv, bewertung_rv);
+        auto const bewertung_l = std::max(bewertung_vl, bewertung_ll, bewertung_rl);
+        auto const bewertung_r = std::max(bewertung_vr, bewertung_lr, bewertung_rr);
+        auto const m = std::min(bewertung_v, bewertung_l, bewertung_r);
+        if (m == bewertung_v)
+          return std::max(bewertung_vv, bewertung_lv, bewertung_rv);
+        else if (m == bewertung_l)
+          return std::max(bewertung_vl, bewertung_ll, bewertung_rl);
+        else // if (m == bewertung_r)
+          return std::max(bewertung_vr, bewertung_lr, bewertung_rr);
+      } // Variante B (Optimist)
+#endif
+
+#if 0
+      { // Variante C
+        // 1) Gewinnerstrategie gleich verwenden
+        if (   ( (bewertung_vv == 1) && (bewertung_vl == 1) && (bewertung_vr == 1) )
+            || ( (bewertung_lv == 1) && (bewertung_ll == 1) && (bewertung_lr == 1) )
+            || ( (bewertung_rv == 1) && (bewertung_rl == 1) && (bewertung_rr == 1) ) )
+          return 1;
+        if (   ( (bewertung_vv == -1) && (bewertung_lv == -1) && (bewertung_rv == -1) )
+            || ( (bewertung_vl == -1) && (bewertung_ll == -1) && (bewertung_rl == -1) )
+            || ( (bewertung_vr == -1) && (bewertung_lr == -1) && (bewertung_rr == -1) ) )
+          return -1;
+        // 2) die ungünstigen Richtungen für beide Spieler entfernen
+        // 3) die verbleibenen Bewertungen irgendwie mitteln
+
+      return Bewertung(Bewertung::Spielstand::OFFEN, -1);
+      } // Variante C
+#endif
+    } // Taktik::Ergebnis Tiefensuche::ergebnis(Spielraster const& spielraster, int const bot) const
+
+  /**
+   ** -> Rückgabe
+   ** 
+   ** @param     spielraster   das Spielraster
+   ** @param     bot1          die Nummer des ersten Bots
+   ** @param     bot2          die Nummer des zweiten Bots
+   **
+   ** @return    Bewertung des Spielrasters
+   **
+   ** @version   2014-11-29
    **/
   double
-    Tiefensuche::wert(Spielraster const& spielraster,
-                      int const bot1, int const bot2,
-                      Bewegungsrichtung const r1,
-                      Bewegungsrichtung const r2) const
-  {
-    BotPosition const bp1 = spielraster.position(bot1);
-    BotPosition const bp2 = spielraster.position(bot2);
+    Tiefensuche::bewertung(Spielraster const& spielraster,
+                           int bot1, int bot2) const
+    {
+      return (spielraster.einflussbereich_groesse_erreichbar(bot1)
+              - spielraster.einflussbereich_groesse_erreichbar(bot2));
+    } // double Tiefensuche::bewertung(Spielraster const& spielraster, int bot1, int bot2) const
 
-    if (bp1 + r1 == bp2 + r2)
-      return 0; // ineinander gelaufen
-    if (spielraster(bp1 + r1)) {
-      if (spielraster(bp2 + r2))
-        return 0; // beide gegen die Wand gelaufen
-      else
-        return -1; // alleine gegen eine Wand gelaufen :-(
-    } else if (spielraster(bp2 + r2))
-      return 1; // Gegner gegen eine Wand gelaufen :-)
+  /**
+   ** -> Rückgabe
+   ** 
+   ** @param     lhs   erstes Ergebnis
+   ** @param     rhs   zweites Ergebnis
+   **
+   ** @return    ob lhs schlechter ist als rhs
+   **
+   ** @version   2014-11-29
+   **/
+  bool
+    operator<(Tiefensuche::Bewertung const& lhs,
+              Tiefensuche::Bewertung const& rhs)
+    {
+      switch (lhs.spielstand) {
+      case Tiefensuche::Bewertung::Spielstand::GEWONNEN:
+        // Gewinnen ist immer gut
+        switch (rhs.spielstand) {
+        case Tiefensuche::Bewertung::Spielstand::GEWONNEN:
+          // Wenn gewinnen, dann möglichst schnell
+          if (lhs.tiefe > rhs.tiefe)
+            return true;
+          else if (lhs.tiefe < rhs.tiefe)
+            return false;
+          else
+            return (lhs.wert < rhs.wert);
+        case Tiefensuche::Bewertung::Spielstand::VERLOREN:
+        case Tiefensuche::Bewertung::Spielstand::UNENTSCHIEDEN:
+        case Tiefensuche::Bewertung::Spielstand::OFFEN:
+          return false;
+        } // switch (rhs.spielstand)
+      case Tiefensuche::Bewertung::Spielstand::VERLOREN:
+        // Gewinnen ist immer schlecht
+        switch (rhs.spielstand) {
+        case Tiefensuche::Bewertung::Spielstand::VERLOREN:
+          // Wenn verlieren, dann möglichst spät
+          if (lhs.tiefe < rhs.tiefe)
+            return true;
+          else if (lhs.tiefe > rhs.tiefe)
+            return false;
+          else
+            return (lhs.wert < rhs.wert);
+        case Tiefensuche::Bewertung::Spielstand::GEWONNEN:
+        case Tiefensuche::Bewertung::Spielstand::UNENTSCHIEDEN:
+        case Tiefensuche::Bewertung::Spielstand::OFFEN:
+          return true;
+        } // switch (rhs.spielstand)
+      case Tiefensuche::Bewertung::Spielstand::UNENTSCHIEDEN:
+        switch (rhs.spielstand) {
+        case Tiefensuche::Bewertung::Spielstand::VERLOREN:
+          return false;
+        case Tiefensuche::Bewertung::Spielstand::GEWONNEN:
+          return true;
+        case Tiefensuche::Bewertung::Spielstand::UNENTSCHIEDEN:
+        case Tiefensuche::Bewertung::Spielstand::OFFEN:
+          // todo: Überdenken
+          if ((lhs.wert < 0) && (rhs.wert < 0))
+            return (lhs.tiefe < rhs.tiefe);
+          else if (lhs.wert == rhs.wert)
+            return (lhs.tiefe < rhs.tiefe);
+          else
+            return (lhs.wert < rhs.wert);
+        } // switch (rhs.spielstand)
+      case Tiefensuche::Bewertung::Spielstand::OFFEN:
+        switch (rhs.spielstand) {
+        case Tiefensuche::Bewertung::Spielstand::VERLOREN:
+          return false;
+        case Tiefensuche::Bewertung::Spielstand::GEWONNEN:
+          return true;
+        case Tiefensuche::Bewertung::Spielstand::UNENTSCHIEDEN:
+        case Tiefensuche::Bewertung::Spielstand::OFFEN:
+          // todo: Überdenken
+          if ((lhs.wert < 0) && (rhs.wert < 0)) {
+            if (lhs.tiefe == rhs.tiefe)
+              return (lhs.wert < rhs.wert);
+            return (lhs.tiefe < rhs.tiefe);
+          } else if (lhs.wert == rhs.wert)
+            return (lhs.tiefe < rhs.tiefe);
+          else
+            return (lhs.wert < rhs.wert);
+        } // switch (rhs.spielstand)
+      } // switch (lhs.spielstand)
+      return false;
+    } // bool operator<(Tiefensuche::Bewertung lhs, RaumAusfuellenTIefensuche::Ergebnis rhs)
 
-    // Beide Bots konnten einen Schritt machen
+  /**
+   ** -> Rückgabe
+   ** 
+   ** @param     lhs   erstes Ergebnis
+   ** @param     rhs   zweites Ergebnis
+   **
+   ** @return    ob lhs besser ist als rhs
+   **
+   ** @version   2014-11-29
+   **/
+  bool
+    operator>(Tiefensuche::Bewertung const& lhs,
+              Tiefensuche::Bewertung const& rhs)
+    {
+      return (rhs < lhs);
+    } // bool operator>(Tiefensuche::Bewertung lhs, Tiefensuche::Bewertung rhs)
 
-    // die Schritte durchführen
-    Spielraster sr{spielraster};
-    sr.bewege_bot(bot1, r1);
-    sr.bewege_bot(bot2, r2);
+  /**
+   ** -> Rückgabe
+   ** 
+   ** @param     lhs   erstes Ergebnis
+   ** @param     rhs   zweites Ergebnis
+   **
+   ** @return    ob lhs und rhs gleich sind
+   **
+   ** @version   2014-11-29
+   **/
+  bool
+    operator==(Tiefensuche::Bewertung const& lhs,
+               Tiefensuche::Bewertung const& rhs)
+    {
+      return (   (rhs.spielstand == lhs.spielstand)
+              && (rhs.tiefe == lhs.tiefe)
+              && (rhs.wert == lhs.wert) );
+    } // bool operator==(Tiefensuche::Bewertung lhs, Tiefensuche::Bewertung rhs)
 
-    // rekursiver Aufruf (aufwendig)
-    auto const bewertung_vv = this->wert(sr, bot1, bot2,
-                                           Bewegungsrichtung::VORWAERTS,
-                                           Bewegungsrichtung::VORWAERTS);
-    auto const bewertung_vl = this->wert(sr, bot1, bot2,
-                                           Bewegungsrichtung::VORWAERTS,
-                                           Bewegungsrichtung::LINKS);
-    auto const bewertung_vr = this->wert(sr, bot1, bot2,
-                                           Bewegungsrichtung::VORWAERTS,
-                                           Bewegungsrichtung::RECHTS);
-    auto const bewertung_lv = this->wert(sr, bot1, bot2,
-                                           Bewegungsrichtung::LINKS,
-                                           Bewegungsrichtung::VORWAERTS);
-    auto const bewertung_ll = this->wert(sr, bot1, bot2,
-                                           Bewegungsrichtung::LINKS,
-                                           Bewegungsrichtung::LINKS);
-    auto const bewertung_lr = this->wert(sr, bot1, bot2,
-                                           Bewegungsrichtung::LINKS,
-                                           Bewegungsrichtung::RECHTS);
-    auto const bewertung_rv = this->wert(sr, bot1, bot2,
-                                           Bewegungsrichtung::RECHTS,
-                                           Bewegungsrichtung::VORWAERTS);
-    auto const bewertung_rl = this->wert(sr, bot1, bot2,
-                                           Bewegungsrichtung::RECHTS,
-                                           Bewegungsrichtung::LINKS);
-    auto const bewertung_rr = this->wert(sr, bot1, bot2,
-                                           Bewegungsrichtung::RECHTS,
-                                           Bewegungsrichtung::RECHTS);
-
-#if 1
-    { // Variante A: Mein Gegner verhält sich möglichst schlecht für mich
-      // (pessimistisch)
-      // Minimiere den Verlust
-      auto const bewertung_v = std::min(bewertung_vv, bewertung_vl, bewertung_vr);
-      auto const bewertung_l = std::min(bewertung_lv, bewertung_ll, bewertung_lr);
-      auto const bewertung_r = std::min(bewertung_rv, bewertung_rl, bewertung_rr);
-
-      return std::max(bewertung_v, bewertung_l, bewertung_r);
-    } // Variante A (Pessimist)
-#endif
-
-
-#if 1
-    { // Variante B: Mein Gegner verhält sich möglichst gut für sich (er verfolgt Variante 1)
-      // (optimistisch)
-      // Minimiere seinen Verlust
-      auto const bewertung_v = std::max(bewertung_vv, bewertung_lv, bewertung_rv);
-      auto const bewertung_l = std::max(bewertung_vl, bewertung_ll, bewertung_rl);
-      auto const bewertung_r = std::max(bewertung_vr, bewertung_lr, bewertung_rr);
-      auto const m = std::min(bewertung_v, bewertung_l, bewertung_r);
-      auto res = -1;
-      if (m == bewertung_v)
-        res = std::max(res, bewertung_vv, bewertung_lv, bewertung_rv);
-      if (m == bewertung_l)
-        res = std::max(res, bewertung_vl, bewertung_ll, bewertung_rl);
-      if (m == bewertung_r)
-        res = std::max(res, bewertung_vr, bewertung_lr, bewertung_rr);
-      return res;
-    } // Variante B (Optimist)
-#endif
-
-#if 1
-    { // Variante C
-      // 1) Gewinnerstrategie gleich verwenden
-      if (   ( (bewertung_vv == 1) && (bewertung_vl == 1) && (bewertung_vr == 1) )
-          || ( (bewertung_lv == 1) && (bewertung_ll == 1) && (bewertung_lr == 1) )
-          || ( (bewertung_rv == 1) && (bewertung_rl == 1) && (bewertung_rr == 1) ) )
-        return 1;
-      if (   ( (bewertung_vv == -1) && (bewertung_lv == -1) && (bewertung_rv == -1) )
-          || ( (bewertung_vl == -1) && (bewertung_ll == -1) && (bewertung_rl == -1) )
-          || ( (bewertung_vr == -1) && (bewertung_lr == -1) && (bewertung_rr == -1) ) )
-        return -1;
-      // 2) die ungünstigen Richtungen für beide Spieler entfernen
-      // 3) die verbleibenen Bewertungen irgendwie mitteln
-    } // Variante C
-#endif
-
-    return 0;
-  } // Taktik::Ergebnis Tiefensuche::ergebnis(Spielraster const& spielraster, int const bot) const
+  /**
+   ** gibt die Bewertung aus
+   ** 
+   ** @param     ostr   Ausgabestrom
+   ** @param     b      Bewertung
+   **
+   ** @return    Ausgabestrom
+   **
+   ** @version   2014-11-29
+   **/
+  ostream&
+    operator<<(ostream& ostr, Tiefensuche::Bewertung const& b)
+    {
+      ostr << "(";
+      switch (b.spielstand) {
+      case Tiefensuche::Bewertung::Spielstand::VERLOREN:
+        ostr << "-"; break;
+      case Tiefensuche::Bewertung::Spielstand::GEWONNEN:
+        ostr << "+"; break;
+      case Tiefensuche::Bewertung::Spielstand::UNENTSCHIEDEN:
+        ostr << "x"; break;
+      case Tiefensuche::Bewertung::Spielstand::OFFEN:
+        ostr << "o"; break;
+      } // switch (bewertung.spielstand)
+      ostr << " " << b.tiefe;
+      if (b.spielstand == Tiefensuche::Bewertung::Spielstand::OFFEN)
+        ostr << ", " << b.wert;
+      ostr << ")";
+      return ostr;
+    }
 
 } // namespace TaktikNS

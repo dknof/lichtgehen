@@ -173,8 +173,6 @@ namespace UI_Gtkmm {
       this->show_all_children();
       this->show_all();
 
-      //this->signal_key_press_event().connect(sigc::mem_fun(*this, &MainWindow::on_key_press_event));
-      //
       return ;
     } // Hauptfenster::init()
 
@@ -518,6 +516,15 @@ namespace UI_Gtkmm {
           return true;
         case GDK_KEY_Escape:
           this->close();
+          return true;
+        case GDK_KEY_r:
+          // Spielraster ausgeben
+          //
+          this->ui->spielraster->historie(this->historie->get_value() - 1).ausgeben(cout);
+          return true;
+        case GDK_KEY_R:
+          // Raster ausgeben
+          cout << this->ui->spielraster->historie(this->historie->get_value() - 1);
           return true;
         default:
           return false;

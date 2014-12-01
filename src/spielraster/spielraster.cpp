@@ -53,7 +53,7 @@ Spielraster::Spielraster()
 { }
 
 /**
- ** Das Spielraster auf ostr ausgeben
+ ** Das Spielraster auf ostr schön ausgeben
  ** 
  ** @param     ostr   Ausgabestrom
  ** @param     spielraster  Spielraster zum ausgeben
@@ -64,7 +64,32 @@ Spielraster::Spielraster()
  **/
 ostream&
 operator<<(ostream& ostr, Spielraster const& spielraster)
-{ return spielraster.ausgeben(ostr); }
+{ return spielraster.ausgeben_schoen(ostr); }
+
+/**
+ ** Das Spielraster auf ostr ausgeben
+ ** Die Ausgabe entspricht dem Format zum Laden
+ ** 
+ ** @param     ostr   Ausgabestrom
+ **
+ ** @return    Ausgabestrom
+ **
+ ** @version   2014-12-01
+ **/
+ostream& 
+Spielraster::ausgeben(ostream& ostr) const
+{
+  ostr << "GAMEBOARDSTART "
+    << this->breite() << "," << this->laenge() << '\n';
+  this->Raster::ausgeben(ostr);
+  ostr << "GAMEBOARDEND\n";
+  for (int b = 0; b < this->bot_anz(); ++b) {
+    auto const p = this->position(b);
+    ostr << "POS " << b+1 << " "
+      << p.x()+1 << "," << p.y()+1 << " " << p.richtung() << '\n';
+  }
+  return ostr;
+} // ostream& Spielraster::ausgeben(ostream& ostr) const
 
 /**
  ** Das Spielraster auf ostr ausgeben
@@ -74,11 +99,9 @@ operator<<(ostream& ostr, Spielraster const& spielraster)
  ** @return    Ausgabestrom
  **
  ** @version   2014-10-25
- **
- ** @todo      Bots und Verlauf darstellen
  **/
 ostream& 
-Spielraster::ausgeben(ostream& ostr) const
+Spielraster::ausgeben_schoen(ostream& ostr) const
 {
   typedef std::pair<Richtung, Richtung> RP;
   std::map<RP, string> richtung_symbol;
@@ -96,8 +119,8 @@ Spielraster::ausgeben(ostream& ostr) const
   richtung_symbol[RP(Richtung::WESTEN, Richtung::SUEDEN)] = "┌"; // = "⬐";
 
   ostr << "┌";
-    for (int x = 0; x < this->breite(); ++x)
-      ostr << "─";
+  for (int x = 0; x < this->breite(); ++x)
+    ostr << "─";
   ostr << "┐\n";
   for (int y = 0; y < this->laenge(); ++y) {
     ostr << "│";
@@ -154,8 +177,8 @@ Spielraster::ausgeben(ostream& ostr) const
     ostr << '\n';
   } // for (y)
   ostr << "└";
-    for (int x = 0; x < this->breite(); ++x)
-      ostr << "─";
+  for (int x = 0; x < this->breite(); ++x)
+    ostr << "─";
   ostr << "┘\n";
   // Positionen/Rundenanzahl der Bots ausgeben
   for (int n = 0; n < this->bot_anz(); ++n) 
@@ -165,7 +188,7 @@ Spielraster::ausgeben(ostream& ostr) const
       ostr << "Bot " << n << ": " << this->weg(n).size() - 2 << " Runden\n";
 
   return ostr;
-} // ostream& Raster::ausgeben(ostream& ostr) const
+} // ostream& Raster::ausgeben_schoen(ostream& ostr) const
 
 /**
  ** -> Rückgabe
@@ -445,8 +468,8 @@ Spielraster::historie(int const runde) const
   // Felder wieder freisetzen
   for (auto const& w : sr.bot_weg_) {
     if (static_cast<int>(w.size()) >= runde + 2)
-    for (auto f = (begin(w) + runde + 1); f != end(w); ++f)
-      sr.belege(*f, false);
+      for (auto f = (begin(w) + runde + 1); f != end(w); ++f)
+        sr.belege(*f, false);
   }
   // Weg der Bots beschneiden
   for (auto& w : sr.bot_weg_)
@@ -569,8 +592,8 @@ Spielraster::einflussbereich(int const bot, Position const position) const
     for (auto p : offene_positionen_bot) {
       for (auto r : ::richtungen) {
         if (!raster(p + r)) {
-      raster.belege(p + r);
-      raster_bot.belege(p + r);
+          raster.belege(p + r);
+          raster_bot.belege(p + r);
           offene_positionen_bot_neu.insert(p + r);
         }
       }
@@ -597,5 +620,5 @@ Spielraster::einflussbereich_groesse_erreichbar(int const bot) const
 {
   Raster r = *this;
   r.belege(this->einflussbereich(bot).invertiert());
-  return r.raumgroesse_erreichbar(this->position(bot));
+  return r.raumgroesse_erreichbar(this->position(bot), false);
 } // int Spielraster::einflussbereich_groesse_erreichbar(int bot) const

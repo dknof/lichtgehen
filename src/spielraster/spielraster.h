@@ -57,6 +57,8 @@ class Spielraster : public Raster {
   Spielraster();
 
   // Spielraster auf ostr ausgeben
+  ostream& ausgeben_schoen(ostream& ostr) const;
+  // Spielraster auf ostr ausgeben
   ostream& ausgeben(ostream& ostr) const override;
 
 
