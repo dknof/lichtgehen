@@ -103,10 +103,10 @@ using Felder = vector<bool>;
   int nachbarn_frei(Position const& position) const;
   // Die Größe des Raumes unter position
   int raumgroesse(Position const& position,
-                  bool position_uberpruefen = true) const;
+                  bool position_uberpruefen = false) const;
   // Die Größe von position erreichbaren Raumes
   int raumgroesse_erreichbar(Position const& position,
-                             bool position_uberpruefen = true) const;
+                             bool position_uberpruefen = false) const;
   // Kürzeste Entfernun zwischen beiden Positionen
   int kuerzeste_entfernung(Position const& pa, Position const& pb) const;
 

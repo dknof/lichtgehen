@@ -64,8 +64,14 @@ namespace std {
 inline X min(X const& a, X const& b, X const& c)
 { return std::min(a, std::min(b, c)); }
   template<class X>
+inline X min(X const& a, X const& b, X const& c, X const& d)
+{ return std::min(std::min(a, b), std::min(c, d)); }
+  template<class X>
 inline X max(X const& a, X const& b, X const& c)
 { return std::max(a, std::max(b, c)); }
+  template<class X>
+inline X max(X const& a, X const& b, X const& c, X const& d)
+{ return std::max(std::max(a, b), std::max(c, d)); }
 }
 
 

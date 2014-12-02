@@ -219,7 +219,8 @@ namespace UI_Gtkmm {
         auto text = "Bot " + std::to_string(b);
         if (spielraster.position(b)) {
           text += " " + std::to_string(spielraster.position(b));
-          text += ", " + std::to_string(spielraster.einflussbereich_groesse(b)) + " Felder";
+          text += ", " + std::to_string(spielraster.einflussbereich_groesse_erreichbar(b)) + " (" + std::to_string(spielraster.einflussbereich_groesse(b)) + ") (";
+          //text += ", " + std::to_string(spielraster.einflussbereich_groesse(b)) + " Felder";
         } else {
           text += ", tot, Runde " + std::to_string(spielraster.weg(b).size());
         }
@@ -512,6 +513,7 @@ namespace UI_Gtkmm {
           cout << "Leertaste\n";
           break;
         case GDK_KEY_F1:
+        case GDK_KEY_question:
           this->ui->hilfe->show();
           return true;
         case GDK_KEY_Escape:

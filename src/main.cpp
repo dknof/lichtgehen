@@ -152,6 +152,7 @@ main_eigenes_spiel(int& argc, char* argv[])
     // Schritte abfragen
     for (int b = 0; b < spielraster.bot_anz(); ++b) {
       if (spielraster.position(b)) {
+    cdebug << b << " erreichbare Raumgröße: " << spielraster.raumgroesse_erreichbar(spielraster.position(b)) << '\n';
         naechster_schritt[b] = bots[b]->bewegung();
       }
     }
@@ -172,8 +173,10 @@ main_eigenes_spiel(int& argc, char* argv[])
         spielraster.bewege_bot(b, naechster_schritt[b]);
       }
     } // for (b)
+#if 0
     if (spielraster.bots_im_spiel() == 1)
       break;
+#endif
   } // while (spielraster.bots_im_spiel())
 
   ui->spiel_endet();

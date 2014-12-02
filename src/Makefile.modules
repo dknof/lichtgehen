@@ -1,2 +1,2 @@
 USE_UI_GTKMM = true
-USE_HUMAN = true
+USE_HUMAN = false

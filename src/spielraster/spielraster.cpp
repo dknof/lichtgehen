@@ -81,7 +81,10 @@ Spielraster::ausgeben(ostream& ostr) const
 {
   ostr << "GAMEBOARDSTART "
     << this->breite() << "," << this->laenge() << '\n';
-  this->Raster::ausgeben(ostr);
+  Raster raster = *this;
+  for (int b = 0; b < this->bot_anz(); ++b)
+    raster.belege(this->position(b), false);
+  ostr << raster;
   ostr << "GAMEBOARDEND\n";
   for (int b = 0; b < this->bot_anz(); ++b) {
     auto const p = this->position(b);
@@ -373,7 +376,7 @@ Spielraster::rauminfo(int const bot) const
   if (!this->bot_im_spiel(bot))
     return RaumInfo{};
   RaumInfo rauminfo;
-  rauminfo.groesse = this->raumgroesse(this->position(bot), false);
+  rauminfo.groesse = this->raumgroesse(this->position(bot));
   rauminfo.bot_anz = 0;
 
   // Entfernung zum nächsten Bot
@@ -412,7 +415,7 @@ Spielraster::rauminfo(int const bot,
                       Bewegungsrichtung const bewegungsrichtung) const
 {
   RaumInfo rauminfo;
-  rauminfo.groesse = this->raumgroesse(this->position(bot) + bewegungsrichtung);
+  rauminfo.groesse = this->raumgroesse(this->position(bot) + bewegungsrichtung, true);
   rauminfo.bot_anz = 0;
   rauminfo.entfernung_naechster_bot = this->breite() * this->laenge() + 1;
   for (int b = 0; b < this->bot_anz(); ++b) {
@@ -620,5 +623,5 @@ Spielraster::einflussbereich_groesse_erreichbar(int const bot) const
 {
   Raster r = *this;
   r.belege(this->einflussbereich(bot).invertiert());
-  return r.raumgroesse_erreichbar(this->position(bot), false);
+  return r.raumgroesse_erreichbar(this->position(bot));
 } // int Spielraster::einflussbereich_groesse_erreichbar(int bot) const

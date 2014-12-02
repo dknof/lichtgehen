@@ -1,3 +1,6 @@
+2014-12-02
+	- Erreichbare Raumgröße wird ermittelt (enthält noch ein paar Ungenauigkeiten/Vereinfachungen)
+
 2014-12-01
 	- Aus der UI kann mit <r> das Spielfeld ausgegeben werden (für Testzwecke)
 	- Fehlerkorrektur bei der Tiefensuche
