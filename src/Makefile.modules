@@ -1,2 +1,2 @@
-USE_UI_GTKMM = true
+USE_UI_GTKMM = false
 USE_HUMAN = false

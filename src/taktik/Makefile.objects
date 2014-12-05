@@ -4,6 +4,7 @@ OBJECTS = taktik.o \
 	  richtung.o \
 	  raum_ausfuellen.o \
 	  raum_ausfuellen_tiefensuche.o \
+	  raum_ausfuellen_tiefensuche_bis_ende.o \
 	  groesster_raum.o \
 	  groesstes_einflussgebiet.o \
 	  tiefensuche.o

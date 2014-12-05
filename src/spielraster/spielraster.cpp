@@ -302,7 +302,7 @@ void
 Spielraster::entferne_bot(int const n)
 {
   // setze den Bot auf eine Position außerhalb vom Spielraster
-  this->bot_weg_[n].push_back(BotPosition{{-10, -10}, Richtung::NORDEN});
+  this->bot_weg_[n].push_back(BotPosition{Position::KEINE, Richtung::NORDEN});
   return;
 } // void Spielraster::entferne_bot(int const n)
 

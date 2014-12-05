@@ -34,9 +34,7 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#include "raum_ausfuellen_tiefensuche.h"
-
-#define TIEFE_MAX 6
+#include "raum_ausfuellen_tiefensuche_bis_ende.h"
 
 namespace TaktikNS {
   /**
@@ -46,10 +44,10 @@ namespace TaktikNS {
    **
    ** @return    -
    **
-   ** @version   2014-12-05
+   ** @version   2014-11-08
    **/
-  RaumAusfuellenTiefensuche::RaumAusfuellenTiefensuche() :
-    Taktik{"Raum ausfüllen (Tiefensuche)", "Den Raum möglichst gut ausfüllen, rekursiv mit Tiefensuche wird ein optimaler Weg bestimmt."}
+  RaumAusfuellenTiefensucheBisEnde::RaumAusfuellenTiefensucheBisEnde() :
+    Taktik{"Raum ausfüllen (Tiefensuche bis Ende)", "Den Raum möglichst gut ausfüllen, rekursiv mit Tiefensuche, bis der Raum aufgefüllt ist, wird ein optimaler Weg bestimmt."}
   { }
 
   /**
@@ -61,34 +59,56 @@ namespace TaktikNS {
    **
    ** @return    Richtung mit dem längsten Weg
    **
-   ** @version   2014-12-05
+   ** @version   2014-11-08
    **/
   Taktik::Ergebnis
-    RaumAusfuellenTiefensuche::ergebnis(Spielraster const& spielraster,
+    RaumAusfuellenTiefensucheBisEnde::ergebnis(Spielraster const& spielraster,
                                         int const bot_nummer)
     {
       auto const& bp = spielraster.position(bot_nummer);
       int const wegweite_vorwaerts
-        = this->wegweite(spielraster, bp + Bewegungsrichtung::VORWAERTS, TIEFE_MAX);
+        = this->wegweite(spielraster, bp + Bewegungsrichtung::VORWAERTS);
       int const wegweite_links
-        = this->wegweite(spielraster, bp + Bewegungsrichtung::LINKS, TIEFE_MAX);
+        = this->wegweite(spielraster, bp + Bewegungsrichtung::LINKS);
       int const wegweite_rechts
-        = this->wegweite(spielraster, bp + Bewegungsrichtung::RECHTS, TIEFE_MAX);
+        = this->wegweite(spielraster, bp + Bewegungsrichtung::RECHTS);
       CLOG << Bewegungsrichtung::VORWAERTS << ": " << wegweite_vorwaerts << endl;
       CLOG << Bewegungsrichtung::LINKS << ": " << wegweite_links << endl;
       CLOG << Bewegungsrichtung::RECHTS << ": " << wegweite_rechts << endl;
 
-      if (wegweite_links >= wegweite_vorwaerts)
-        if (wegweite_links >= wegweite_rechts)
-          return Bewegungsrichtung::LINKS;
-        else
-          return Bewegungsrichtung::RECHTS;
-      else 
+      if (wegweite_vorwaerts >= wegweite_links)
         if (wegweite_vorwaerts >= wegweite_rechts)
           return Bewegungsrichtung::VORWAERTS;
         else
           return Bewegungsrichtung::RECHTS;
-    } // Taktik::Ergebnis RaumAusfuellenTiefensuche::ergebnis(Spielraster const& spielraster, int const bot_nummer)
+      else 
+        if (wegweite_links >= wegweite_rechts)
+          return Bewegungsrichtung::LINKS;
+        else
+          return Bewegungsrichtung::RECHTS;
+    } // Taktik::Ergebnis RaumAusfuellenTiefensucheBisEnde::ergebnis(Spielraster const& spielraster, int const bot_nummer)
+
+  /**
+   ** -> Rückgabe
+   ** Suche den längsten Weg.
+   ** 
+   ** @param     raster   Spielraster
+   ** @param     bp     Position auf dem Raster
+   **
+   ** @return    Längster Weg ab der Position
+   **
+   ** @version   2014-11-08
+   **/
+  int
+    RaumAusfuellenTiefensucheBisEnde::wegweite(Raster raster,
+                                        Position const bp) const
+    {
+      // zwischen verschiedenen Versionen wählen
+      return this->wegweite_simpel(raster, bp); // ganz simpel
+      //return this->wegweite_untere_grenze(raster, bp, 0); // mit Maxvergleich
+      //std::set<std::pair<Raster, Position>> bekannte_raster;
+      //return this->wegweite_ohne_duplikate(raster, bp, bekannte_raster); // mit Duplikatvergleich
+    } // int RaumAusfuellenTiefensucheBisEnde::wegweite(Raster raster, Position const& bp) const
 
   /**
    ** -> Rückgabe
@@ -97,38 +117,28 @@ namespace TaktikNS {
    ** 28 Rasterer: 1,05 s
    ** 5x5 Rasterer: 0,255 s
    ** 
-   ** @param     raster              Spielraster
-   ** @param     p                   Position auf dem Raster
-   ** @param     tiefe_verbleibend   verbleibende Tiefe zu prüfen
+   ** @param     raster   Spielraster
+   ** @param     bp     Position auf dem Raster
    **
    ** @return    Längster Weg ab der Position
    **
-   ** @version   2014-12-05
+   ** @version   2014-11-08
    **/
   int
-    RaumAusfuellenTiefensuche::wegweite(Raster raster,
-                                        Position p,
-                                        int tiefe_verbleibend) const
+    RaumAusfuellenTiefensucheBisEnde::wegweite_simpel(Raster raster,
+                                               Position const bp) const
     {
-      if (raster(p))
+      if (raster(bp))
         return 0;
-      raster.belege(p);
-      int n = 1;
-      while (raster.nachbarn_frei(p) == 1) {
-        p = raster.freier_nachbar(p);
-        raster.belege(p);
-        n += 1;
-      }
-      if (tiefe_verbleibend == 0)
-        return (n + raster.raumgroesse_erreichbar(p));
+      raster.belege(bp);
 
-      tiefe_verbleibend -= 1;
-      int wegweite_max = 0;
+      int wegweite_max = 1;
       for (auto& r : ::richtungen) {
-        wegweite_max = std::max(wegweite_max,
-                                this->wegweite(raster, p + r, tiefe_verbleibend));
+        if (raster(bp + r))
+          continue;
+        wegweite_max = std::max(wegweite_max, this->wegweite_simpel(raster, bp + r) + 1);
       }
-      return n + wegweite_max;
-    } // int RaumAusfuellenTiefensuche::wegweite(Raster raster, BotPosition const p, int tiefe_verbleibend)
+      return wegweite_max;
+    } // int RaumAusfuellenTiefensucheBisEnde::wegweite_simpel(Raster raster, BotPosition const p)
 
 } // namespace TaktikNS

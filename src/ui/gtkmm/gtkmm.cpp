@@ -90,6 +90,7 @@ namespace UI_Gtkmm {
     UI_Gtkmm::spiel_startet()
     {
       this->hauptfenster->present();
+      this->hauptfenster->aktualisiere();
       return;
     } // void UI_Gtkmm::spiel_startet()
 

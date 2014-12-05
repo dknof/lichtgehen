@@ -181,10 +181,10 @@ namespace StrategieNS {
         this->hinzufuegen(Taktik::create("Tiefensuche"));
         break;
       case EIGENER_RAUM:
-        this->hinzufuegen(Taktik::create("Raum ausfüllen"));
+        this->hinzufuegen(Taktik::create("Raum ausfüllen (Tiefensuche)"));
         break;
       case LETZTE_FELDER | EIGENER_RAUM:
-        this->hinzufuegen(Taktik::create("Raum ausfüllen (Tiefensuche)"));
+        this->hinzufuegen(Taktik::create("Raum ausfüllen (Tiefensuche bis Ende)"));
         break;
       default:
         // kann nicht auftreten

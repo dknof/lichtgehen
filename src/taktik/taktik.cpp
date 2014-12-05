@@ -47,6 +47,7 @@
 #include "tiefensuche.h"
 #include "raum_ausfuellen.h"
 #include "raum_ausfuellen_tiefensuche.h"
+#include "raum_ausfuellen_tiefensuche_bis_ende.h"
 
 /**
  ** erstellt eine Taktik entsprechend dem Namen
@@ -98,6 +99,8 @@ Taktik::create(string const& name)
     return make_unique<RaumAusfuellen>();
   else if (name == "Raum ausfüllen (Tiefensuche)")
     return make_unique<RaumAusfuellenTiefensuche>();
+  else if (name == "Raum ausfüllen (Tiefensuche bis Ende)")
+    return make_unique<RaumAusfuellenTiefensucheBisEnde>();
   else if (name == "Tiefensuche")
     return make_unique<Tiefensuche>();
   else if (name == "Raum abzweigen")

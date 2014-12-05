@@ -36,6 +36,8 @@
 
 #include "position.h"
 
+Position Position::KEINE(-10, -10);
+
 /**
  ** Konstruktor
  ** 

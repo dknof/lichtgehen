@@ -1,5 +1,5 @@
 DEPTH = ..
-DIRECTORY = gui
+DIRECTORY = ui
 
 all : lib
 

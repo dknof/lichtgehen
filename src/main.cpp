@@ -135,6 +135,7 @@ main_eigenes_spiel(int& argc, char* argv[])
     bot->setze_nummer(i);
     //bot->setze_strategie(Strategie::create({"in größten Raum", "zum größten Einflussgebiet"}));
     //bot->setze_strategie(Strategie::create({"zum größten Einflussgebiet"}));
+    //bot->setze_strategie(Strategie::create({"zum größten Einflussgebiet"}));
     bot->setze_strategie(Strategie::create({"Tiefensuche"}));
     //bot->setze_strategie(Strategie::create({"Raum ausfüllen (Tiefensuche)"}));
     bots.push_back(std::move(bot));
@@ -147,15 +148,17 @@ main_eigenes_spiel(int& argc, char* argv[])
   while (spielraster.bots_im_spiel()) {
     runde += 1;
     cdebug << runde << '\n';
+    cdebug << spielraster << '\n';
     //usleep(10000);
     ui->runde(runde);
     // Schritte abfragen
     for (int b = 0; b < spielraster.bot_anz(); ++b) {
       if (spielraster.position(b)) {
-    cdebug << b << " erreichbare Raumgröße: " << spielraster.raumgroesse_erreichbar(spielraster.position(b)) << '\n';
+        cdebug << b << " erreichbare Raumgröße: " << spielraster.raumgroesse_erreichbar(spielraster.position(b)) << '\n';
         naechster_schritt[b] = bots[b]->bewegung();
       }
     }
+    //break;
 
     // Schritte gehen
     auto pos_neu = vector<Position>(spielraster.bot_anz());

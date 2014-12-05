@@ -47,6 +47,9 @@
  **/
 class Position {
   public:
+    // keine Position
+    static Position KEINE;
+  public:
     // Konstruktor
     Position();
     // Konstruktor

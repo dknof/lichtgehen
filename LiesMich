@@ -6,7 +6,7 @@ Benötigt wird C++14, getestet ist mit dem Compiler gcc version 4.9.1 und clang+
 
 In der Datei src/Makefile.rules werden der Compiler sowie die Parameter für den Compiler gesetzt (sofern nicht bereits CXX und CXXFLAGS gesetzt sind).
 
-In der Datei src/Makefile.local lassen sich zwei Module anschalten:
+In der Datei src/Makefile.modules lassen sich zwei Module anschalten:
 * gtkmm: eine graphische Ausgabe (benötigt die Entwicklerpakete von gtkmm Version 3, debian: libgtkmm-3.0-dev)
 * human: bei der graphischen Ausgabe kann ein Bot gesteuert werden
 Sind beide Module aktiv, kann über den Spielserver gegen einen eigenen Bot getestet werden.

@@ -37,7 +37,7 @@
 #include "tiefensuche.h"
 #include <cstdlib>
 
-#define TIEFE_MAX 3
+#define TIEFE_MAX 2
 
 namespace TaktikNS {
   /**

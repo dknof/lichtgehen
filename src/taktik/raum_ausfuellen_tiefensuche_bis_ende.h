@@ -34,8 +34,8 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef TAKTIK_RAUM_AUSFUELLEN_TIEFENSUCHE_H
-#define TAKTIK_RAUM_AUSFUELLEN_TIEFENSUCHE_H
+#ifndef TAKTIK_RAUM_AUSFUELLEN_TIEFENSUCHE_BIS_ENDE_H
+#define TAKTIK_RAUM_AUSFUELLEN_TIEFENSUCHE_BIS_ENDE_H
 
 #include "taktik.h"
 #include <set>
@@ -44,10 +44,10 @@ namespace TaktikNS {
 /** Taktik RaumAusfuellenTiefensuche
  ** Einen Raum möglichst gut ausfüllen. Es wird vorausgesetzt, dass der Bot alleine in dem Raum ist. Es wird mit Tiefensuche der längste Weg gesucht.
  **/
-class RaumAusfuellenTiefensuche : public Taktik {
+class RaumAusfuellenTiefensucheBisEnde : public Taktik {
   public:
     // Konstruktor
-    RaumAusfuellenTiefensuche();
+    RaumAusfuellenTiefensucheBisEnde();
 
     // gibt das Ergebnis der Taktik zurück (ob sie greift und die Richtung)
     Ergebnis ergebnis(Spielraster const& spielraster,
@@ -55,9 +55,15 @@ class RaumAusfuellenTiefensuche : public Taktik {
 
   private:
     // die Wegweite
-    int wegweite(Raster raster, Position p, int tiefe_verbleibend) const;
-}; // class RaumAusfuellenTiefensuche : public Taktik
+    int wegweite(Raster raster, Position bp) const;
+    // die Wegweite (einfaches Verfahren)
+    int wegweite_simpel(Raster raster, Position bp) const;
+    // die Wegweite (mit unterer Grenze)
+    int wegweite_untere_grenze(Raster raster, Position const& bp, int untere_grenze) const;
+    // die Wegweite (ohne Duplikate)
+    int wegweite_ohne_duplikate(Raster raster, Position const& bp, std::set<std::pair<Raster, Position>>& bekannte_raster) const;
+}; // class RaumAusfuellenTiefensucheBisEnde : public Taktik
 
 } // namespace TaktikNS
 
-#endif // #ifndef TAKTIK_RAUM_AUSFUELLEN_TIEFENSUCHE_H
+#endif // #ifndef TAKTIK_RAUM_AUSFUELLEN_TIEFENSUCHE_BIS_ENDE_H

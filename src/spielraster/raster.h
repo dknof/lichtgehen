@@ -101,6 +101,11 @@ using Felder = vector<bool>;
 
   // Die Anzahl der freien Nachbarraster
   int nachbarn_frei(Position const& position) const;
+  // Ein (der) freie Nachbar
+  Position freier_nachbar(Position const& position) const;
+  // Der freie Raum unter 'position'
+  Raster raum(Position const& position,
+              bool position_uberpruefen = false) const;
   // Die Größe des Raumes unter position
   int raumgroesse(Position const& position,
                   bool position_uberpruefen = false) const;

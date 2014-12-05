@@ -219,7 +219,7 @@ namespace UI_Gtkmm {
         auto text = "Bot " + std::to_string(b);
         if (spielraster.position(b)) {
           text += " " + std::to_string(spielraster.position(b));
-          text += ", " + std::to_string(spielraster.einflussbereich_groesse_erreichbar(b)) + " (" + std::to_string(spielraster.einflussbereich_groesse(b)) + ") (";
+          text += ", " + std::to_string(spielraster.einflussbereich_groesse_erreichbar(b)) + " (" + std::to_string(spielraster.einflussbereich_groesse(b)) + ")";
           //text += ", " + std::to_string(spielraster.einflussbereich_groesse(b)) + " Felder";
         } else {
           text += ", tot, Runde " + std::to_string(spielraster.weg(b).size());
@@ -510,7 +510,6 @@ namespace UI_Gtkmm {
           this->historie->set_value(this->ui->spielraster->runde());
           return true;
         case GDK_KEY_space:
-          cout << "Leertaste\n";
           break;
         case GDK_KEY_F1:
         case GDK_KEY_question:
@@ -522,11 +521,11 @@ namespace UI_Gtkmm {
         case GDK_KEY_r:
           // Spielraster ausgeben
           //
-          this->ui->spielraster->historie(this->historie->get_value() - 1).ausgeben(cout);
+          this->ui->spielraster->historie(this->historie->get_value() - 1).ausgeben(cerr);
           return true;
         case GDK_KEY_R:
           // Raster ausgeben
-          cout << this->ui->spielraster->historie(this->historie->get_value() - 1);
+          cerr << this->ui->spielraster->historie(this->historie->get_value() - 1);
           return true;
         default:
           return false;

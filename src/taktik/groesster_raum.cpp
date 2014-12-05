@@ -67,11 +67,11 @@ namespace TaktikNS {
     {
       BotPosition const bp{spielraster.position(bot_nummer)};
       int const groesse_v
-        = {spielraster.raumgroesse(bp + Bewegungsrichtung::VORWAERTS)};
+        = {spielraster.raumgroesse(bp + Bewegungsrichtung::VORWAERTS, true)};
       int const groesse_l
-        = {spielraster.raumgroesse(bp + Bewegungsrichtung::LINKS)};
+        = {spielraster.raumgroesse(bp + Bewegungsrichtung::LINKS, true)};
       int const groesse_r
-        = {spielraster.raumgroesse(bp + Bewegungsrichtung::RECHTS)};
+        = {spielraster.raumgroesse(bp + Bewegungsrichtung::RECHTS, true)};
 
       if (   (groesse_v > groesse_l)
           && (groesse_v > groesse_r))

@@ -1,5 +1,5 @@
 DEPTH = ../..
-DIRECTORY = gui/gtkmm
+DIRECTORY = ui/gtkmm
 
 INCLUDE += `pkg-config gtkmm-3.0 --cflags`
 
