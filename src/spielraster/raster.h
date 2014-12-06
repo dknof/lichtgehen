@@ -40,10 +40,15 @@
 #include "constants.h"
 
 #include "position.h"
+
+#define USE_BITSET
+
+#ifdef USE_BITSET
 #include <bitset>
 // Maximale Größe des Rasters
+// Bei meinen Tests gab es eine Performanceverschlechterung zwischen ab 256*256 Felder
 #define RASTER_MAX_GROESSE (128*128)
-#define USE_BITSET
+#endif
 
 /** Ein Raster
  ** Die einzelnen Punkte sind besetzt oder nicht besetzt

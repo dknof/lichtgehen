@@ -46,6 +46,12 @@ namespace TaktikNS {
  **/
 class RaumAusfuellenTiefensuche : public Taktik {
   public:
+  struct Bewertung {
+    int weite;
+    int nachbarn_frei;
+    Bewertung(int const w, int const f) : weite(w), nachbarn_frei(f) {}
+  }; // struct Bewertung
+  public:
     // Konstruktor
     RaumAusfuellenTiefensuche();
 
@@ -57,6 +63,11 @@ class RaumAusfuellenTiefensuche : public Taktik {
     // die Wegweite
     int wegweite(Raster raster, Position p, int tiefe_verbleibend) const;
 }; // class RaumAusfuellenTiefensuche : public Taktik
+
+bool operator>=(RaumAusfuellenTiefensuche::Bewertung const& lhs,
+                RaumAusfuellenTiefensuche::Bewertung const& rhs);
+ostream& operator<<(ostream& ostr,
+                    RaumAusfuellenTiefensuche::Bewertung const& e);
 
 } // namespace TaktikNS
 

@@ -153,7 +153,7 @@ namespace StrategieNS {
 
       // Teste, auf letzte Felder
       if (!(this->spielstatus & LETZTE_FELDER)) {
-        if (rauminfo.groesse <= 25)
+        if (rauminfo.groesse <= 2 + 5)
           neuer_status |= LETZTE_FELDER;
       } // if (!(this->spielstatus & LETZTE_FELDER))
 

@@ -63,7 +63,7 @@ class Tiefensuche : public Taktik {
     // Konstruktor
     Tiefensuche();
     // Destruktor
-    virtual ~Tiefensuche();
+    ~Tiefensuche();
 
     // gibt das Ergebnis der Taktik zurück (ob sie greift und die Richtung)
     Ergebnis ergebnis(Spielraster const& spielraster,
@@ -71,14 +71,18 @@ class Tiefensuche : public Taktik {
 
   protected:
     // bewertet das Spielfeld
-    virtual Bewertung::Wert bewertung(Spielraster const& spielraster,
-                                      int bot1, int bot2) const;
+    Bewertung::Wert bewertung(Spielraster const& spielraster,
+                              int bot1, int bot2) const;
 
   private:
     // bewertet rekursiv die Schritte
     Bewertung tiefensuche(Spielraster const& spielraster, int bot1, int bot2,
                           Bewegungsrichtung r1, Bewegungsrichtung r2,
                           int tiefe) const;
+
+  protected:
+    // maximale Tiefe
+    int tiefe_max;
 }; // class Tiefensuche : public Taktik
 
 // Vergleich von den Ergebnissen

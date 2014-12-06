@@ -36,7 +36,7 @@
 
 #include "raum_ausfuellen_tiefensuche.h"
 
-#define TIEFE_MAX 6
+#define TIEFE_MAX 4
 
 namespace TaktikNS {
   /**
@@ -68,26 +68,38 @@ namespace TaktikNS {
                                         int const bot_nummer)
     {
       auto const& bp = spielraster.position(bot_nummer);
-      int const wegweite_vorwaerts
-        = this->wegweite(spielraster, bp + Bewegungsrichtung::VORWAERTS, TIEFE_MAX);
-      int const wegweite_links
-        = this->wegweite(spielraster, bp + Bewegungsrichtung::LINKS, TIEFE_MAX);
-      int const wegweite_rechts
-        = this->wegweite(spielraster, bp + Bewegungsrichtung::RECHTS, TIEFE_MAX);
-      CLOG << Bewegungsrichtung::VORWAERTS << ": " << wegweite_vorwaerts << endl;
-      CLOG << Bewegungsrichtung::LINKS << ": " << wegweite_links << endl;
-      CLOG << Bewegungsrichtung::RECHTS << ": " << wegweite_rechts << endl;
+      auto const ev
+        = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::VORWAERTS, TIEFE_MAX),
+                    spielraster.nachbarn_frei(bp + Bewegungsrichtung::VORWAERTS));
+      auto const el
+        = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::LINKS, TIEFE_MAX),
+                    spielraster.nachbarn_frei(bp + Bewegungsrichtung::LINKS));
+      auto const er
+        = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::RECHTS, TIEFE_MAX),
+                    spielraster.nachbarn_frei(bp + Bewegungsrichtung::RECHTS));
+      CLOG << Bewegungsrichtung::VORWAERTS << ": " << ev << endl;
+      CLOG << Bewegungsrichtung::LINKS     << ": " << el << endl;
+      CLOG << Bewegungsrichtung::RECHTS    << ": " << er << endl;
 
-      if (wegweite_links >= wegweite_vorwaerts)
-        if (wegweite_links >= wegweite_rechts)
+#if 0
+      // bei viel freier Fläche: möglichst am Rand halten
+        if (   (el.weite >= 50)
+            && ((el.weite * 101)/100 + 5 >= std::max(er.weite, ev.weite)) )
+          return Bewegungsrichtung::LINKS;
+        if (   (ev.weite >= 50)
+            && ((ev.weite * 101)/100 + 5 >= std::max(el.weite, er.weite)) )
+          return Bewegungsrichtung::VORWAERTS;
+#endif
+
+      if (el >= ev)
+        if (el >= er)
           return Bewegungsrichtung::LINKS;
         else
           return Bewegungsrichtung::RECHTS;
-      else 
-        if (wegweite_vorwaerts >= wegweite_rechts)
-          return Bewegungsrichtung::VORWAERTS;
-        else
-          return Bewegungsrichtung::RECHTS;
+      if (ev >= er)
+        return Bewegungsrichtung::VORWAERTS;
+      else
+        return Bewegungsrichtung::RECHTS;
     } // Taktik::Ergebnis RaumAusfuellenTiefensuche::ergebnis(Spielraster const& spielraster, int const bot_nummer)
 
   /**
@@ -119,8 +131,12 @@ namespace TaktikNS {
         raster.belege(p);
         n += 1;
       }
-      if (tiefe_verbleibend == 0)
+      if (raster.nachbarn_frei(p) == 0) {
+        return n;
+      }
+      if (tiefe_verbleibend == 0) {
         return (n + raster.raumgroesse_erreichbar(p));
+      }
 
       tiefe_verbleibend -= 1;
       int wegweite_max = 0;
@@ -130,5 +146,43 @@ namespace TaktikNS {
       }
       return n + wegweite_max;
     } // int RaumAusfuellenTiefensuche::wegweite(Raster raster, BotPosition const p, int tiefe_verbleibend)
+
+  /**
+   ** -> Rückgabe
+   ** vergleicht zwei Bewertungen
+   ** 
+   ** @param     lhs   linker Operand
+   ** @param     rhs   linker Operand
+   **
+   ** @return    wahr, wenn die Weite von lhs größer ist als von rhs oder beide weiten gleich sind und die Anzahl an freien Nachbarn von lhs kleiner(!) oder gleich der von rhs ist
+   **
+   ** @version   2014-12-06
+   **/
+  bool
+    operator>=(RaumAusfuellenTiefensuche::Bewertung const& lhs,
+               RaumAusfuellenTiefensuche::Bewertung const& rhs)
+    {
+      return (   (lhs.weite > rhs.weite)
+              || (   (lhs.weite == rhs.weite)
+                  && (lhs.nachbarn_frei <= rhs.nachbarn_frei) ) );
+    } // bool operator>=(RaumAusfuellenTiefensuche::Bewertung lhs, RaumAusfuellenTiefensuche::Bewertung rhs);
+
+  /**
+   ** Gibt die Bewertung auf ostr aus
+   ** 
+   ** @param     ostr   Ausgabestrom
+   ** @param     e      Bewertung
+   **
+   ** @return    Ausgabestrom
+   **
+   ** @version   2014-12-06
+   **/
+  ostream&
+    operator<<(ostream& ostr,
+               RaumAusfuellenTiefensuche::Bewertung const& e)
+    {
+      ostr << e.weite << ", " << e.nachbarn_frei;
+      return ostr;
+    } // ostream& operator<<(ostream& ostr, RaumAusfuellenTiefensuche::Bewertung e)
 
 } // namespace TaktikNS

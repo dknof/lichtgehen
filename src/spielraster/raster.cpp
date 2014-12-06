@@ -68,7 +68,7 @@ Raster::Raster(int const breite, int const laenge) :
   ,felder_(breite * laenge, false)
 #endif
 {
-#ifndef USE_BITSET
+#ifdef USE_BITSET
   assert(breite * laenge <= RASTER_MAX_GROESSE);
 #endif
 }
@@ -125,8 +125,9 @@ Raster::einlesen(istream& istr)
   isstr >> breite_;
   isstr.get();
   isstr >> laenge_;
+#ifdef USE_BITSET
   assert(this->breite() * this->laenge() <= RASTER_MAX_GROESSE);
-#ifndef USE_BITSET
+#else
   this->felder_ = vector<bool>(this->breite() * this->laenge());
 #endif
 
@@ -527,14 +528,15 @@ int
 Raster::raumgroesse_erreichbar(Position const& position,
                                bool const position_ueberpruefen) const
 {
-  if (position_ueberpruefen && (*this)(position))
-    return 0;
-
-  if ((*this)(position))
-    return std::max(this->raumgroesse_erreichbar(position + Richtung::NORDEN, true),
-                    this->raumgroesse_erreichbar(position + Richtung::OSTEN, true),
-                    this->raumgroesse_erreichbar(position + Richtung::SUEDEN, true),
-                    this->raumgroesse_erreichbar(position + Richtung::WESTEN, true));
+  if ((*this)(position)) {
+    if (position_ueberpruefen)
+      return 0;
+    else
+      return std::max(this->raumgroesse_erreichbar(position + Richtung::NORDEN, true),
+                      this->raumgroesse_erreichbar(position + Richtung::OSTEN, true),
+                      this->raumgroesse_erreichbar(position + Richtung::SUEDEN, true),
+                      this->raumgroesse_erreichbar(position + Richtung::WESTEN, true));
+  }
 
   Raster raster(*this); // Raster, das gefüllt wird
   std::set<Position> positionen; // Noch zu betrachtende Positionen
@@ -612,7 +614,7 @@ Raster::raumgroesse_erreichbar(Position const& position,
     m = std::max(m, m2);
   } // for (p : sackgassen)
 
-  return (n + m);
+  return std::min(n + m, this->raumgroesse(position));
 }  // int Raster::raumgroesse_erreichbar(Position const& position, bool const position_ueberpruefen = false) const
 
 /**

@@ -73,7 +73,7 @@ cdebug_ = new std::ostringstream;
 #endif
 main_wettbewerb(argc, argv);
 #else
-#if 1 // debug
+#if 0 // debug
 cdebug_ = &cerr;
 #else // no debug
 cdebug_ = new std::ostringstream;
@@ -106,8 +106,8 @@ main_eigenes_spiel(int& argc, char* argv[])
 #ifdef USE_UI_GTKMM
   auto ui = UI::create("gtkmm", argc, argv);
 #else
-  //auto ui = UI::create("none", argc, argv);
-  auto ui = UI::create("cout", argc, argv);
+  auto ui = UI::create("none", argc, argv);
+  //auto ui = UI::create("cout", argc, argv);
   //auto ui = UI::create("cerr", argc, argv);
 #endif
 
@@ -148,16 +148,17 @@ main_eigenes_spiel(int& argc, char* argv[])
   while (spielraster.bots_im_spiel()) {
     runde += 1;
     cdebug << runde << '\n';
-    cdebug << spielraster << '\n';
+    //cdebug << spielraster << '\n';
     //usleep(10000);
     ui->runde(runde);
     // Schritte abfragen
     for (int b = 0; b < spielraster.bot_anz(); ++b) {
       if (spielraster.position(b)) {
-        cdebug << b << " erreichbare Raumgröße: " << spielraster.raumgroesse_erreichbar(spielraster.position(b)) << '\n';
+        //cdebug << b << " erreichbare Raumgröße: " << spielraster.raumgroesse_erreichbar(spielraster.position(b)) << '\n';
         naechster_schritt[b] = bots[b]->bewegung();
       }
     }
+    //if (runde == 21)
     //break;
 
     // Schritte gehen

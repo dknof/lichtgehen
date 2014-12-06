@@ -37,7 +37,11 @@
 #include "tiefensuche.h"
 #include <cstdlib>
 
-#define TIEFE_MAX 2
+//#define ZEIT_MESSEN
+
+#ifdef ZEIT_MESSEN
+#include <chrono>
+#endif
 
 namespace TaktikNS {
   /**
@@ -50,7 +54,8 @@ namespace TaktikNS {
    ** @version   2014-11-08
    **/
   Tiefensuche::Tiefensuche() :
-    Taktik{"Tiefensuche", "Bestimme alle möglichen möglichen Wege und beschreite den „besten“ (nur für zwei Bots)."}
+    Taktik{"Tiefensuche", "Bestimme alle möglichen Wege und beschreite den „besten“ (nur für zwei Bots)."},
+    tiefe_max(0)
   { }
 
   /**
@@ -97,38 +102,49 @@ namespace TaktikNS {
       if (bot2 == spielraster.bot_anz())
         return false;
 
+#ifdef ZEIT_MESSEN
+      auto const zeit_start = std::chrono::system_clock::now();
+#endif
+
+      auto const felder_frei = spielraster.felder_frei();
+      this->tiefe_max = (  (felder_frei >= 2000) ? 0
+                         : (felder_frei >=  160) ? 1
+                         : (felder_frei >=   80) ? 2
+                         : (felder_frei >=   40) ? 3
+                         : (felder_frei >=   20) ? 4
+                         : felder_frei);
       auto const bewertung_vv = this->tiefensuche(spielraster, bot, bot2,
                                                   Bewegungsrichtung::VORWAERTS,
                                                   Bewegungsrichtung::VORWAERTS,
-                                                  1);
+                                                  0);
       auto const bewertung_vl = this->tiefensuche(spielraster, bot, bot2,
                                                   Bewegungsrichtung::VORWAERTS,
                                                   Bewegungsrichtung::LINKS,
-                                                  1);
+                                                  0);
       auto const bewertung_vr = this->tiefensuche(spielraster, bot, bot2,
                                                   Bewegungsrichtung::VORWAERTS,
                                                   Bewegungsrichtung::RECHTS,
-                                                  1);
+                                                  0);
       auto const bewertung_lv = this->tiefensuche(spielraster, bot, bot2,
                                                   Bewegungsrichtung::LINKS,
                                                   Bewegungsrichtung::VORWAERTS,
-                                                  1);
+                                                  0);
       auto const bewertung_ll = this->tiefensuche(spielraster, bot, bot2,
                                                   Bewegungsrichtung::LINKS,
                                                   Bewegungsrichtung::LINKS,
-                                                  1);
+                                                  0);
       auto const bewertung_lr = this->tiefensuche(spielraster, bot, bot2,
                                                   Bewegungsrichtung::LINKS,
                                                   Bewegungsrichtung::RECHTS,
-                                                  1);
+                                                  0);
       auto const bewertung_rv = this->tiefensuche(spielraster, bot, bot2,
                                                   Bewegungsrichtung::RECHTS,
                                                   Bewegungsrichtung::VORWAERTS,
-                                                  1);
+                                                  0);
       auto const bewertung_rl = this->tiefensuche(spielraster, bot, bot2,
                                                   Bewegungsrichtung::RECHTS,
                                                   Bewegungsrichtung::LINKS,
-                                                  1);
+                                                  0);
       auto const bewertung_rr = this->tiefensuche(spielraster, bot, bot2,
                                                   Bewegungsrichtung::RECHTS,
                                                   Bewegungsrichtung::RECHTS,
@@ -140,16 +156,12 @@ namespace TaktikNS {
       auto const bewertung_r = std::min(bewertung_rv, bewertung_rl, bewertung_rr);
 
 #if 1
-#if 0
-      cdebug << "vv: " << bewertung_vv << '\n';
-      cdebug << "vl: " << bewertung_vl << '\n';
-      cdebug << "vr: " << bewertung_vr << '\n';
-      cdebug << "lv: " << bewertung_lv << '\n';
-      cdebug << "ll: " << bewertung_ll << '\n';
-      cdebug << "lr: " << bewertung_lr << '\n';
-      cdebug << "rv: " << bewertung_rv << '\n';
-      cdebug << "rl: " << bewertung_rl << '\n';
-      cdebug << "rr: " << bewertung_rr << '\n';
+#if 1
+      cdebug << '\n';
+      cdebug << "v    " << bewertung_vv << "   \t" << bewertung_vl << "   \t" << bewertung_vr << "\n";
+      cdebug << "l    " << bewertung_lv << "   \t" << bewertung_ll << "   \t" << bewertung_lr << "\n";
+      cdebug << "r    " << bewertung_rv << "   \t" << bewertung_rl << "   \t" << bewertung_rr << "\n";
+
 #endif
 
       cdebug << bot << ": "
@@ -158,7 +170,19 @@ namespace TaktikNS {
         << "R = " << bewertung_r << "\n";
 #endif
 
-      auto zufall = 1 * rand();
+#ifdef ZEIT_MESSEN
+      auto const dauer = std::chrono::system_clock::now() - zeit_start;
+      static std::chrono::duration<double> dauer_max = (std::chrono::system_clock::now()
+                                                        - std::chrono::system_clock::now());
+      if (dauer_max < dauer) {
+        dauer_max = dauer;
+        cout << felder_frei << ": " << dauer_max.count() << " Sekunden\n";
+        if (felder_frei <= 10)
+        exit(0);
+      }
+#endif
+
+      auto zufall = 0 * rand();
       if (bewertung_v > bewertung_l) {
         if (bewertung_v > bewertung_r)
           return Bewegungsrichtung::VORWAERTS;
@@ -206,6 +230,7 @@ namespace TaktikNS {
    ** @param     bot2          die Nummer des zweiten Bots
    ** @param     r1            die Bewegungsrichtung des ersten Bots
    ** @param     r2            die Bewegungsrichtung des zweiten Bots
+   ** @param     tiefe         verbleibende Tiefe
    **
    ** @return    Wert der Bewegungen
    **
@@ -216,7 +241,7 @@ namespace TaktikNS {
                              int const bot1, int const bot2,
                              Bewegungsrichtung const r1,
                              Bewegungsrichtung const r2,
-                             int const tiefe) const
+                             int tiefe) const
     {
       BotPosition const bp1 = spielraster.position(bot1);
       BotPosition const bp2 = spielraster.position(bot2);
@@ -239,49 +264,49 @@ namespace TaktikNS {
       sr.bewege_bot(bot1, r1);
       sr.bewege_bot(bot2, r2);
 
-      if (tiefe == TIEFE_MAX)
+      if (tiefe >= this->tiefe_max)
         return Bewertung(Bewertung::Spielstand::OFFEN,
                          tiefe,
-                         this->bewertung(spielraster, bot1, bot2));
+                         this->bewertung(sr, bot1, bot2));
 
+      tiefe += 1;
       // rekursiver Aufruf (aufwendig)
       auto const bewertung_vv = this->tiefensuche(sr, bot1, bot2,
                                                   Bewegungsrichtung::VORWAERTS,
                                                   Bewegungsrichtung::VORWAERTS,
-                                                  tiefe + 1);
+                                                  tiefe);
       auto const bewertung_vl = this->tiefensuche(sr, bot1, bot2,
                                                   Bewegungsrichtung::VORWAERTS,
                                                   Bewegungsrichtung::LINKS,
-                                                  tiefe + 1);
+                                                  tiefe);
       auto const bewertung_vr = this->tiefensuche(sr, bot1, bot2,
                                                   Bewegungsrichtung::VORWAERTS,
                                                   Bewegungsrichtung::RECHTS,
-                                                  tiefe + 1);
+                                                  tiefe);
       auto const bewertung_lv = this->tiefensuche(sr, bot1, bot2,
                                                   Bewegungsrichtung::LINKS,
                                                   Bewegungsrichtung::VORWAERTS,
-                                                  tiefe + 1);
+                                                  tiefe);
       auto const bewertung_ll = this->tiefensuche(sr, bot1, bot2,
                                                   Bewegungsrichtung::LINKS,
                                                   Bewegungsrichtung::LINKS,
-                                                  tiefe + 1);
+                                                  tiefe);
       auto const bewertung_lr = this->tiefensuche(sr, bot1, bot2,
                                                   Bewegungsrichtung::LINKS,
                                                   Bewegungsrichtung::RECHTS,
-                                                  tiefe + 1);
+                                                  tiefe);
       auto const bewertung_rv = this->tiefensuche(sr, bot1, bot2,
                                                   Bewegungsrichtung::RECHTS,
                                                   Bewegungsrichtung::VORWAERTS,
-                                                  tiefe + 1);
+                                                  tiefe);
       auto const bewertung_rl = this->tiefensuche(sr, bot1, bot2,
                                                   Bewegungsrichtung::RECHTS,
                                                   Bewegungsrichtung::LINKS,
-                                                  tiefe + 1);
+                                                  tiefe);
       auto const bewertung_rr = this->tiefensuche(sr, bot1, bot2,
                                                   Bewegungsrichtung::RECHTS,
                                                   Bewegungsrichtung::RECHTS,
-                                                  tiefe + 1);
-
+                                                  tiefe);
 #if 0
       { // Variante A: Mein Gegner verhält sich möglichst schlecht für mich
         // (pessimistisch)
@@ -302,13 +327,8 @@ namespace TaktikNS {
         auto const bewertung_v = std::max(bewertung_vv, bewertung_lv, bewertung_rv);
         auto const bewertung_l = std::max(bewertung_vl, bewertung_ll, bewertung_rl);
         auto const bewertung_r = std::max(bewertung_vr, bewertung_lr, bewertung_rr);
-        auto const m = std::min(bewertung_v, bewertung_l, bewertung_r);
-        if (m == bewertung_v)
-          return std::max(bewertung_vv, bewertung_lv, bewertung_rv);
-        else if (m == bewertung_l)
-          return std::max(bewertung_vl, bewertung_ll, bewertung_rl);
-        else // if (m == bewertung_r)
-          return std::max(bewertung_vr, bewertung_lr, bewertung_rr);
+
+        return std::min(bewertung_v, bewertung_l, bewertung_r);
       } // Variante B (Optimist)
 #endif
 
@@ -326,7 +346,7 @@ namespace TaktikNS {
         // 2) die ungünstigen Richtungen für beide Spieler entfernen
         // 3) die verbleibenen Bewertungen irgendwie mitteln
 
-      return Bewertung(Bewertung::Spielstand::OFFEN, -1);
+        return Bewertung(Bewertung::Spielstand::OFFEN, -1);
       } // Variante C
 #endif
     } // Taktik::Ergebnis Tiefensuche::ergebnis(Spielraster const& spielraster, int const bot) const
