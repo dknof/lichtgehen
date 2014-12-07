@@ -6,9 +6,11 @@ Benötigt wird C++14, getestet ist mit dem Compiler gcc version 4.9.1 und clang+
 
 In der Datei src/Makefile.rules werden der Compiler sowie die Parameter für den Compiler gesetzt (sofern nicht bereits CXX und CXXFLAGS gesetzt sind).
 
-In der Datei src/Makefile.modules lassen sich zwei Module anschalten:
+In der Datei src/Makefile.modules lassen sich drei Module anschalten:
 * gtkmm: eine graphische Ausgabe (benötigt die Entwicklerpakete von gtkmm Version 3, debian: libgtkmm-3.0-dev)
-* human: bei der graphischen Ausgabe kann ein Bot gesteuert werden
-Sind beide Module aktiv, kann über den Spielserver gegen einen eigenen Bot getestet werden.
+* Eingabe: bei der graphischen Ausgabe kann ein Bot gesteuert werden
+* Eigenes Spiel: tronbot läuft ohne den Spielserver 
+* : bei der graphischen Ausgabe kann ein Bot gesteuert werden
+Sind die Module gtkmm und Eingabe aktiv, kann über den Spielserver gegen einen eigenen Bot getestet werden, sind alle drei Module aktiv, kann ohne den Spieleserver gegen den Bot gespielt werden.
 
 Es werden Raster von maximal 128*128 Größe unterstützt. Wird mehr benötigt, muss in src/spielraster/raster.h, Zeile 44 das „#define USE_BITSET“ auskommentiert werden.

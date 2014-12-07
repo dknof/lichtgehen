@@ -38,7 +38,7 @@
 
 #include "spielraster/spielraster.h"
 #include "bot/bot.h"
-#include "bot/human.h"
+#include "bot/mensch.h"
 #include "ui/ui.h"
 
 #include <string>
@@ -65,20 +65,23 @@ void main_eigenes_spiel(int& argc, char* argv[]);
 int
 main(int argc, char* argv[])
 {
-#if 0 // Wettbewerb
-#if 0 // debug
-cdebug_ = &cerr;
-#else // no debug
-cdebug_ = new std::ostringstream;
-#endif
-main_wettbewerb(argc, argv);
-#else
+  
+#ifdef USE_EIGENES_SPIEL
 #if 0 // debug
 cdebug_ = &cerr;
 #else // no debug
 cdebug_ = new std::ostringstream;
 #endif
 main_eigenes_spiel(argc, argv);
+
+#else // Wettbewerb
+#if 0 // debug
+cdebug_ = &cerr;
+#else // no debug
+cdebug_ = new std::ostringstream;
+#endif
+
+main_wettbewerb(argc, argv);
 #endif
 
 return 0;
@@ -125,14 +128,23 @@ main_eigenes_spiel(int& argc, char* argv[])
   // Bots erzeugen
   for (int i = 0; i < spielraster.bot_anz(); ++i) {
     auto bot = (
-#ifdef USE_HUMAN
+#ifdef USE_EINGABE
                 (i == 0)
 #else
                 false
 #endif
-                ? make_unique<Human>(spielraster, *ui)
+                ? make_unique<Mensch>(spielraster, *ui)
                 : make_unique<Bot>(spielraster));
     bot->setze_nummer(i);
+    switch (i) {
+    case 0:
+      bot->setze_strategie(Strategie::create({"in größten Raum", "zum größten Einflussgebiet"}));
+      break;
+    case 1:
+    default:
+      bot->setze_strategie(Strategie::create({"Tiefensuche"}));
+      break;
+    } // switch (i)
     //bot->setze_strategie(Strategie::create({"in größten Raum", "zum größten Einflussgebiet"}));
     //bot->setze_strategie(Strategie::create({"zum größten Einflussgebiet"}));
     //bot->setze_strategie(Strategie::create({"zum größten Einflussgebiet"}));
@@ -210,8 +222,8 @@ main_wettbewerb(int& argc, char* argv[])
   //auto ui = UI::create("cout", argc, argv);
   //auto ui = UI::create("cerr", argc, argv);
 #endif
-#ifdef USE_HUMAN
-  Human bot(spielraster, *ui);
+#ifdef USE_EINGABE
+  Mensch bot(spielraster, *ui);
 #else
   Bot bot(spielraster);
 #endif

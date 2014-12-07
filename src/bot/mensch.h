@@ -34,8 +34,8 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef HUMAN_H
-#define HUMAN_H
+#ifndef MENSCH_H
+#define MENSCH_H
 
 #include "constants.h"
 #include "bot.h"
@@ -44,10 +44,10 @@ class UI;
 
 /** Ein Mensch
  **/
-class Human : public Bot {
+class Mensch : public Bot {
   public:
     // Konstruktor
-    Human(Spielraster const& spielraster, UI& ui);
+    Mensch(Spielraster const& spielraster, UI& ui);
 
     // die Bewegung
     Bewegungsrichtung bewegung();
@@ -55,6 +55,6 @@ class Human : public Bot {
   private:
     // UI
     UI& ui;
-}; // class Human : public Bot
+}; // class Mensch : public Bot
 
-#endif // #ifndef HUMAN_H
+#endif // #ifndef MENSCH_H

@@ -6,8 +6,11 @@ DEPGEN_FLAGS ?= -MMD -MP -MT $@ -MF $(@:.o=.d)
 ifeq ($(USE_UI_GTKMM), true)
   CPPFLAGS += -DUSE_UI_GTKMM
 endif
-ifeq ($(USE_HUMAN), true)
-  CPPFLAGS += -DUSE_HUMAN
+ifeq ($(USE_EINGABE), true)
+  CPPFLAGS += -DUSE_EINGABE
+endif
+ifeq ($(USE_EIGENES_SPIEL), true)
+  CPPFLAGS += -DUSE_EIGENES_SPIEL
 endif
 
 .PHONY: all

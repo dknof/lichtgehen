@@ -40,7 +40,7 @@ SPIELRASTER="../Spielraster/Ring.txt"
 
 # Eigenes Spiel
 
-if grep -q "#if 0 // Wettbewerb" main.cpp; then
+if grep -q "USE_EIGENES_SPIEL *= *true" Makefile.modules; then
   time ./tronbot <"$SPIELRASTER"
 else
   # Spiel über den Server

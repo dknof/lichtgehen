@@ -1,2 +1,8 @@
+# Graphische Ausgabe des Spielverlaufs
 USE_UI_GTKMM = true
-USE_HUMAN = false
+
+# Eingabe, nur mit USE_UI_GTKMM verwenden
+USE_EINGABE = false
+
+# Spiel, ohne einen separaten Server.
+USE_EIGENES_SPIEL = true

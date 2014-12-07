@@ -34,7 +34,7 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#include "human.h"
+#include "mensch.h"
 
 #include "../ui/ui.h"
 
@@ -48,7 +48,7 @@
  **
  ** @version   2014-11-21
  **/
-Human::Human(Spielraster const& spielraster, UI& ui) :
+Mensch::Mensch(Spielraster const& spielraster, UI& ui) :
   Bot(spielraster),
   ui(ui)
 { }
@@ -63,7 +63,7 @@ Human::Human(Spielraster const& spielraster, UI& ui) :
  ** @version   2014-11-21
  **/
 Bewegungsrichtung
-Human::bewegung()
+Mensch::bewegung()
 {
   auto const bp = this->spielraster_.position(this->nummer()); // Position
   auto const bw = (this->ui.naechste_richtung() - bp.richtung()); // Bewegung
@@ -73,4 +73,4 @@ Human::bewegung()
   if (this->spielraster_(bp + bw))
     return this->bewegung();
   return bw;
-} // Bewegungsrichtung Human::bewegung()
+} // Bewegungsrichtung Mensch::bewegung()
