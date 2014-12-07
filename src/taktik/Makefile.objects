@@ -2,6 +2,7 @@ OBJECTS = taktik.o \
 	  tot.o \
 	  einzigerweg.o \
 	  richtung.o \
+	  gegner_verfolgen.o \
 	  raum_ausfuellen.o \
 	  raum_ausfuellen_tiefensuche.o \
 	  raum_ausfuellen_tiefensuche_bis_ende.o \

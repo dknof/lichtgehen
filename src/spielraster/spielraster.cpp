@@ -386,7 +386,7 @@ Spielraster::rauminfo(int const bot) const
       continue;
     if (!this->bot_im_spiel(b))
       continue;
-    int const n = this->kuerzeste_entfernung(this->position(bot),
+    auto const n = this->kuerzeste_entfernung(this->position(bot),
                                              this->position(b));
     if (n >= 0) {
       rauminfo.bot_anz += 1;
@@ -421,7 +421,7 @@ Spielraster::rauminfo(int const bot,
   for (int b = 0; b < this->bot_anz(); ++b) {
     if (b == bot)
       continue;
-    int const n = this->kuerzeste_entfernung(this->position(bot),
+    auto const n = this->kuerzeste_entfernung(this->position(bot),
                                              this->position(b));
     if (n >= 0) {
       rauminfo.bot_anz += 1;

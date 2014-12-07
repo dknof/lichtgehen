@@ -47,7 +47,7 @@ using std::string;
 #include <algorithm>
 #include <unistd.h>
 
-std::ostream* cdebug_;
+std::ostream* cdebug_ = new std::ostringstream;
 
 void main_wettbewerb(int& argc, char* argv[]);
 void main_eigenes_spiel(int& argc, char* argv[]);
@@ -65,22 +65,12 @@ void main_eigenes_spiel(int& argc, char* argv[]);
 int
 main(int argc, char* argv[])
 {
-  
+//cdebug_ = &cerr;
+
 #ifdef USE_EIGENES_SPIEL
-#if 0 // debug
-cdebug_ = &cerr;
-#else // no debug
-cdebug_ = new std::ostringstream;
-#endif
 main_eigenes_spiel(argc, argv);
-
 #else // Wettbewerb
-#if 0 // debug
-cdebug_ = &cerr;
-#else // no debug
 cdebug_ = new std::ostringstream;
-#endif
-
 main_wettbewerb(argc, argv);
 #endif
 
@@ -138,18 +128,19 @@ main_eigenes_spiel(int& argc, char* argv[])
     bot->setze_nummer(i);
     switch (i) {
     case 0:
-      bot->setze_strategie(Strategie::create({"in größten Raum", "zum größten Einflussgebiet"}));
+      bot->setze_strategie(Strategie::create({"Tiefensuche",
+                                             "in größten Raum",
+                                             "zum größten Einflussgebiet",
+                                             "Gegner verfolgen",
+                                             "vorwärts 0.7",
+                                             "links 0.7",
+                                             }));
       break;
     case 1:
     default:
       bot->setze_strategie(Strategie::create({"Tiefensuche"}));
       break;
     } // switch (i)
-    //bot->setze_strategie(Strategie::create({"in größten Raum", "zum größten Einflussgebiet"}));
-    //bot->setze_strategie(Strategie::create({"zum größten Einflussgebiet"}));
-    //bot->setze_strategie(Strategie::create({"zum größten Einflussgebiet"}));
-    bot->setze_strategie(Strategie::create({"Tiefensuche"}));
-    //bot->setze_strategie(Strategie::create({"Raum ausfüllen (Tiefensuche)"}));
     bots.push_back(std::move(bot));
   }
 
@@ -241,7 +232,7 @@ main_wettbewerb(int& argc, char* argv[])
 
     if (zeile.compare( 0, 15, "GAMEBOARDSTART ") == 0) {
       // GAMEBOARDSTART N,M - Es wird ein neues Spielbrett mit X Spalten und Y Zeilen übertragen. Endet mit GAMEBOARDEND
-      string text = zeile + "\n";
+      auto text = zeile + "\n";
       do {
         std::getline(cin, zeile);
         text += zeile + "\n";

@@ -155,7 +155,7 @@ namespace TaktikNS {
       auto const bewertung_l = std::min(bewertung_lv, bewertung_ll, bewertung_lr);
       auto const bewertung_r = std::min(bewertung_rv, bewertung_rl, bewertung_rr);
 
-#if 1
+#if 0
 #if 1
       cdebug << '\n';
       cdebug << "v    " << bewertung_vv << "   \t" << bewertung_vl << "   \t" << bewertung_vr << "\n";
@@ -182,7 +182,7 @@ namespace TaktikNS {
       }
 #endif
 
-      auto zufall = 0 * rand();
+      auto zufall = 1 * rand();
       if (bewertung_v > bewertung_l) {
         if (bewertung_v > bewertung_r)
           return Bewegungsrichtung::VORWAERTS;

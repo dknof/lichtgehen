@@ -77,6 +77,8 @@ using Felder = vector<bool>;
   int breite() const;
   // Länge des Rasteres
   int laenge() const;
+  // Größe des Rasters
+  int groesse() const;
 
   // Das Raster
   bool operator()(int x, int y) const;

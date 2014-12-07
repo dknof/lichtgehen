@@ -40,6 +40,7 @@
 #include "tot.h"
 #include "einzigerweg.h"
 #include "richtung.h"
+#include "gegner_verfolgen.h"
 #include "groesster_raum.h"
 #include "groesstes_einflussgebiet.h"
 
@@ -92,7 +93,7 @@ Taktik::create(string const& name)
   else if (name == "Abstand wahren")
     return nullptr; // Gege weg vom Gegner
   else if (name == "Gegner verfolgen")
-    return nullptr; // Gehe hin zum Gegner
+    return make_unique<GegnerVerfolgen>();
   else if (name == "Abhauen")
     return nullptr; // Gehe von allen Gegnern weg
   else if (name == "Raum ausfüllen")
@@ -105,8 +106,6 @@ Taktik::create(string const& name)
     return make_unique<Tiefensuche>();
   else if (name == "Raum abzweigen")
     return nullptr; // großen Raum abzweigen
-  else if (name == "Raum abzweigen")
-    return nullptr; // Einflussgebiet maximieren
 
   cerr << "Taktik '" << name << "' unbekannt\n";
   return nullptr;

@@ -69,7 +69,7 @@ Raster::Raster(int const breite, int const laenge) :
 #endif
 {
 #ifdef USE_BITSET
-  assert(breite * laenge <= RASTER_MAX_GROESSE);
+  assert(this->groesse() <= RASTER_MAX_GROESSE);
 #endif
 }
 
@@ -126,7 +126,7 @@ Raster::einlesen(istream& istr)
   isstr.get();
   isstr >> laenge_;
 #ifdef USE_BITSET
-  assert(this->breite() * this->laenge() <= RASTER_MAX_GROESSE);
+  assert(this->groesse() <= RASTER_MAX_GROESSE);
 #else
   this->felder_ = vector<bool>(this->breite() * this->laenge());
 #endif
@@ -218,6 +218,21 @@ Raster::laenge() const
 {
   return this->laenge_;
 } // int Raster::laenge() const
+
+/**
+ ** -> Rückgabe
+ ** 
+ ** @param     -
+ **
+ ** @return    die Größe des Rasters
+ **
+ ** @version   2014-12-08
+ **/
+int
+Raster::groesse() const
+{
+  return (this->breite() * this->laenge());
+} // int Raster::groesse() const
 
 /**
  ** -> Rückgabe
@@ -367,7 +382,7 @@ Raster::felder_belegt() const
 #ifdef USE_BITSET
   Felder f;
   f.set();
-  f << (RASTER_MAX_GROESSE - this->breite() * this->laenge());
+  f << (RASTER_MAX_GROESSE - this->groesse());
   return static_cast<int>((this->felder_ & f).count());
 #else
   int n = 0;
@@ -442,7 +457,7 @@ Raster::freier_nachbar(Position const& position) const
  **/
 Raster
 Raster::raum(Position const& position,
-                    bool const position_ueberpruefen) const
+             bool const position_ueberpruefen) const
 {
   Raster raum(this->breite(), this->laenge()); // Raster, das gefüllt wird
   if (position_ueberpruefen && (*this)(position))
@@ -457,7 +472,7 @@ Raster::raum(Position const& position,
   while (!positionen.empty()) {
     auto p = begin(positionen);
     for (auto r : ::richtungen) {
-      Position const p2 = *p + r;
+      auto const p2 = *p + r;
       if (!raster(p2)) {
         raster.belege(p2);
         raum.belege(p2);
@@ -469,7 +484,7 @@ Raster::raum(Position const& position,
   } // while (!positionen.empty())
 
   return raster;
-}  // Raster Raster::raum(Position const& position, bool const position_ueberpruelfen = true) const
+}  // Raster Raster::raum(Position const& position, bool const position_ueberpruefen = true) const
 
 /**
  ** -> Rückgabe
@@ -499,7 +514,7 @@ Raster::raumgroesse(Position const& position,
   while (!positionen.empty()) {
     auto p = begin(positionen);
     for (auto r : ::richtungen) {
-      Position const p2 = *p + r;
+      auto const p2 = *p + r;
       if (!raster(p2)) {
         raster.belege(p2);
         n += 1;
@@ -510,7 +525,7 @@ Raster::raumgroesse(Position const& position,
   } // while (!positionen.empty())
 
   return n;
-}  // int Raster::raumgroesse(Position const& position, bool const position_ueberpruelfen = true) const
+}  // int Raster::raumgroesse(Position const& position, bool const position_ueberpruefen = true) const
 
 /**
  ** -> Rückgabe
@@ -555,7 +570,7 @@ Raster::raumgroesse_erreichbar(Position const& position,
         n += 1;
       }
       for (auto r : ::richtungen) {
-        Position const p2 = p + r;
+        auto const p2 = p + r;
         if (raster(p2))
           continue;
 
@@ -644,7 +659,7 @@ Raster::kuerzeste_entfernung(Position const& pa, Position const& pb) const
     positionenb.clear();
     for (auto p : positionen) {
       for (auto r : ::richtungen) {
-        Position const p2 = p + r;
+        auto const p2 = p + r;
         if (p2 == pb)
           return n;
         if (!raster(p2)) {

@@ -77,9 +77,11 @@ namespace TaktikNS {
       auto const er
         = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::RECHTS, TIEFE_MAX),
                     spielraster.nachbarn_frei(bp + Bewegungsrichtung::RECHTS));
+#if 0
       CLOG << Bewegungsrichtung::VORWAERTS << ": " << ev << endl;
       CLOG << Bewegungsrichtung::LINKS     << ": " << el << endl;
       CLOG << Bewegungsrichtung::RECHTS    << ": " << er << endl;
+#endif
 
 #if 0
       // bei viel freier Fläche: möglichst am Rand halten
