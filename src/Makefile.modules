@@ -6,3 +6,6 @@ USE_EINGABE = false
 
 # Spiel, ohne einen separaten Server.
 USE_EIGENES_SPIEL = true
+
+# Mit Threads arbeiten (9 Stück)
+USE_THREADS = true

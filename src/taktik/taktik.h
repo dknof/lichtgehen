@@ -59,8 +59,8 @@ class Taktik {
       explicit operator bool()
       { return this->greift; }
 
-      bool const greift;
-      Bewegungsrichtung const richtung;
+      bool greift;
+      Bewegungsrichtung richtung;
     }; // struct Ergebnis
 
   public:

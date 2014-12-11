@@ -74,6 +74,9 @@ inline X max(X const& a, X const& b, X const& c, X const& d)
 { return std::max(std::max(a, b), std::max(c, d)); }
 }
 
+// Zeitbeschränkung in Sekunden
+#define ZEITBESCHRAENKUNG 1
+
 
 // creates a segmentation fault
 #define SEGFAULT if (true) { cerr << "Created segmentation fault:\n" \

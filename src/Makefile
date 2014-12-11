@@ -7,6 +7,9 @@ LIBS_ALL =
 ifeq ($(USE_UI_GTKMM), true)
   LIBS_ALL += `pkg-config gtkmm-3.0 --libs`
 endif
+ifeq ($(USE_THREADS), true)
+  LIBS_ALL += -lpthread
+endif
 
 include Makefile.objects
 

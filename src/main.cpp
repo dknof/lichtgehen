@@ -49,6 +49,12 @@ using std::string;
 
 std::ostream* cdebug_ = new std::ostringstream;
 
+#define ZEIT_MESSEN
+
+#ifdef ZEIT_MESSEN
+#include <chrono>
+#endif
+
 void main_wettbewerb(int& argc, char* argv[]);
 void main_eigenes_spiel(int& argc, char* argv[]);
 
@@ -65,7 +71,7 @@ void main_eigenes_spiel(int& argc, char* argv[]);
 int
 main(int argc, char* argv[])
 {
-//cdebug_ = &cerr;
+cdebug_ = &cerr;
 
 #ifdef USE_EIGENES_SPIEL
 main_eigenes_spiel(argc, argv);
@@ -158,7 +164,18 @@ main_eigenes_spiel(int& argc, char* argv[])
     for (int b = 0; b < spielraster.bot_anz(); ++b) {
       if (spielraster.position(b)) {
         //cdebug << b << " erreichbare Raumgröße: " << spielraster.raumgroesse_erreichbar(spielraster.position(b)) << '\n';
+#ifdef ZEIT_MESSEN
+      auto const zeit_start = std::chrono::system_clock::now();
+#endif
         naechster_schritt[b] = bots[b]->bewegung();
+#ifdef ZEIT_MESSEN
+      std::chrono::duration<double> const dauer
+        = std::chrono::system_clock::now() - zeit_start;
+      if (dauer.count() > 0.3) {
+        cout << b << ": " << dauer.count() << " Sekunden\n";
+      }
+#endif
+
       }
     }
     //if (runde == 21)

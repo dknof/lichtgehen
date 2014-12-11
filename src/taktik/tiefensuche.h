@@ -67,18 +67,23 @@ class Tiefensuche : public Taktik {
 
     // gibt das Ergebnis der Taktik zurück (ob sie greift und die Richtung)
     Ergebnis ergebnis(Spielraster const& spielraster,
-                      int bot) override;
+                      int bot);
 
-  protected:
+  private:
     // bewertet das Spielfeld
     Bewertung::Wert bewertung(Spielraster const& spielraster,
                               int bot1, int bot2) const;
 
   private:
     // bewertet rekursiv die Schritte
-    Bewertung tiefensuche(Spielraster const& spielraster, int bot1, int bot2,
+    Ergebnis tiefensuche(Spielraster const& spielraster,
+                      int bot, int bot2) const;
+    Ergebnis tiefensuche_thread(Spielraster const& spielraster,
+                      int bot, int bot2) const;
+    Bewertung tiefensuche_iteration(Spielraster const& spielraster, int bot1, int bot2,
                           Bewegungsrichtung r1, Bewegungsrichtung r2,
                           int tiefe) const;
+    Ergebnis a(Spielraster const& s, int i, int j, Bewegungsrichtung r1) const;
 
   protected:
     // maximale Tiefe

@@ -51,4 +51,4 @@ GAMEBOARDSTART 50,50
 ..................................................
 GAMEBOARDEND
 POS 1 1,11 S
-POS 2 1,40 N
+POS 2 30,40 N

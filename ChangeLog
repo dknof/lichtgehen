@@ -1,3 +1,7 @@
+2014-12-11
+	- Bei der Tiefensuche wird die Tiefe so lange erhöht, bis das Zeitlimit erreicht ist
+	- Multithreadunterstützung
+
 2014-12-06
 	- Tiefensuche erweitert
 
