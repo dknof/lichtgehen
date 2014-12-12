@@ -124,7 +124,7 @@ namespace TaktikNS {
 #endif
         dauer = std::chrono::system_clock::now() - zeit_start;
         this->tiefe_max += 1;
-      } while (dauer.count() < 0.1 * ZEITBESCHRAENKUNG / 2);
+      } while (dauer.count() < 0.1 * 0.9 * ZEITBESCHRAENKUNG);
 #else
       ergebnis = tiefensuche(spielraster, bot, bot2);
 #endif

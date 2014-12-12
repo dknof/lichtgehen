@@ -159,7 +159,7 @@ namespace StrategieNS {
         //cdebug << "Teste Taktik " << *t << '\n';
         auto ergebnis = t->ergebnis(spielraster, bot_nummer);
         if (ergebnis) {
-          cdebug << bot_nummer << ": " << ergebnis.richtung << ": " << *t << '\n';
+          //cdebug << bot_nummer << ": " << ergebnis.richtung << ": " << *t << '\n';
           return ergebnis.richtung;
         }
       }

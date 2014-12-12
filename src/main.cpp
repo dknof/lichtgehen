@@ -171,7 +171,7 @@ main_eigenes_spiel(int& argc, char* argv[])
 #ifdef ZEIT_MESSEN
       std::chrono::duration<double> const dauer
         = std::chrono::system_clock::now() - zeit_start;
-      if (dauer.count() > 0.3) {
+      if (dauer.count() > 0.9 * ZEITBESCHRAENKUNG) {
         cout << b << ": " << dauer.count() << " Sekunden\n";
       }
 #endif
@@ -235,11 +235,13 @@ main_wettbewerb(int& argc, char* argv[])
 #else
   Bot bot(spielraster);
 #endif
-  //bot.setze_strategie(Strategie::create("Vorwärts"));
-  //bot.setze_strategie(Strategie::create("Linksherum"));
-  //bot.setze_strategie(Strategie::create({"vorwärts 0.1", "links 0.5"}));
-  bot.setze_strategie(Strategie::create({"in größten Raum", "Raum ausfüllen"}));
-  //bot.setze_strategie(Strategie::create({"in größten Raum"}));
+  bot.setze_strategie(Strategie::create({"Tiefensuche",
+                                        "in größten Raum",
+                                        "zum größten Einflussgebiet",
+                                        "Gegner verfolgen",
+                                        "vorwärts 0.7",
+                                        "links 0.7",
+                                        }));
 
   string zeile;
   while (cin.good()) {
@@ -261,13 +263,6 @@ main_wettbewerb(int& argc, char* argv[])
     } else if (zeile.compare( 0, 4, "SET ") == 0) {
       // SET P - Eigene Spielernummer festlegen
       bot.setze_nummer(std::stoi(string(zeile, 4)) - 1);
-
-#if 0
-      if (zeile == "SET 1")
-        bot.setze_strategie(Strategie::create("Vorwärts"));
-      else if (zeile == "SET 2")
-        bot.setze_strategie(Strategie::create("Linksherum"));
-#endif
 
     } else if (zeile.compare( 0, 4, "POS ") == 0) {
       // POS P N,M DIR - Position N,M des Bots P auf dem Spielbrett festlegen, wobei der Bot in Richtung DIR = (NORTH|EAST|SOUTH|WEST) schaut.
