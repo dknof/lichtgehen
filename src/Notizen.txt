@@ -1,7 +1,0 @@
-* Raum ausfüllen: Sackgassen erkennen
-* Tiefensuche: genauere Bewertung: wie lange bis zum Ergebnis? länger ist besser (der Gegner kann häufiger Fehler machen)
-* Spielraster::Anzahl erreichbare Felder: es kann nur eine Sackgasse betreten werden
-* Taktik größtes Einflussgebiet: auch generische Bewegung berücksichtigen
-
-Spielfelder
-* Säulenwald
