@@ -37,6 +37,7 @@
 #include "tiefensuche.h"
 #include <cstdlib>
 #include <chrono>
+#include <algorithm>
 
 #ifdef USE_THREADS
 #include <future>
@@ -208,63 +209,8 @@ namespace TaktikNS {
                                                           1)
                                           });
 #endif // #ifdef !USE_THREADS
+      cdebug << bot << ": " << ergebnisse;
       return ergebnisse.beste_richtung();
-
-#if 0
-      // Minimiere den Verlust
-      auto const bewertung_v = std::min(bewertung_vv, bewertung_vl, bewertung_vr);
-      auto const bewertung_l = std::min(bewertung_lv, bewertung_ll, bewertung_lr);
-      auto const bewertung_r = std::min(bewertung_rv, bewertung_rl, bewertung_rr);
-
-#if 1
-#if 1
-      cdebug << '\n';
-      cdebug << "v    " << bewertung_vv << "   \t" << bewertung_vl << "   \t" << bewertung_vr << "\n";
-      cdebug << "l    " << bewertung_lv << "   \t" << bewertung_ll << "   \t" << bewertung_lr << "\n";
-      cdebug << "r    " << bewertung_rv << "   \t" << bewertung_rl << "   \t" << bewertung_rr << "\n";
-
-#endif
-
-      cdebug << bot << ": "
-        << "V = " << bewertung_v << ", "
-        << "L = " << bewertung_l << ", "
-        << "R = " << bewertung_r << "\n";
-#endif
-
-      auto zufall = 1 * rand();
-      if (bewertung_v > bewertung_l) {
-        if (bewertung_v > bewertung_r)
-          return Bewegungsrichtung::VORWAERTS;
-        else if (bewertung_v < bewertung_r)
-          return Bewegungsrichtung::RECHTS;
-        else // (bewertung_v == bewertung_r)
-          return ((zufall <= RAND_MAX / 2)
-                  ? Bewegungsrichtung::VORWAERTS
-                  : Bewegungsrichtung::RECHTS);
-      } else if (bewertung_v < bewertung_l) {
-        if (bewertung_l > bewertung_r)
-          return Bewegungsrichtung::LINKS;
-        else if (bewertung_l < bewertung_r)
-          return Bewegungsrichtung::RECHTS;
-        else // (bewertung_l == bewertung_r)
-          return ((zufall <= RAND_MAX / 2)
-                  ? Bewegungsrichtung::LINKS
-                  : Bewegungsrichtung::RECHTS);
-      } else { // (bewertung_v == bewertung_l)
-        if (bewertung_v < bewertung_r)
-          return Bewegungsrichtung::RECHTS;
-        else if (bewertung_v > bewertung_r)
-          return ((zufall <= RAND_MAX / 2)
-                  ? Bewegungsrichtung::VORWAERTS
-                  : Bewegungsrichtung::LINKS);
-        else // (bewertung_v == bewertung_l == bewertung_r)
-          return ((zufall <= RAND_MAX / 3)
-                  ? Bewegungsrichtung::VORWAERTS
-                  : (zufall <= RAND_MAX / 3 * 2)
-                  ? Bewegungsrichtung::LINKS
-                  : Bewegungsrichtung::RECHTS);
-      }
-#endif
 
       return false;
     } // Taktik::Ergebnis Tiefensuche::tiefensuche(Spielraster const& spielraster, int const bot, int const bot2) const
@@ -598,6 +544,70 @@ namespace TaktikNS {
   Bewegungsrichtung 
     Tiefensuche::RichtungenErgebnis::beste_richtung() const
     {
+      // Minimiere den Verlust
+      auto const bewertung_v = std::min(this->bewertung[0], this->bewertung[1], this->bewertung[2]);
+      auto const bewertung_l = std::min(this->bewertung[3], this->bewertung[4], this->bewertung[5]);
+      auto const bewertung_r = std::min(this->bewertung[6], this->bewertung[7], this->bewertung[8]);
+
+      using Y = std::pair<Bewertung, int>;
+      using X = std::pair<Bewegungsrichtung, Y>;
+      array<X, 3>
+        ergebnisse({ X(Bewegungsrichtung::VORWAERTS, Y(bewertung_v, this->nachbarn_frei[0])),
+         X(Bewegungsrichtung::LINKS,  Y(bewertung_l, this->nachbarn_frei[1])),
+         X(Bewegungsrichtung::RECHTS, Y(bewertung_r, this->nachbarn_frei[2])) });
+
+      // Bewegungsrichtung ignorieren
+      // Bewertung kleiner ist schlechter
+      // int (nachbarn_anz) kleiner ist besser
+      return std::max_element(begin(ergebnisse), end(ergebnisse),
+                              [=](auto const& a, auto const& b)
+                              {
+                              if (a.second.first < b.second.first)
+                              return true;
+                              else if (b.second.first < a.second.first)
+                              return false;
+                              else if (a.second.second > b.second.second)
+                              return true;
+                              else
+                              return false;
+                              }
+                             )->first;
+#if 0
+      auto zufall = 1 * rand();
+      if (bewertung_v > bewertung_l) {
+        if (bewertung_v > bewertung_r)
+          return Bewegungsrichtung::VORWAERTS;
+        else if (bewertung_v < bewertung_r)
+          return Bewegungsrichtung::RECHTS;
+        else // (bewertung_v == bewertung_r)
+          return ((zufall <= RAND_MAX / 2)
+                  ? Bewegungsrichtung::VORWAERTS
+                  : Bewegungsrichtung::RECHTS);
+      } else if (bewertung_v < bewertung_l) {
+        if (bewertung_l > bewertung_r)
+          return Bewegungsrichtung::LINKS;
+        else if (bewertung_l < bewertung_r)
+          return Bewegungsrichtung::RECHTS;
+        else // (bewertung_l == bewertung_r)
+          return ((zufall <= RAND_MAX / 2)
+                  ? Bewegungsrichtung::LINKS
+                  : Bewegungsrichtung::RECHTS);
+      } else { // (bewertung_v == bewertung_l)
+        if (bewertung_v < bewertung_r)
+          return Bewegungsrichtung::RECHTS;
+        else if (bewertung_v > bewertung_r)
+          return ((zufall <= RAND_MAX / 2)
+                  ? Bewegungsrichtung::VORWAERTS
+                  : Bewegungsrichtung::LINKS);
+        else // (bewertung_v == bewertung_l == bewertung_r)
+          return ((zufall <= RAND_MAX / 3)
+                  ? Bewegungsrichtung::VORWAERTS
+                  : (zufall <= RAND_MAX / 3 * 2)
+                  ? Bewegungsrichtung::LINKS
+                  : Bewegungsrichtung::RECHTS);
+      }
+#endif
+
       return Bewegungsrichtung::VORWAERTS;
     } // Bewegungsrichtung Tiefensuche::RichtungenErgebnis::beste_richtung() const
 
