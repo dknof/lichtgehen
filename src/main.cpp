@@ -134,6 +134,7 @@ main_eigenes_spiel(int& argc, char* argv[])
     bot->setze_nummer(i);
     switch (i) {
     case 0:
+    case 1:
       bot->setze_strategie(Strategie::create({"Tiefensuche",
                                              "in größten Raum",
                                              "zum größten Einflussgebiet",
@@ -142,9 +143,9 @@ main_eigenes_spiel(int& argc, char* argv[])
                                              "links 0.7",
                                              }));
       break;
-    case 1:
     default:
-      bot->setze_strategie(Strategie::create({"Tiefensuche"}));
+      //bot->setze_strategie(Strategie::create({"Tiefensuche"}));
+      bot->setze_strategie(Strategie::create({"vorwärts"}));
       break;
     } // switch (i)
     bots.push_back(std::move(bot));
@@ -201,6 +202,7 @@ main_eigenes_spiel(int& argc, char* argv[])
     if (spielraster.bots_im_spiel() == 1)
       break;
 #endif
+    break;
   } // while (spielraster.bots_im_spiel())
 
   ui->spiel_endet();

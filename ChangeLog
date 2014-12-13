@@ -1,3 +1,6 @@
+2014-12-13
+	- Fehler in der Bewertung der Tiefensuche korrigiert
+
 2014-12-12
 	- Makefile.rules für gcc 4.8.3 angepasst (-std=c++1y statt -std=c++14)
 	- std::make_unique von der gcc-Implementierung kopiert

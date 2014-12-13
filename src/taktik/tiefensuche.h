@@ -77,12 +77,12 @@ class Tiefensuche : public Taktik {
   private:
     // bewertet rekursiv die Schritte
     Ergebnis tiefensuche(Spielraster const& spielraster,
-                      int bot, int bot2) const;
+                         int bot, int bot2) const;
     Ergebnis tiefensuche_thread(Spielraster const& spielraster,
-                      int bot, int bot2) const;
-    Bewertung tiefensuche_iteration(Spielraster const& spielraster, int bot1, int bot2,
-                          Bewegungsrichtung r1, Bewegungsrichtung r2,
-                          int tiefe) const;
+                                int bot, int bot2) const;
+    Bewertung iteration(Spielraster const& spielraster, int bot1, int bot2,
+                        Bewegungsrichtung r1, Bewegungsrichtung r2,
+                        int tiefe) const;
     Ergebnis a(Spielraster const& s, int i, int j, Bewegungsrichtung r1) const;
 
   protected:

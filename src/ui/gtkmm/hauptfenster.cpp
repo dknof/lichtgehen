@@ -40,6 +40,7 @@
 #include "../../spielraster/spielraster.h"
 
 #include <gtkmm.h>
+#include <fstream>
 
 namespace UI_Gtkmm {
   auto const bot_colors
@@ -519,9 +520,13 @@ namespace UI_Gtkmm {
           this->close();
           return true;
         case GDK_KEY_r:
-          // Spielraster ausgeben
-          //
+          // Spielraster ausgeben und speichern
           this->ui->spielraster->historie(this->historie->get_value() - 1).ausgeben(cerr);
+          {
+            std::ofstream ostr("Test.txt");
+            if (ostr.good())
+              this->ui->spielraster->historie(this->historie->get_value() - 1).ausgeben(ostr);
+          }
           return true;
         case GDK_KEY_R:
           // Raster ausgeben

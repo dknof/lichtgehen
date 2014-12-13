@@ -1,14 +1,14 @@
 # Graphische Ausgabe des Spielverlaufs
-USE_UI_GTKMM = false
+USE_UI_GTKMM = true
 
 # Eingabe, nur mit USE_UI_GTKMM verwenden
 USE_EINGABE = false
 
 # Spiel, ohne einen separaten Server.
-USE_EIGENES_SPIEL = false
+USE_EIGENES_SPIEL = true
 
 # Mit Threads arbeiten (9 Stück)
-USE_THREADS = true
+USE_THREADS = false
 
 # Zeitbeschränkung für die Tiefensuche (in Sekunden)
-CPPFLAGS += -DZEITBESCHRAENKUNG=0.5
+CPPFLAGS += -DZEITBESCHRAENKUNG=0
