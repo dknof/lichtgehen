@@ -59,6 +59,15 @@ class Tiefensuche : public Taktik {
       Bewertung(Spielstand const s, int const t) : spielstand(s), tiefe(t) {}
       Bewertung(Spielstand const s, int const t, double const w) : spielstand(s), tiefe(t), wert(w) {}
     }; // struct Bewertung
+
+    // Ergebnisse der Rekursion
+    struct RichtungenErgebnis {
+      using Ergebnisse = std::array<Bewertung, 3*3>;
+      RichtungenErgebnis(Spielraster const& spielraster, int bot, Ergebnisse const& bewertung);
+      Bewegungsrichtung beste_richtung() const;
+      Ergebnisse const bewertung;
+      std::array<int, 3> const nachbarn_frei;
+    }; // struct RichtungenErgebnis
   public:
     // Konstruktor
     Tiefensuche();
@@ -78,12 +87,9 @@ class Tiefensuche : public Taktik {
     // bewertet rekursiv die Schritte
     Ergebnis tiefensuche(Spielraster const& spielraster,
                          int bot, int bot2) const;
-    Ergebnis tiefensuche_thread(Spielraster const& spielraster,
-                                int bot, int bot2) const;
     Bewertung iteration(Spielraster const& spielraster, int bot1, int bot2,
                         Bewegungsrichtung r1, Bewegungsrichtung r2,
                         int tiefe) const;
-    Ergebnis a(Spielraster const& s, int i, int j, Bewegungsrichtung r1) const;
 
   protected:
     // maximale Tiefe
@@ -101,6 +107,8 @@ bool operator==(Tiefensuche::Bewertung const& lhs,
                 Tiefensuche::Bewertung const& rhs);
 // Ausgabe der Bewertung
 ostream& operator<<(ostream& ostr, Tiefensuche::Bewertung const& b);
+// Ausgabe der Ergebnisse der Rekursion
+ostream& operator<<(ostream& ostr, Tiefensuche::RichtungenErgebnis const& e);
 
 } // namespace TaktikNS
 

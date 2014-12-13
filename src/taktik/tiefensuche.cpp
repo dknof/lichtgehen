@@ -39,7 +39,6 @@
 #include <chrono>
 
 #ifdef USE_THREADS
-#include <array>
 #include <future>
 #endif
 
@@ -117,11 +116,7 @@ namespace TaktikNS {
       auto dauer = std::chrono::duration<double>{zeit_start - zeit_start};
       this->tiefe_max = 0;
       do {
-#ifdef USE_THREADS
-        ergebnis = this->tiefensuche_thread(spielraster, bot, bot2);
-#else
         ergebnis = this->tiefensuche(spielraster, bot, bot2);
-#endif
         dauer = std::chrono::system_clock::now() - zeit_start;
         this->tiefe_max += 1;
       } while (dauer.count() < 0.1 * 0.9 * ZEITBESCHRAENKUNG);
@@ -148,43 +143,74 @@ namespace TaktikNS {
     Tiefensuche::tiefensuche(Spielraster const& spielraster,
                              int const bot, int const bot2) const
     {
-      auto const bewertung_vv = this->iteration(spielraster, bot, bot2,
-                                                Bewegungsrichtung::VORWAERTS,
-                                                Bewegungsrichtung::VORWAERTS,
-                                                0);
-      auto const bewertung_vl = this->iteration(spielraster, bot, bot2,
-                                                Bewegungsrichtung::VORWAERTS,
-                                                Bewegungsrichtung::LINKS,
-                                                0);
-      auto const bewertung_vr = this->iteration(spielraster, bot, bot2,
-                                                Bewegungsrichtung::VORWAERTS,
-                                                Bewegungsrichtung::RECHTS,
-                                                0);
-      auto const bewertung_lv = this->iteration(spielraster, bot, bot2,
-                                                Bewegungsrichtung::LINKS,
-                                                Bewegungsrichtung::VORWAERTS,
-                                                0);
-      auto const bewertung_ll = this->iteration(spielraster, bot, bot2,
-                                                Bewegungsrichtung::LINKS,
-                                                Bewegungsrichtung::LINKS,
-                                                0);
-      auto const bewertung_lr = this->iteration(spielraster, bot, bot2,
-                                                Bewegungsrichtung::LINKS,
-                                                Bewegungsrichtung::RECHTS,
-                                                0);
-      auto const bewertung_rv = this->iteration(spielraster, bot, bot2,
-                                                Bewegungsrichtung::RECHTS,
-                                                Bewegungsrichtung::VORWAERTS,
-                                                0);
-      auto const bewertung_rl = this->iteration(spielraster, bot, bot2,
-                                                Bewegungsrichtung::RECHTS,
-                                                Bewegungsrichtung::LINKS,
-                                                0);
-      auto const bewertung_rr = this->iteration(spielraster, bot, bot2,
-                                                Bewegungsrichtung::RECHTS,
-                                                Bewegungsrichtung::RECHTS,
-                                                1);
+#ifdef USE_THREADS
+#define THREAD(b1, b2) std::async(std::launch::async, std::bind(&Tiefensuche::iteration, this, spielraster, bot, bot2, b1, b2, 0))
+      std::array<std::future<Bewertung>, 9> threads
+        = {THREAD(Bewegungsrichtung::VORWAERTS, Bewegungsrichtung::VORWAERTS),
+          THREAD(Bewegungsrichtung::VORWAERTS, Bewegungsrichtung::LINKS),
+          THREAD(Bewegungsrichtung::VORWAERTS, Bewegungsrichtung::RECHTS),
+          THREAD(Bewegungsrichtung::LINKS, Bewegungsrichtung::VORWAERTS),
+          THREAD(Bewegungsrichtung::LINKS, Bewegungsrichtung::LINKS),
+          THREAD(Bewegungsrichtung::LINKS, Bewegungsrichtung::RECHTS),
+          THREAD(Bewegungsrichtung::RECHTS, Bewegungsrichtung::VORWAERTS),
+          THREAD(Bewegungsrichtung::RECHTS, Bewegungsrichtung::LINKS),
+          THREAD(Bewegungsrichtung::RECHTS, Bewegungsrichtung::RECHTS)};
+#undef THREAD
+      RichtungenErgebnis const ergebnisse(spielraster, bot,
+                                          Ergebnisse{threads[0].get(),
+                                          threads[1].get(),
+                                          threads[2].get(),
+                                          threads[3].get(),
+                                          threads[4].get(),
+                                          threads[5].get(),
+                                          threads[6].get(),
+                                          threads[7].get(),
+                                          threads[8].get()
+                                          });
+#else // #ifdef !USE_THREADS
+      RichtungenErgebnis const ergebnisse(spielraster, bot,
+                                          RichtungenErgebnis::Ergebnisse{
+                                          this->iteration(spielraster, bot, bot2,
+                                                          Bewegungsrichtung::VORWAERTS,
+                                                          Bewegungsrichtung::VORWAERTS,
+                                                          0),
+                                          this->iteration(spielraster, bot, bot2,
+                                                          Bewegungsrichtung::VORWAERTS,
+                                                          Bewegungsrichtung::LINKS,
+                                                          0),
+                                          this->iteration(spielraster, bot, bot2,
+                                                          Bewegungsrichtung::VORWAERTS,
+                                                          Bewegungsrichtung::RECHTS,
+                                                          0),
+                                          this->iteration(spielraster, bot, bot2,
+                                                          Bewegungsrichtung::LINKS,
+                                                          Bewegungsrichtung::VORWAERTS,
+                                                          0),
+                                          this->iteration(spielraster, bot, bot2,
+                                                          Bewegungsrichtung::LINKS,
+                                                          Bewegungsrichtung::LINKS,
+                                                          0),
+                                          this->iteration(spielraster, bot, bot2,
+                                                          Bewegungsrichtung::LINKS,
+                                                          Bewegungsrichtung::RECHTS,
+                                                          0),
+                                          this->iteration(spielraster, bot, bot2,
+                                                          Bewegungsrichtung::RECHTS,
+                                                          Bewegungsrichtung::VORWAERTS,
+                                                          0),
+                                          this->iteration(spielraster, bot, bot2,
+                                                          Bewegungsrichtung::RECHTS,
+                                                          Bewegungsrichtung::LINKS,
+                                                          0),
+                                          this->iteration(spielraster, bot, bot2,
+                                                          Bewegungsrichtung::RECHTS,
+                                                          Bewegungsrichtung::RECHTS,
+                                                          1)
+                                          });
+#endif // #ifdef !USE_THREADS
+      return ergebnisse.beste_richtung();
 
+#if 0
       // Minimiere den Verlust
       auto const bewertung_v = std::min(bewertung_vv, bewertung_vl, bewertung_vr);
       auto const bewertung_l = std::min(bewertung_lv, bewertung_ll, bewertung_lr);
@@ -238,105 +264,10 @@ namespace TaktikNS {
                   ? Bewegungsrichtung::LINKS
                   : Bewegungsrichtung::RECHTS);
       }
+#endif
 
       return false;
     } // Taktik::Ergebnis Tiefensuche::tiefensuche(Spielraster const& spielraster, int const bot, int const bot2) const
-
-  /**
-   ** -> Rückgabe
-   ** Suche mit Tiefensuche die „beste“ Richtung, verwended 9 threads
-   ** 
-   ** @param     spielraster   das Spielraster
-   ** @param     bot   die Nummer des Bots
-   ** @param     bot2   die Nummer des zweiten Bots
-   **
-   ** @return    Richtung mit dem „besten“ Wert
-   **
-   ** @version   2014-11-08
-   **/
-  Taktik::Ergebnis
-    Tiefensuche::tiefensuche_thread(Spielraster const& spielraster,
-                                    int const bot, int const bot2) const
-    {
-#ifdef USE_THREADS
-#define THREAD(b1, b2) std::async(std::launch::async, std::bind(&Tiefensuche::iteration, this, spielraster, bot, bot2, b1, b2, 0))
-      std::array<std::future<Bewertung>, 9> threads
-        = {THREAD(Bewegungsrichtung::VORWAERTS, Bewegungsrichtung::VORWAERTS),
-          THREAD(Bewegungsrichtung::VORWAERTS, Bewegungsrichtung::LINKS),
-          THREAD(Bewegungsrichtung::VORWAERTS, Bewegungsrichtung::RECHTS),
-          THREAD(Bewegungsrichtung::LINKS, Bewegungsrichtung::VORWAERTS),
-          THREAD(Bewegungsrichtung::LINKS, Bewegungsrichtung::LINKS),
-          THREAD(Bewegungsrichtung::LINKS, Bewegungsrichtung::RECHTS),
-          THREAD(Bewegungsrichtung::RECHTS, Bewegungsrichtung::VORWAERTS),
-          THREAD(Bewegungsrichtung::RECHTS, Bewegungsrichtung::LINKS),
-          THREAD(Bewegungsrichtung::RECHTS, Bewegungsrichtung::RECHTS)};
-      auto const bewertung_vv = threads[0].get();
-      auto const bewertung_vl = threads[1].get();
-      auto const bewertung_vr = threads[2].get();
-      auto const bewertung_lv = threads[3].get();
-      auto const bewertung_ll = threads[4].get();
-      auto const bewertung_lr = threads[5].get();
-      auto const bewertung_rv = threads[6].get();
-      auto const bewertung_rl = threads[7].get();
-      auto const bewertung_rr = threads[8].get();
-
-      // Minimiere den Verlust
-      auto const bewertung_v = std::min(bewertung_vv, bewertung_vl, bewertung_vr);
-      auto const bewertung_l = std::min(bewertung_lv, bewertung_ll, bewertung_lr);
-      auto const bewertung_r = std::min(bewertung_rv, bewertung_rl, bewertung_rr);
-
-#if 0
-#if 1
-      cdebug << '\n';
-      cdebug << "v    " << bewertung_vv << "   \t" << bewertung_vl << "   \t" << bewertung_vr << "\n";
-      cdebug << "l    " << bewertung_lv << "   \t" << bewertung_ll << "   \t" << bewertung_lr << "\n";
-      cdebug << "r    " << bewertung_rv << "   \t" << bewertung_rl << "   \t" << bewertung_rr << "\n";
-
-#endif
-
-      cdebug << bot << ": "
-        << "V = " << bewertung_v << ", "
-        << "L = " << bewertung_l << ", "
-        << "R = " << bewertung_r << "\n";
-#endif
-
-      auto zufall = 0 * rand();
-      if (bewertung_v > bewertung_l) {
-        if (bewertung_v > bewertung_r)
-          return Bewegungsrichtung::VORWAERTS;
-        else if (bewertung_v < bewertung_r)
-          return Bewegungsrichtung::RECHTS;
-        else // (bewertung_v == bewertung_r)
-          return ((zufall <= RAND_MAX / 2)
-                  ? Bewegungsrichtung::VORWAERTS
-                  : Bewegungsrichtung::RECHTS);
-      } else if (bewertung_v < bewertung_l) {
-        if (bewertung_l > bewertung_r)
-          return Bewegungsrichtung::LINKS;
-        else if (bewertung_l < bewertung_r)
-          return Bewegungsrichtung::RECHTS;
-        else // (bewertung_l == bewertung_r)
-          return ((zufall <= RAND_MAX / 2)
-                  ? Bewegungsrichtung::LINKS
-                  : Bewegungsrichtung::RECHTS);
-      } else { // (bewertung_v == bewertung_l)
-        if (bewertung_v < bewertung_r)
-          return Bewegungsrichtung::RECHTS;
-        else if (bewertung_v > bewertung_r)
-          return ((zufall <= RAND_MAX / 2)
-                  ? Bewegungsrichtung::VORWAERTS
-                  : Bewegungsrichtung::LINKS);
-        else // (bewertung_v == bewertung_l == bewertung_r)
-          return ((zufall <= RAND_MAX / 3)
-                  ? Bewegungsrichtung::VORWAERTS
-                  : (zufall <= RAND_MAX / 3 * 2)
-                  ? Bewegungsrichtung::LINKS
-                  : Bewegungsrichtung::RECHTS);
-      }
-#endif // #ifdef USE_THREADS
-
-      return false;
-    } // Taktik::Ergebnis Tiefensuche::tiefensuche_thread(Spielraster const& spielraster, int const bot, int const bot2) const
 
   /**
    ** -> Rückgabe
@@ -636,5 +567,77 @@ namespace TaktikNS {
       ostr << ")";
       return ostr;
     }
+
+  /**
+   ** Konstruktor
+   ** 
+   ** @param     spielraster   Spielraster
+   ** @param     bot           Nummer des Bots
+   ** @param     bewertung     Bewertungen für alle Richtungskombinationen
+   **
+   ** @return    -
+   **
+   ** @version   2014-12-13
+   **/
+  Tiefensuche::RichtungenErgebnis::RichtungenErgebnis(Spielraster const& spielraster, int bot, RichtungenErgebnis::Ergebnisse const& bewertung) :
+    bewertung(bewertung),
+    nachbarn_frei({spielraster.nachbarn_frei(spielraster.position(bot) + Bewegungsrichtung::VORWAERTS),
+                  spielraster.nachbarn_frei(spielraster.position(bot) + Bewegungsrichtung::LINKS),
+                  spielraster.nachbarn_frei(spielraster.position(bot) + Bewegungsrichtung::RECHTS)})
+    { }
+
+  /**
+   ** -> Rückgabe
+   ** 
+   ** @param     -
+   **
+   ** @return    „Beste“ Richtung entsprechend den Ergebnissen
+   **
+   ** @version   2014-12-13
+   **/
+  Bewegungsrichtung 
+    Tiefensuche::RichtungenErgebnis::beste_richtung() const
+    {
+      return Bewegungsrichtung::VORWAERTS;
+    } // Bewegungsrichtung Tiefensuche::RichtungenErgebnis::beste_richtung() const
+
+  /**
+   ** gibt die Ergebnisse aus
+   ** 
+   ** @param     ostr   Ausgabestrom
+   ** @param     e      Ergebnis
+   **
+   ** @return    Ausgabestrom
+   **
+   ** @version   2014-12-13
+   **/
+  ostream&
+    operator<<(ostream& ostr, Tiefensuche::RichtungenErgebnis const& e)
+    {
+      auto const& bewertung_vv = e.bewertung[0];
+      auto const& bewertung_vl = e.bewertung[1];
+      auto const& bewertung_vr = e.bewertung[2];
+      auto const& bewertung_lv = e.bewertung[3];
+      auto const& bewertung_ll = e.bewertung[4];
+      auto const& bewertung_lr = e.bewertung[5];
+      auto const& bewertung_rv = e.bewertung[6];
+      auto const& bewertung_rl = e.bewertung[7];
+      auto const& bewertung_rr = e.bewertung[8];
+
+      auto const bewertung_v = std::min(bewertung_vv, bewertung_vl, bewertung_vr);
+      auto const bewertung_l = std::min(bewertung_lv, bewertung_ll, bewertung_lr);
+      auto const bewertung_r = std::min(bewertung_rv, bewertung_rl, bewertung_rr);
+
+      ostr << "V = " << bewertung_v << ", "
+        << "L = " << bewertung_l << ", "
+        << "R = " << bewertung_r << "\n";
+
+      ostr << '\n';
+      ostr << "v    " << bewertung_vv << "   \t" << bewertung_vl << "   \t" << bewertung_vr << " (" << e.nachbarn_frei[0] << ")\n";
+      ostr << "l    " << bewertung_lv << "   \t" << bewertung_ll << "   \t" << bewertung_lr << " (" << e.nachbarn_frei[1] << ")\n";
+      ostr << "r    " << bewertung_rv << "   \t" << bewertung_rl << "   \t" << bewertung_rr << " (" << e.nachbarn_frei[2] << ")\n";
+
+      return ostr;
+    } // ostream& operator<<(ostream& ostr, Tiefensuche::RichtungenErgebnis const& e)
 
 } // namespace TaktikNS

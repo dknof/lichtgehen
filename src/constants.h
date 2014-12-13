@@ -49,6 +49,8 @@ using std::istream;
 using std::string;
 #include <vector>
 using std::vector;
+#include <array>
+using std::array;
 #include <memory>
 using std::unique_ptr;
 #ifndef __cpp_lib_make_unique
