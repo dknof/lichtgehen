@@ -94,6 +94,7 @@ BotPosition::BotPosition(istream& istr) :
     break;
   default:
     cerr << "Richtung '" << c << "' unbekannt.\n";
+    assert(false);
   } // switch (c)
 } // BotPosition::BotPosition(istream& istr)
 

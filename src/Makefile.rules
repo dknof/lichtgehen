@@ -1,7 +1,7 @@
 CXX ?= g++
-#CXXFLAGS ?= -Wall -Werror -Wno-parentheses -std=c++14 -O0 -ggdb
+CXXFLAGS ?= -Wall -Werror -Wno-parentheses -std=c++14 -O0 -ggdb
 #CXXFLAGS ?= -Wall -Werror -Wno-parentheses -std=c++14 -O3
-CXXFLAGS ?= -Wall -Werror -Wno-parentheses -std=c++1y -O3
+#CXXFLAGS ?= -Wall -Werror -Wno-parentheses -std=c++1y -O3
 
 DEPGEN_FLAGS ?= -MMD -MP -MT $@ -MF $(@:.o=.d)
 ifeq ($(USE_UI_GTKMM), true)

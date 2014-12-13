@@ -59,7 +59,7 @@ operator<<(ostream& ostr, Richtung const& richtung)
     ostr << 'N';
     break;
   case Richtung::OSTEN:
-    ostr << 'O';
+    ostr << 'E';
     break;
   case Richtung::SUEDEN:
     ostr << 'S';
