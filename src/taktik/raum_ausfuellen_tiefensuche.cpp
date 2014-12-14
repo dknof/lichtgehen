@@ -38,6 +38,10 @@
 
 #include <chrono>
 
+#ifdef USE_THREADS
+#include <future>
+#endif
+
 namespace TaktikNS {
   /**
    ** Standardkonstruktor
@@ -68,7 +72,7 @@ namespace TaktikNS {
                                         int const bot_nummer)
     {
       auto const& bp = spielraster.position(bot_nummer);
-#if 1
+#ifdef TIEFE_DYNAMISCH
       // Tiefe ausprobieren
       auto const zeit_start = std::chrono::system_clock::now();
       auto dauer = std::chrono::duration<double>{zeit_start - zeit_start};
@@ -77,12 +81,27 @@ namespace TaktikNS {
       Bewertung el;
       Bewertung er;
       do {
+#ifdef USE_THREADS
+#define THREAD(b) std::async(std::launch::async, std::bind(&RaumAusfuellenTiefensuche::wegweite, this, spielraster, bp + b, tiefe_max))
+        std::array<std::future<int>, 3> threads
+          = {THREAD(Bewegungsrichtung::VORWAERTS),
+            THREAD(Bewegungsrichtung::LINKS),
+            THREAD(Bewegungsrichtung::RECHTS)};
+#undef THREAD
+        ev = Bewertung(threads[0].get(),
+                       spielraster.nachbarn_frei(bp + Bewegungsrichtung::VORWAERTS));
+        el = Bewertung(threads[1].get(),
+                       spielraster.nachbarn_frei(bp + Bewegungsrichtung::LINKS));
+        er = Bewertung(threads[2].get(),
+                       spielraster.nachbarn_frei(bp + Bewegungsrichtung::RECHTS));
+#else
         ev = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::VORWAERTS, tiefe_max),
                        spielraster.nachbarn_frei(bp + Bewegungsrichtung::VORWAERTS));
         el = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::LINKS, tiefe_max),
                        spielraster.nachbarn_frei(bp + Bewegungsrichtung::LINKS));
         er = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::RECHTS, tiefe_max),
                        spielraster.nachbarn_frei(bp + Bewegungsrichtung::RECHTS));
+#endif
         dauer = std::chrono::system_clock::now() - zeit_start;
         tiefe_max += 1;
       } while (dauer.count() < 0.1 * 0.9 * ZEITBESCHRAENKUNG);

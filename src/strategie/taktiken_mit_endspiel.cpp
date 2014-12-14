@@ -175,7 +175,7 @@ namespace StrategieNS {
       this->taktiken.clear();
       this->hinzufuegen(Taktik::create("Tot"));
       this->hinzufuegen(Taktik::create("Einziger Weg"));
-      this->hinzufuegen(Taktik::create("in größten Raum"));
+      //this->hinzufuegen(Taktik::create("in größten Raum"));
       switch (neuer_status) {
       case LETZTE_FELDER:
         this->hinzufuegen(Taktik::create("Tiefensuche"));
@@ -184,7 +184,8 @@ namespace StrategieNS {
         this->hinzufuegen(Taktik::create("Raum ausfüllen (Tiefensuche)"));
         break;
       case LETZTE_FELDER | EIGENER_RAUM:
-        this->hinzufuegen(Taktik::create("Raum ausfüllen (Tiefensuche bis Ende)"));
+        //this->hinzufuegen(Taktik::create("Raum ausfüllen (Tiefensuche bis Ende)"));
+        this->hinzufuegen(Taktik::create("Raum ausfüllen (Tiefensuche)"));
         break;
       default:
         // kann nicht auftreten

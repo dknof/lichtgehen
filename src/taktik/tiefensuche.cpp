@@ -111,7 +111,7 @@ namespace TaktikNS {
                          : felder_frei);
 
       Taktik::Ergebnis ergebnis = false;
-#if 1
+#ifdef TIEFE_DYNAMISCH
       // Tiefe ausprobieren
       auto const zeit_start = std::chrono::system_clock::now();
       auto dauer = std::chrono::duration<double>{zeit_start - zeit_start};
@@ -158,7 +158,7 @@ namespace TaktikNS {
           THREAD(Bewegungsrichtung::RECHTS, Bewegungsrichtung::RECHTS)};
 #undef THREAD
       RichtungenErgebnis const ergebnisse(spielraster, bot,
-                                          Ergebnisse{threads[0].get(),
+                                          RichtungenErgebnis::Ergebnisse({threads[0].get(),
                                           threads[1].get(),
                                           threads[2].get(),
                                           threads[3].get(),
@@ -167,7 +167,7 @@ namespace TaktikNS {
                                           threads[6].get(),
                                           threads[7].get(),
                                           threads[8].get()
-                                          });
+                                          }));
 #else // #ifdef !USE_THREADS
       RichtungenErgebnis const ergebnisse(spielraster, bot,
                                           RichtungenErgebnis::Ergebnisse{
@@ -420,15 +420,19 @@ namespace TaktikNS {
         case Tiefensuche::Bewertung::Spielstand::GEWONNEN:
           return true;
         case Tiefensuche::Bewertung::Spielstand::UNENTSCHIEDEN:
-          // todo: Überdenken
-          if ((lhs.wert < 0) && (rhs.wert < 0))
+          // Bei schlechtem Stand lieber kürzer spielen
+          if ((lhs.wert < 0) && (rhs.wert < 0)
+              && (lhs.tiefe != rhs.tiefe))
+            return (lhs.tiefe > rhs.tiefe);
+          if (lhs.wert == rhs.wert)
             return (lhs.tiefe < rhs.tiefe);
-          else if (lhs.wert == rhs.wert)
-            return (lhs.tiefe < rhs.tiefe);
-          else
-            return (lhs.wert < rhs.wert);
+          return (lhs.wert < rhs.wert);
         case Tiefensuche::Bewertung::Spielstand::OFFEN:
-          // todo: Überdenken
+          // Bei schlechten Stand ist unentschieden besser
+          if ((lhs.wert < 0) && (rhs.wert < 0))
+            return false;
+          if (lhs.wert == rhs.wert)
+            return (lhs.tiefe < rhs.tiefe);
           return (lhs.wert < rhs.wert);
         } // switch (rhs.spielstand)
       case Tiefensuche::Bewertung::Spielstand::OFFEN:
@@ -438,9 +442,12 @@ namespace TaktikNS {
         case Tiefensuche::Bewertung::Spielstand::GEWONNEN:
           return true;
         case Tiefensuche::Bewertung::Spielstand::UNENTSCHIEDEN:
+          // Bei schlechten Stand ist unentschieden besser
+          if ((lhs.wert < 0) && (rhs.wert < 0))
+            return true;
+        case Tiefensuche::Bewertung::Spielstand::OFFEN:
           if (lhs.wert == rhs.wert)
             return (lhs.tiefe < rhs.tiefe);
-        case Tiefensuche::Bewertung::Spielstand::OFFEN:
           return (lhs.wert < rhs.wert);
         } // switch (rhs.spielstand)
       } // switch (lhs.spielstand)

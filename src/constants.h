@@ -115,6 +115,8 @@ inline X max(X const& a, X const& b, X const& c, X const& d)
 #ifndef ZEITBESCHRAENKUNG
 #define ZEITBESCHRAENKUNG 1
 #endif
+// Die Tiefe bei der Tiefensuche dynamisch ermitteln
+#define TIEFE_DYNAMISCH
 
 // creates a segmentation fault
 #define SEGFAULT if (true) { cerr << "Created segmentation fault:\n" \
