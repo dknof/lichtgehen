@@ -50,6 +50,7 @@ class RaumAusfuellenTiefensuche : public Taktik {
     int weite;
     int nachbarn_frei;
     Bewertung(int const w, int const f) : weite(w), nachbarn_frei(f) {}
+    Bewertung() : weite(0), nachbarn_frei(0) {}
   }; // struct Bewertung
   public:
     // Konstruktor

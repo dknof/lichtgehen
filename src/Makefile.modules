@@ -11,4 +11,4 @@ USE_EIGENES_SPIEL = true
 USE_THREADS = false
 
 # Zeitbeschränkung für die Tiefensuche (in Sekunden)
-CPPFLAGS += -DZEITBESCHRAENKUNG=0
+CPPFLAGS += -DZEITBESCHRAENKUNG=0.5

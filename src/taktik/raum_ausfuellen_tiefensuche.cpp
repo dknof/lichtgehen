@@ -36,7 +36,7 @@
 
 #include "raum_ausfuellen_tiefensuche.h"
 
-#define TIEFE_MAX 4
+#include <chrono>
 
 namespace TaktikNS {
   /**
@@ -61,22 +61,43 @@ namespace TaktikNS {
    **
    ** @return    Richtung mit dem längsten Weg
    **
-   ** @version   2014-12-05
+   ** @version   2014-12-14
    **/
   Taktik::Ergebnis
     RaumAusfuellenTiefensuche::ergebnis(Spielraster const& spielraster,
                                         int const bot_nummer)
     {
       auto const& bp = spielraster.position(bot_nummer);
+#if 1
+      // Tiefe ausprobieren
+      auto const zeit_start = std::chrono::system_clock::now();
+      auto dauer = std::chrono::duration<double>{zeit_start - zeit_start};
+      int tiefe_max = 0;
+      Bewertung ev;
+      Bewertung el;
+      Bewertung er;
+      do {
+        ev = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::VORWAERTS, tiefe_max),
+                       spielraster.nachbarn_frei(bp + Bewegungsrichtung::VORWAERTS));
+        el = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::LINKS, tiefe_max),
+                       spielraster.nachbarn_frei(bp + Bewegungsrichtung::LINKS));
+        er = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::RECHTS, tiefe_max),
+                       spielraster.nachbarn_frei(bp + Bewegungsrichtung::RECHTS));
+        dauer = std::chrono::system_clock::now() - zeit_start;
+        tiefe_max += 1;
+      } while (dauer.count() < 0.1 * 0.9 * ZEITBESCHRAENKUNG);
+#else
+      int const tiefe_max = 4;
       auto const ev
-        = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::VORWAERTS, TIEFE_MAX),
+        = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::VORWAERTS, tiefe_max),
                     spielraster.nachbarn_frei(bp + Bewegungsrichtung::VORWAERTS));
       auto const el
-        = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::LINKS, TIEFE_MAX),
+        = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::LINKS, tiefe_max),
                     spielraster.nachbarn_frei(bp + Bewegungsrichtung::LINKS));
       auto const er
-        = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::RECHTS, TIEFE_MAX),
+        = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::RECHTS, tiefe_max),
                     spielraster.nachbarn_frei(bp + Bewegungsrichtung::RECHTS));
+#endif
 #if 0
       CLOG << Bewegungsrichtung::VORWAERTS << ": " << ev << endl;
       CLOG << Bewegungsrichtung::LINKS     << ": " << el << endl;
@@ -85,12 +106,12 @@ namespace TaktikNS {
 
 #if 0
       // bei viel freier Fläche: möglichst am Rand halten
-        if (   (el.weite >= 50)
-            && ((el.weite * 101)/100 + 5 >= std::max(er.weite, ev.weite)) )
-          return Bewegungsrichtung::LINKS;
-        if (   (ev.weite >= 50)
-            && ((ev.weite * 101)/100 + 5 >= std::max(el.weite, er.weite)) )
-          return Bewegungsrichtung::VORWAERTS;
+      if (   (el.weite >= 50)
+          && ((el.weite * 101)/100 + 5 >= std::max(er.weite, ev.weite)) )
+        return Bewegungsrichtung::LINKS;
+      if (   (ev.weite >= 50)
+          && ((ev.weite * 101)/100 + 5 >= std::max(el.weite, er.weite)) )
+        return Bewegungsrichtung::VORWAERTS;
 #endif
 
       if (el >= ev)

@@ -1,3 +1,6 @@
+2014-12-14
+	- Die Tiefensuche beim Raum ausfüllen ermittelt die Tiefe nun auch dynamisch entsprechend dem Zeitlimit
+
 2014-12-13
 	- Fehler in der Bewertung der Tiefensuche korrigiert
 
