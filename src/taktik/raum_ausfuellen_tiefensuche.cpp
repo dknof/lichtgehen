@@ -95,12 +95,18 @@ namespace TaktikNS {
         er = Bewertung(threads[2].get(),
                        spielraster.nachbarn_frei(bp + Bewegungsrichtung::RECHTS));
 #else
+        el = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::LINKS, tiefe_max),
+                       spielraster.nachbarn_frei(bp + Bewegungsrichtung::LINKS));
+        ev = el;
+        er = el;
+#if 1
         ev = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::VORWAERTS, tiefe_max),
                        spielraster.nachbarn_frei(bp + Bewegungsrichtung::VORWAERTS));
         el = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::LINKS, tiefe_max),
                        spielraster.nachbarn_frei(bp + Bewegungsrichtung::LINKS));
         er = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::RECHTS, tiefe_max),
                        spielraster.nachbarn_frei(bp + Bewegungsrichtung::RECHTS));
+#endif
 #endif
         dauer = std::chrono::system_clock::now() - zeit_start;
         tiefe_max += 1;
@@ -117,7 +123,7 @@ namespace TaktikNS {
         = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::RECHTS, tiefe_max),
                     spielraster.nachbarn_frei(bp + Bewegungsrichtung::RECHTS));
 #endif
-#if 0
+#if 1
       CLOG << Bewegungsrichtung::VORWAERTS << ": " << ev << endl;
       CLOG << Bewegungsrichtung::LINKS     << ": " << el << endl;
       CLOG << Bewegungsrichtung::RECHTS    << ": " << er << endl;

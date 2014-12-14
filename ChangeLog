@@ -2,6 +2,7 @@
 	- Die Tiefensuche beim Raum ausfüllen ermittelt die Tiefe nun auch dynamisch entsprechend dem Zeitlimit
 	- Tiefensuche abgeschlossen
 	- Thread-Unterstützung für Tiefensuche beim Raum ausfüllen
+	- Ein Fehler korrigiert bei Ermittlung der erreichbaren Raumgröße
 
 2014-12-13
 	- Fehler in der Bewertung der Tiefensuche korrigiert

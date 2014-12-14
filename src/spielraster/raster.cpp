@@ -38,6 +38,7 @@
 
 #include <sstream>
 #include <set>
+#include <iterator>
 
 /**
  ** Standardkonstruktor
@@ -571,7 +572,8 @@ Raster::raumgroesse_erreichbar(Position const& position,
       }
       for (auto r : ::richtungen) {
         auto const p2 = p + r;
-        if (raster(p2))
+        if (   raster(p2)
+          || (positionen.find(p2) != positionen.end()))
           continue;
 
         // Auf einen Engpass prüfen, dieser kann eine Sackgasse sein
@@ -605,8 +607,9 @@ Raster::raumgroesse_erreichbar(Position const& position,
         }
       } // for (p2 > p)
     } // for (p : sackgassen)
-    for (auto const& p : positionen)
+    for (auto const& p : positionen) {
       sackgassen.erase(p);
+    }
   } // while (!positionen.empty())
 
   // Von allen Sackgassen kann nur eine gefüllt werden -- wähle die größte

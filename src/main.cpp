@@ -72,6 +72,7 @@ int
 main(int argc, char* argv[])
 {
 cdebug_ = &cerr;
+cdebug_ = &cout;
 
 #ifdef USE_EIGENES_SPIEL
 main_eigenes_spiel(argc, argv);
@@ -202,7 +203,7 @@ main_eigenes_spiel(int& argc, char* argv[])
     if (spielraster.bots_im_spiel() == 1)
       break;
 #endif
-//    break;
+    break;
   } // while (spielraster.bots_im_spiel())
 
   ui->spiel_endet();
