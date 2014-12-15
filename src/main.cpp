@@ -72,7 +72,7 @@ int
 main(int argc, char* argv[])
 {
 cdebug_ = &cerr;
-cdebug_ = &cout;
+//cdebug_ = &cout;
 
 #ifdef USE_EIGENES_SPIEL
 main_eigenes_spiel(argc, argv);
@@ -158,7 +158,7 @@ main_eigenes_spiel(int& argc, char* argv[])
   ui->spiel_startet(spielraster);
   while (spielraster.bots_im_spiel()) {
     runde += 1;
-    cdebug << runde << '\n';
+    cdebug << "Runde " << runde << '\n';
     //cdebug << spielraster << '\n';
     //usleep(10000);
     ui->runde(runde);

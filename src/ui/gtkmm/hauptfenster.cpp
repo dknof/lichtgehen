@@ -207,11 +207,11 @@ namespace UI_Gtkmm {
 
       // Runde
       if (this->ui->spielraster->runde() == this->historie->get_value())
-        this->runde->set_label("Runde " + std::to_string(spielraster.runde()));
+        this->runde->set_label("       Runde " + std::to_string(spielraster.runde()) + "       ");
       else
-        this->runde->set_label("Runde "
+        this->runde->set_label("  Runde "
                                + std::to_string(static_cast<int>(this->historie->get_value()))
-                               + " (" + std::to_string(this->ui->spielraster->runde()) + ")");
+                               + " (" + std::to_string(this->ui->spielraster->runde()) + ")  ");
       // Felder frei
       this->felder_frei->set_label(std::to_string(spielraster.felder_frei()) + " Felder frei");
 

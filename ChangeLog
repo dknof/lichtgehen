@@ -1,5 +1,6 @@
 2014-12-15
 	- Ermittlung der erreichbaren Raumgröße verbessert
+	- Hauptfenster: Textbereich breiter
 
 2014-12-14
 	- Die Tiefensuche beim Raum ausfüllen ermittelt die Tiefe nun auch dynamisch entsprechend dem Zeitlimit
