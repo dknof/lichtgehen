@@ -8,7 +8,7 @@ USE_EINGABE = false
 USE_EIGENES_SPIEL = true
 
 # Mit Threads arbeiten (9 Stück)
-USE_THREADS = false
+USE_THREADS = true
 
 # Zeitbeschränkung für die Tiefensuche (in Sekunden)
-CPPFLAGS += -DZEITBESCHRAENKUNG=0
+CPPFLAGS += -DZEITBESCHRAENKUNG=0.1

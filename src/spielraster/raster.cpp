@@ -544,95 +544,107 @@ int
 Raster::raumgroesse_erreichbar(Position const& position,
                                bool const position_ueberpruefen) const
 {
-  if ((*this)(position)) {
-    if (position_ueberpruefen)
-      return 0;
-    else
-      return std::max(this->raumgroesse_erreichbar(position + Richtung::NORDEN, true),
-                      this->raumgroesse_erreichbar(position + Richtung::OSTEN, true),
-                      this->raumgroesse_erreichbar(position + Richtung::SUEDEN, true),
-                      this->raumgroesse_erreichbar(position + Richtung::WESTEN, true));
-  }
+  if (position_ueberpruefen && (*this)(position))
+    return 0;
 
-  Raster raster(*this); // Raster, das gefüllt wird
-  std::set<Position> positionen; // Noch zu betrachtende Positionen
-  std::set<Position> sackgassen; // Sackgassen, diese werden separat berücksichtigt
-  positionen.insert(position);
-  int n = 0; // Anzahl der Felder
-  while (!positionen.empty()) {
-    while (!positionen.empty()) {
-      auto p = *begin(positionen);
-      positionen.erase(p);
-      raster.belege(p);
-      n += 1;
+  int n_max = 0; // Maximale Anzahl an Feldern
+  for (auto r : ::richtungen) {
+    if ((*this)(position + r))
+      continue;
+    Raster raster(*this); // Raster, das gefüllt wird
+    if (!(*this)(position)) {
+      raster.belege(position);
+    }
+    std::set<Position> positionen; // Noch zu betrachtende Positionen
+    std::set<Position> sackgassen; // Sackgassen, diese werden separat berücksichtigt
+    int n = 0; // Anzahl der Felder
+    {
+      auto p = position + r;
       while (raster.nachbarn_frei(p) == 1) {
-        p = raster.freier_nachbar(p);
         raster.belege(p);
         n += 1;
+        p = raster.freier_nachbar(p);
       }
-      for (auto r : ::richtungen) {
-        auto const p2 = p + r;
-        if (   raster(p2)
-          || (positionen.find(p2) != positionen.end()))
-          continue;
-
-        // Auf einen Engpass prüfen, dieser kann eine Sackgasse sein
-        if (   (raster.nachbarn_frei(p2) <= 1)
-           ) {
-          if (sackgassen.find(p2) != sackgassen.end()) {
-            // Einen zweiten Weg zu der Position gefunden, also keine Sackgasse
-            sackgassen.erase(p2);
-            raster.belege(p2);
-            n += 1;
-          } else {
-            sackgassen.insert(p2);
-          }
-        } else {
-          positionen.insert(p2);
+      positionen.insert(p);
+    }
+    while (!positionen.empty()) {
+      while (!positionen.empty()) {
+        auto p = *begin(positionen);
+        positionen.erase(p);
+        raster.belege(p);
+        n += 1;
+        while (raster.nachbarn_frei(p) == 1) {
+          p = raster.freier_nachbar(p);
+          raster.belege(p);
+          positionen.erase(p);
+          n += 1;
         }
-      } // for (auto r : ::richtungen)
+        for (auto r : ::richtungen) {
+          auto const p2 = p + r;
+          if (   raster(p2)
+              || (positionen.find(p2) != positionen.end()))
+            continue;
+
+          // Auf einen Engpass prüfen, dieser kann eine Sackgasse sein
+          if (   (raster.nachbarn_frei(p2) <= 1)
+             ) {
+            if (sackgassen.find(p2) != sackgassen.end()) {
+              // Einen zweiten Weg zu der Position gefunden, also keine Sackgasse
+              sackgassen.erase(p2);
+              raster.belege(p2);
+              n += 1;
+            } else {
+              sackgassen.insert(p2);
+            }
+          } else {
+            positionen.insert(p2);
+          }
+        } // for (auto r : ::richtungen)
+      } // while (!positionen.empty())
+
+      // Schleifen erkennen
+      for (auto p = begin(sackgassen); p != end(sackgassen); ++p) {
+        auto raum = raster.raum(*p);
+        auto p2 = p;
+        for (++p2; p2 != end(sackgassen); ) {
+          if (raum(*p2)) {
+            positionen.insert(*p2);
+            positionen.insert(*p);
+            p2 = sackgassen.erase(p2);
+          } else {
+            ++p2;
+          }
+        } // for (p2 > p)
+      } // for (p : sackgassen)
+      for (auto const& p : positionen) {
+        sackgassen.erase(p);
+      }
     } // while (!positionen.empty())
 
-    // Schleifen erkennen
-    for (auto p = begin(sackgassen); p != end(sackgassen); ++p) {
-      auto raum = raster.raum(*p);
-      auto p2 = p;
-      for (++p2; p2 != end(sackgassen); ) {
-        if (raum(*p2)) {
-          positionen.insert(*p2);
-          positionen.insert(*p);
-          p2 = sackgassen.erase(p2);
-        } else {
-          ++p2;
-        }
-      } // for (p2 > p)
+    // Von allen Sackgassen kann nur eine gefüllt werden -- wähle die größte
+    int m = 0; // maximale Größe der Sackgassen
+    for (auto p : sackgassen) {
+      int m2 = 0;
+      // Korridore (nur ein Weg möglich) bis zum Ende durchgehen
+      while (raster.nachbarn_frei(p) == 1) {
+        raster.belege(p);
+        m2 += 1;
+        p = raster.freier_nachbar(p);
+      }
+      if (!raster.nachbarn_frei(p)) {
+        m = std::max(m, m2 + 1);
+        continue;
+      }
+      // Sackgasse füllen
+      m2 += raster.raumgroesse_erreichbar(p);
+
+      m = std::max(m, m2);
     } // for (p : sackgassen)
-    for (auto const& p : positionen) {
-      sackgassen.erase(p);
-    }
-  } // while (!positionen.empty())
-
-  // Von allen Sackgassen kann nur eine gefüllt werden -- wähle die größte
-  int m = 0; // maximale Größe der Sackgassen
-  for (auto p : sackgassen) {
-    int m2 = 0;
-    // Korridore (nur ein Weg möglich) bis zum Ende durchgehen
-    while (raster.nachbarn_frei(p) == 1) {
-      raster.belege(p);
-      m2 += 1;
-      p = raster.freier_nachbar(p);
-    }
-    if (!raster.nachbarn_frei(p)) {
-      m = std::max(m, m2 + 1);
-      continue;
-    }
-    // Sackgasse füllen
-    m2 += raster.raumgroesse_erreichbar(p);
-
-    m = std::max(m, m2);
-  } // for (p : sackgassen)
-
-  return std::min(n + m, this->raumgroesse(position));
+    n_max = std::max(n + m, n_max);
+  } // for (auto r : ::richtungen)
+  if (!(*this)(position))
+    n_max += 1;
+  return std::min(n_max, this->raumgroesse(position));
 }  // int Raster::raumgroesse_erreichbar(Position const& position, bool const position_ueberpruefen = false) const
 
 /**

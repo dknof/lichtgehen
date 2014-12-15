@@ -95,10 +95,15 @@ namespace TaktikNS {
         er = Bewertung(threads[2].get(),
                        spielraster.nachbarn_frei(bp + Bewegungsrichtung::RECHTS));
 #else
+#if 0
+        cout << spielraster << endl;
+        cout << endl;
         el = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::LINKS, tiefe_max),
                        spielraster.nachbarn_frei(bp + Bewegungsrichtung::LINKS));
+        //exit(0);
         ev = el;
         er = el;
+#endif
 #if 1
         ev = Bewertung(this->wegweite(spielraster, bp + Bewegungsrichtung::VORWAERTS, tiefe_max),
                        spielraster.nachbarn_frei(bp + Bewegungsrichtung::VORWAERTS));
