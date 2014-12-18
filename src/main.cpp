@@ -71,7 +71,7 @@ void main_eigenes_spiel(int& argc, char* argv[]);
 int
 main(int argc, char* argv[])
 {
-cdebug_ = &cerr;
+//cdebug_ = &cerr;
 //cdebug_ = &cout;
 
 #ifdef USE_EIGENES_SPIEL
@@ -136,6 +136,7 @@ main_eigenes_spiel(int& argc, char* argv[])
     switch (i) {
     case 0:
     case 1:
+    default:
       bot->setze_strategie(Strategie::create({"Tiefensuche",
                                              "in größten Raum",
                                              "zum größten Einflussgebiet",
@@ -144,10 +145,12 @@ main_eigenes_spiel(int& argc, char* argv[])
                                              "links 0.7",
                                              }));
       break;
+#if 0
     default:
       //bot->setze_strategie(Strategie::create({"Tiefensuche"}));
       bot->setze_strategie(Strategie::create({"vorwärts"}));
       break;
+#endif
     } // switch (i)
     bots.push_back(std::move(bot));
   }

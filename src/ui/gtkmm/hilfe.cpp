@@ -95,13 +95,12 @@ namespace UI_Gtkmm {
                                "Bild ↑: in der Historie eine Runde zurück gehen\n"
                                "Pos1: in der Historie zur ersten Runde springen\n"
                                "Ende: in der Historie zur aktuellen Runde springen\n"
-                               "r: angezeigtes Spielfeld ausgeben (für Eingabe als Testfall)\n"
+                               "r: angezeigtes Spielfeld ausgeben und in Test.txt schreiben (zum Testen der Spielsituation)\n"
                                "R: angezeigtes Spielfeld „schön“ ausgeben\n"
                                "\n"
                                "<b>Sonstiges</b>\n"
                                "* Schritte gegen eine Wand werden ignoriert (außer es gibt keine andere Möglichkeit)\n"
                                "* Die Richtungsbefehle werden der Reihe nach abgearbeitet, auch wenn das Spiel bei der Eingabe noch nicht soweit war\n"
-                               "* Wird der Bot weiterbewegt, während man in die Historie schaut, wird zur aktuellen Runde gesprungen\n"
                                , true);
       // todo: Leertaste: entsprechend der Strategie laufen
 
