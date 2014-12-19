@@ -566,95 +566,106 @@ namespace TaktikNS {
       // Bewegungsrichtung ignorieren
       // Bewertung kleiner ist schlechter
       // int (nachbarn_anz) kleiner ist besser
-      return std::max_element(begin(ergebnisse), end(ergebnisse),
-                              [=](auto const& a, auto const& b)
-                              {
-                              if (a.second.first < b.second.first)
-                              return true;
-                              else if (b.second.first < a.second.first)
-                              return false;
-                              else if (a.second.second > b.second.second)
-                              return true;
-                              else
-                              return false;
-                              }
-                             )->first;
 #if 0
-      auto zufall = 1 * rand();
-      if (bewertung_v > bewertung_l) {
-        if (bewertung_v > bewertung_r)
-          return Bewegungsrichtung::VORWAERTS;
-        else if (bewertung_v < bewertung_r)
-          return Bewegungsrichtung::RECHTS;
-        else // (bewertung_v == bewertung_r)
-          return ((zufall <= RAND_MAX / 2)
-                  ? Bewegungsrichtung::VORWAERTS
-                  : Bewegungsrichtung::RECHTS);
-      } else if (bewertung_v < bewertung_l) {
-        if (bewertung_l > bewertung_r)
-          return Bewegungsrichtung::LINKS;
-        else if (bewertung_l < bewertung_r)
-          return Bewegungsrichtung::RECHTS;
-        else // (bewertung_l == bewertung_r)
-          return ((zufall <= RAND_MAX / 2)
-                  ? Bewegungsrichtung::LINKS
-                  : Bewegungsrichtung::RECHTS);
-      } else { // (bewertung_v == bewertung_l)
-        if (bewertung_v < bewertung_r)
-          return Bewegungsrichtung::RECHTS;
-        else if (bewertung_v > bewertung_r)
-          return ((zufall <= RAND_MAX / 2)
-                  ? Bewegungsrichtung::VORWAERTS
-                  : Bewegungsrichtung::LINKS);
-        else // (bewertung_v == bewertung_l == bewertung_r)
-          return ((zufall <= RAND_MAX / 3)
-                  ? Bewegungsrichtung::VORWAERTS
-                  : (zufall <= RAND_MAX / 3 * 2)
-                  ? Bewegungsrichtung::LINKS
-                  : Bewegungsrichtung::RECHTS);
+  return std::max_element(begin(ergebnisse), end(ergebnisse),
+                          [=](auto const& a, auto const& b)
+                          {
+                          if (a.second.first < b.second.first)
+                          return true;
+                          else if (b.second.first < a.second.first)
+                          return false;
+                          else if (a.second.second > b.second.second)
+                          return true;
+                          else
+                          return false;
+                          }
+                         )->first;
+#endif
+      auto m = *begin(ergebnisse);
+      for (auto const& e : ergebnisse) {
+        if (   (m.second.first < e.second.first)
+            || (   (m.second.first == e.second.first)
+                && (m.second.second > e.second.second) ) )
+          m = e;
       }
+      return m.first;
+
+#if 0
+  auto zufall = 1 * rand();
+  if (bewertung_v > bewertung_l) {
+    if (bewertung_v > bewertung_r)
+      return Bewegungsrichtung::VORWAERTS;
+    else if (bewertung_v < bewertung_r)
+      return Bewegungsrichtung::RECHTS;
+    else // (bewertung_v == bewertung_r)
+      return ((zufall <= RAND_MAX / 2)
+              ? Bewegungsrichtung::VORWAERTS
+              : Bewegungsrichtung::RECHTS);
+  } else if (bewertung_v < bewertung_l) {
+    if (bewertung_l > bewertung_r)
+      return Bewegungsrichtung::LINKS;
+    else if (bewertung_l < bewertung_r)
+      return Bewegungsrichtung::RECHTS;
+    else // (bewertung_l == bewertung_r)
+      return ((zufall <= RAND_MAX / 2)
+              ? Bewegungsrichtung::LINKS
+              : Bewegungsrichtung::RECHTS);
+  } else { // (bewertung_v == bewertung_l)
+    if (bewertung_v < bewertung_r)
+      return Bewegungsrichtung::RECHTS;
+    else if (bewertung_v > bewertung_r)
+      return ((zufall <= RAND_MAX / 2)
+              ? Bewegungsrichtung::VORWAERTS
+              : Bewegungsrichtung::LINKS);
+    else // (bewertung_v == bewertung_l == bewertung_r)
+      return ((zufall <= RAND_MAX / 3)
+              ? Bewegungsrichtung::VORWAERTS
+              : (zufall <= RAND_MAX / 3 * 2)
+              ? Bewegungsrichtung::LINKS
+              : Bewegungsrichtung::RECHTS);
+  }
 #endif
 
-      return Bewegungsrichtung::VORWAERTS;
-    } // Bewegungsrichtung Tiefensuche::RichtungenErgebnis::beste_richtung() const
+  return Bewegungsrichtung::VORWAERTS;
+} // Bewegungsrichtung Tiefensuche::RichtungenErgebnis::beste_richtung() const
 
-  /**
-   ** gibt die Ergebnisse aus
-   ** 
-   ** @param     ostr   Ausgabestrom
-   ** @param     e      Ergebnis
-   **
-   ** @return    Ausgabestrom
-   **
-   ** @version   2014-12-13
-   **/
-  ostream&
-    operator<<(ostream& ostr, Tiefensuche::RichtungenErgebnis const& e)
-    {
-      auto const& bewertung_vv = e.bewertung[0];
-      auto const& bewertung_vl = e.bewertung[1];
-      auto const& bewertung_vr = e.bewertung[2];
-      auto const& bewertung_lv = e.bewertung[3];
-      auto const& bewertung_ll = e.bewertung[4];
-      auto const& bewertung_lr = e.bewertung[5];
-      auto const& bewertung_rv = e.bewertung[6];
-      auto const& bewertung_rl = e.bewertung[7];
-      auto const& bewertung_rr = e.bewertung[8];
+/**
+ ** gibt die Ergebnisse aus
+ ** 
+ ** @param     ostr   Ausgabestrom
+ ** @param     e      Ergebnis
+ **
+ ** @return    Ausgabestrom
+ **
+ ** @version   2014-12-13
+ **/
+ostream&
+operator<<(ostream& ostr, Tiefensuche::RichtungenErgebnis const& e)
+{
+  auto const& bewertung_vv = e.bewertung[0];
+  auto const& bewertung_vl = e.bewertung[1];
+  auto const& bewertung_vr = e.bewertung[2];
+  auto const& bewertung_lv = e.bewertung[3];
+  auto const& bewertung_ll = e.bewertung[4];
+  auto const& bewertung_lr = e.bewertung[5];
+  auto const& bewertung_rv = e.bewertung[6];
+  auto const& bewertung_rl = e.bewertung[7];
+  auto const& bewertung_rr = e.bewertung[8];
 
-      auto const bewertung_v = std::min(bewertung_vv, bewertung_vl, bewertung_vr);
-      auto const bewertung_l = std::min(bewertung_lv, bewertung_ll, bewertung_lr);
-      auto const bewertung_r = std::min(bewertung_rv, bewertung_rl, bewertung_rr);
+  auto const bewertung_v = std::min(bewertung_vv, bewertung_vl, bewertung_vr);
+  auto const bewertung_l = std::min(bewertung_lv, bewertung_ll, bewertung_lr);
+  auto const bewertung_r = std::min(bewertung_rv, bewertung_rl, bewertung_rr);
 
-      ostr << "V = " << bewertung_v << ", "
-        << "L = " << bewertung_l << ", "
-        << "R = " << bewertung_r << "\n";
+  ostr << "V = " << bewertung_v << ", "
+    << "L = " << bewertung_l << ", "
+    << "R = " << bewertung_r << "\n";
 
-      ostr << '\n';
-      ostr << "v    " << bewertung_vv << "   \t" << bewertung_vl << "   \t" << bewertung_vr << " (" << e.nachbarn_frei[0] << ")\n";
-      ostr << "l    " << bewertung_lv << "   \t" << bewertung_ll << "   \t" << bewertung_lr << " (" << e.nachbarn_frei[1] << ")\n";
-      ostr << "r    " << bewertung_rv << "   \t" << bewertung_rl << "   \t" << bewertung_rr << " (" << e.nachbarn_frei[2] << ")\n";
+  ostr << '\n';
+  ostr << "v    " << bewertung_vv << "   \t" << bewertung_vl << "   \t" << bewertung_vr << " (" << e.nachbarn_frei[0] << ")\n";
+  ostr << "l    " << bewertung_lv << "   \t" << bewertung_ll << "   \t" << bewertung_lr << " (" << e.nachbarn_frei[1] << ")\n";
+  ostr << "r    " << bewertung_rv << "   \t" << bewertung_rl << "   \t" << bewertung_rr << " (" << e.nachbarn_frei[2] << ")\n";
 
-      return ostr;
-    } // ostream& operator<<(ostream& ostr, Tiefensuche::RichtungenErgebnis const& e)
+  return ostr;
+} // ostream& operator<<(ostream& ostr, Tiefensuche::RichtungenErgebnis const& e)
 
 } // namespace TaktikNS
