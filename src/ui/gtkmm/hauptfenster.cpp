@@ -194,7 +194,7 @@ namespace UI_Gtkmm {
 
       { // die Historie gegebenenfalls erweitern, dabei den Wert weiterschieben
         int r = this->historie->get_value();
-        if (r == this->ui->spielraster->runde() - 1) {
+        if (r >= this->ui->spielraster->runde() - 2) {
           this->historie->set_value(this->ui->spielraster->runde());
           if (this->historie->get_value() == r)
             r = this->ui->spielraster->runde();
@@ -366,7 +366,7 @@ namespace UI_Gtkmm {
         auto const p = spielraster.weg(b).back();
         if (!p)
           continue;
-          cr->move_to(p.x() + 0.5, p.y() + 0.5);
+        cr->move_to(p.x() + 0.5, p.y() + 0.5);
         switch (p.richtung()) {
         case Richtung::NORDEN:
           cr->rel_line_to(-0.4, 0);
@@ -389,8 +389,8 @@ namespace UI_Gtkmm {
           cr->rel_line_to(0.4, 0.4);
           break;
         } // switch (p.richtung())
-          cr->close_path();
-          cr->fill();
+        cr->close_path();
+        cr->fill();
       } // for (b)
       cr->restore();
 

@@ -40,6 +40,7 @@
 #include "bot/bot.h"
 #include "bot/mensch.h"
 #include "ui/ui.h"
+#include "ui/gtkmm/pdf_export.h"
 
 #include <string>
 using std::string;
@@ -78,6 +79,7 @@ main(int argc, char* argv[])
 main_eigenes_spiel(argc, argv);
 #else // Wettbewerb
 cdebug_ = new std::ostringstream;
+cdebug_ = &cout;
 main_wettbewerb(argc, argv);
 #endif
 
@@ -236,6 +238,7 @@ main_wettbewerb(int& argc, char* argv[])
   //auto ui = UI::create("cout", argc, argv);
   //auto ui = UI::create("cerr", argc, argv);
 #endif
+  ui = UI::create("none", argc, argv);
 #ifdef USE_EINGABE
   Mensch bot(spielraster, *ui);
 #else
@@ -268,7 +271,7 @@ main_wettbewerb(int& argc, char* argv[])
 
     } else if (zeile.compare( 0, 4, "SET ") == 0) {
       // SET P - Eigene Spielernummer festlegen
-      bot.setze_nummer(std::stoi(string(zeile, 4)) - 1);
+      //bot.setze_nummer(std::stoi(string(zeile, 4)) - 1);
 
     } else if (zeile.compare( 0, 4, "POS ") == 0) {
       // POS P N,M DIR - Position N,M des Bots P auf dem Spielbrett festlegen, wobei der Bot in Richtung DIR = (NORTH|EAST|SOUTH|WEST) schaut.
@@ -280,8 +283,10 @@ main_wettbewerb(int& argc, char* argv[])
       if (spielraster.runde() == 1)
         ui->spiel_startet(spielraster);
       ui->runde(spielraster.runde());
+#if 0
       if (spielraster.bot_im_spiel(bot.nummer()))
         cout << bot.bewegung() << '\n';
+#endif
 
     } else if (zeile.compare( 0, 4, "OUT ") == 0) {
       // OUT P - Spieler P ist ausgeschieden.
@@ -292,11 +297,15 @@ main_wettbewerb(int& argc, char* argv[])
       ui->spiel_endet();
       break;
 
+    } else if (zeile.compare(0, 5, "(II) )")) {
+      cout << zeile << endl;
     } else {
       cerr << "Unbekannte Befehlszeile:\n" << zeile << '\n';
       break;
     } // if (zeile == …)
   } // while (true)
+
+  UI_Gtkmm::speicher_spielraster(spielraster);
 
   //usleep(20*1000);
   //cdebug << "___\n" << spielraster << endl;

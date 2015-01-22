@@ -39,6 +39,7 @@
 #include "hauptfenster.h"
 #include "hilfe.h"
 #include "ueber.h"
+#include "pdf_export.h"
 #include <gtkmm/main.h>
 
 namespace UI_Gtkmm {
@@ -123,8 +124,10 @@ namespace UI_Gtkmm {
     UI_Gtkmm::spiel_endet()
     {
       this->hauptfenster->aktualisiere();
+#if 0
       if (this->hauptfenster->is_visible())
         this->main->run(*this->hauptfenster);
+#endif
       return;
     } // void UI_Gtkmm::spiel_endet()
 
