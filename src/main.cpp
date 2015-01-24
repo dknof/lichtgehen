@@ -37,8 +37,8 @@
 #include "constants.h"
 
 #include "spielraster/spielraster.h"
-#include "bot/bot.h"
-#include "bot/mensch.h"
+#include "spieler/bot.h"
+#include "spieler/mensch.h"
 #include "ui/ui.h"
 
 #include <string>
