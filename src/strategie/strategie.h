@@ -63,7 +63,7 @@ class Strategie {
 
     // Die Bewegungsrichtung nach der Strategie ermitteln
     virtual Bewegungsrichtung bewegung(Spielraster const& spielraster,
-                                       int bot_nummer) = 0;
+                                       int spieler_nummer) = 0;
 
   protected:
     // setzt Namen und Beschreibung

@@ -67,11 +67,11 @@ class TaktikenMitEndspiel : public Taktiken {
 
     // Die Bewegungsrichtung nach der Strategie ermitteln
     Bewegungsrichtung bewegung(Spielraster const& spielraster,
-                               int bot_nummer) override;
+                               int spieler_nummer) override;
 
   protected:
     // teste auf Änderung des Spielstatus
-    void teste_spielstatus(Spielraster const& spielraster, int bot_nummer);
+    void teste_spielstatus(Spielraster const& spielraster, int spieler_nummer);
 
   protected:
     // Der Spielstatus

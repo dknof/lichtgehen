@@ -55,17 +55,17 @@ namespace TaktikNS {
    ** Gehe in die Richtung von den Felden mit den wenigsten freien Nachbarn. Ignoriere aber Sackgassen.
    ** 
    ** @param     spielraster   das Spielraster
-   ** @param     bot_nummer   die Nummer des Bots
+   ** @param     spieler_nummer   die Nummer des Spielers
    **
    ** @return    Entlang dem Weg mit den meisten Wänden
    **
    ** @version   2014-10-30
    **/
   Taktik::Ergebnis
-    RaumAusfuellen::ergebnis(Spielraster const& spielraster, int const bot_nummer)
+    RaumAusfuellen::ergebnis(Spielraster const& spielraster, int const spieler_nummer)
     {
       int min_frei = 5; // minimale Anzahl an freien Nachbarrasterern
-      BotPosition const bp{spielraster.position(bot_nummer)};
+      SpielerPosition const bp{spielraster.position(spieler_nummer)};
       Bewegungsrichtung richtung = Bewegungsrichtung::VORWAERTS;
       if (!spielraster(bp + Bewegungsrichtung::VORWAERTS)) {
         int const frei = spielraster.nachbarn_frei(bp + Bewegungsrichtung::VORWAERTS);
@@ -91,5 +91,5 @@ namespace TaktikNS {
       if (min_frei == 5) // nur Sackgassen gefunden
         return false;
       return richtung;
-    } // Taktik::Ergebnis RaumAusfuellen::ergebnis(Spielraster const& spielraster, int const bot_nummer)
+    } // Taktik::Ergebnis RaumAusfuellen::ergebnis(Spielraster const& spielraster, int const spieler_nummer)
 } // namespace TaktikNS

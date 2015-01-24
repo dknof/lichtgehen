@@ -82,11 +82,11 @@ Spielraster::ausgeben(ostream& ostr) const
   ostr << "GAMEBOARDSTART "
     << this->breite() << "," << this->laenge() << '\n';
   Raster raster = *this;
-  for (int b = 0; b < this->bot_anz(); ++b)
+  for (int b = 0; b < this->spieler_anz(); ++b)
     raster.belege(this->position(b), false);
   ostr << raster;
   ostr << "GAMEBOARDEND\n";
-  for (int b = 0; b < this->bot_anz(); ++b) {
+  for (int b = 0; b < this->spieler_anz(); ++b) {
     auto const p = this->position(b);
     ostr << "POS " << b+1 << " "
       << p.x()+1 << "," << p.y()+1 << " " << p.richtung() << '\n';
@@ -130,10 +130,10 @@ Spielraster::ausgeben_schoen(ostream& ostr) const
     for (int x = 0; x < this->breite(); ++x) {
       if ((*this)(x, y)) {
 #if 1 // farbige Ausgabe
-        // Bot suchen
-        int n; // Nummer des Bots
-        BotWeg::const_iterator pos; // Position des Bots
-        for (n = 0; n < this->bot_anz(); ++n) {
+        // Spieler suchen
+        int n; // Nummer des Spielers
+        SpielerWeg::const_iterator pos; // Position des Spielers
+        for (n = 0; n < this->spieler_anz(); ++n) {
           for (pos = begin(this->weg(n)); pos != end(this->weg(n)); ++pos) {
             if (*pos == Position(x, y)) {
               break;
@@ -142,8 +142,8 @@ Spielraster::ausgeben_schoen(ostream& ostr) const
           if (pos != end(this->weg(n)))
             break;
         } // for (n)
-        if (n < this->bot_anz()) {
-          // Botverlauf ausgeben
+        if (n < this->spieler_anz()) {
+          // Spielerverlauf ausgeben
           ostr << "\033[" << (31 + 3 * n) << ";1m";
           if (*pos == this->weg(n)[0]) { // Startposition
             switch (((this->weg(n).size() == 1) ? pos : pos + 1)->richtung()) {
@@ -183,12 +183,12 @@ Spielraster::ausgeben_schoen(ostream& ostr) const
   for (int x = 0; x < this->breite(); ++x)
     ostr << "─";
   ostr << "┘\n";
-  // Positionen/Rundenanzahl der Bots ausgeben
-  for (int n = 0; n < this->bot_anz(); ++n) 
+  // Positionen/Rundenanzahl der Spielers ausgeben
+  for (int n = 0; n < this->spieler_anz(); ++n) 
     if (this->position(n))
-      ostr << "Bot " << n << ": " << this->position(n) << '\n';
+      ostr << "Spieler " << n << ": " << this->position(n) << '\n';
     else
-      ostr << "Bot " << n << ": " << this->weg(n).size() - 2 << " Runden\n";
+      ostr << "Spieler " << n << ": " << this->weg(n).size() - 2 << " Runden\n";
 
   return ostr;
 } // ostream& Raster::ausgeben_schoen(ostream& ostr) const
@@ -198,52 +198,52 @@ Spielraster::ausgeben_schoen(ostream& ostr) const
  ** 
  ** @param     -
  **
- ** @return    die Anzahl der Bots
+ ** @return    die Anzahl der Spieler
  **
  ** @version   2014-10-25
  **/
 int
-Spielraster::bot_anz() const
+Spielraster::spieler_anz() const
 {
-  return this->bot_anz_;
-} // int Spielraster::bot_anz() const
+  return this->spieler_anz_;
+} // int Spielraster::spieler_anz() const
 
 /**
  ** -> Rückgabe
  ** 
  ** @param     -
  **
- ** @return    die Anzahl der Bots im Spiel
+ ** @return    die Anzahl der Spieler im Spiel
  **
  ** @version   2014-11-08
  **/
 int
-Spielraster::bots_im_spiel() const
+Spielraster::spieler_im_spiel() const
 {
   int n = 0;
-  for (int i = 0; i < this->bot_anz(); ++i)
-    if (this->bot_im_spiel(i))
+  for (int i = 0; i < this->spieler_anz(); ++i)
+    if (this->spieler_im_spiel(i))
       n += 1;
   return n;
-} // int Spielraster::bots_im_spiel() const
+} // int Spielraster::spieler_im_spiel() const
 
 /**
  ** -> Rückgabe
  ** 
- ** @param     bot   Nummer des Bots
+ ** @param     spieler   Nummer des Spielers
  **
- ** @return    ob der Bot noch im Spiel ist
+ ** @return    ob der Spieler noch im Spiel ist
  **
  ** @version   2014-11-10
  **/
 bool
-Spielraster::bot_im_spiel(int const bot) const
+Spielraster::spieler_im_spiel(int const spieler) const
 {
-  return this->position(bot);
-} // bool Spielraster::bots_im_spiel(int const bot) const
+  return this->position(spieler);
+} // bool Spielraster::spieler_im_spiel(int const spieler) const
 
 /**
- ** setzt den Bot auf ein Raster
+ ** setzt den Spieler auf ein Raster
  ** 
  ** @param     istr   Eingabestrom mit den Daten
  **
@@ -252,94 +252,94 @@ Spielraster::bot_im_spiel(int const bot) const
  ** @version   2014-10-30
  **/
 void
-Spielraster::setze_bot(istream& istr)
+Spielraster::setze_spieler(istream& istr)
 {
   istr.get(); istr.get(); istr.get(); istr.get(); // "SET " oder "POS "
   int n;
   istr >> n;
-  BotPosition bp(istr);
-  this->setze_bot(n - 1, bp);
+  SpielerPosition bp(istr);
+  this->setze_spieler(n - 1, bp);
   return ;
-} // void Spielraster::setze_bot(istream& istr)
+} // void Spielraster::setze_spieler(istream& istr)
 
 /**
- ** setzt den Bot auf ein Raster
+ ** setzt den Spieler auf ein Raster
  ** 
- ** @param     n    Nummer des Bots
- ** @param     bp   BotPosition
+ ** @param     n    Nummer des Spielers
+ ** @param     bp   SpielerPosition
  **
  ** @return    -
  **
  ** @version   2014-10-27
  **/
 void
-Spielraster::setze_bot(int const n, BotPosition const& bot_position)
+Spielraster::setze_spieler(int const n, SpielerPosition const& spieler_position)
 {
-  if (n > this->bot_anz()) {
-    cerr << "Botanzahl nicht wie erwartet: Anzahl = " << this->bot_anz() << ", aber bot " << n << " soll gesetzt werden\n";
+  if (n > this->spieler_anz()) {
+    cerr << "Spieleranzahl nicht wie erwartet: Anzahl = " << this->spieler_anz() << ", aber spieler " << n << " soll gesetzt werden\n";
     exit(1);
   }
-  if (n == this->bot_anz()) {
-    this->bot_anz_ += 1;
-    this->bot_weg_.push_back(BotWeg());
+  if (n == this->spieler_anz()) {
+    this->spieler_anz_ += 1;
+    this->spieler_weg_.push_back(SpielerWeg());
   }
-  this->bot_weg_[n].push_back(bot_position);
-  this->belege(bot_position);
+  this->spieler_weg_[n].push_back(spieler_position);
+  this->belege(spieler_position);
 
   return; 
-} // void Spielraster::setze_bot(int const n, BotPosition const& bot_position)
+} // void Spielraster::setze_spieler(int const n, SpielerPosition const& spieler_position)
 
 /**
- ** entfernt einen Bot vom Spielraster
+ ** entfernt einen Spieler vom Spielraster
  ** 
- ** @param     n    Nummer des Bots
+ ** @param     n    Nummer des Spielers
  **
  ** @return    -
  **
  ** @version   2014-10-27
  **/
 void
-Spielraster::entferne_bot(int const n)
+Spielraster::entferne_spieler(int const n)
 {
-  // setze den Bot auf eine Position außerhalb vom Spielraster
-  this->bot_weg_[n].push_back(BotPosition{Position::KEINE, Richtung::NORDEN});
+  // setze den Spieler auf eine Position außerhalb vom Spielraster
+  this->spieler_weg_[n].push_back(SpielerPosition{Position::KEINE, Richtung::NORDEN});
   return;
-} // void Spielraster::entferne_bot(int const n)
+} // void Spielraster::entferne_spieler(int const n)
 
 /**
  ** -> Rückgabe
  ** 
- ** @param     n    Nummer des Bots
+ ** @param     n    Nummer des Spielers
  **
- ** @return    die Position des Bots
+ ** @return    die Position des Spielers
  **
  ** @version   2014-10-27
  **/
-BotPosition const&
+SpielerPosition const&
 Spielraster::position(int const n) const
 {
   return this->weg(n).back();
-} // BotPosition const& Spielraster::position(int const n) const
+} // SpielerPosition const& Spielraster::position(int const n) const
 
 /**
  ** -> Rückgabe
  ** 
- ** @param     n    Nummer des Bots
+ ** @param     n    Nummer des Spielers
  **
- ** @return    der Weg des Bots
+ ** @return    der Weg des Spielers
  **
  ** @version   2014-10-27
  **/
-BotWeg const&
+SpielerWeg const&
 Spielraster::weg(int const n) const
 {
-  return this->bot_weg_[n];
-} // BotWeg const& Spielraster::weg(int const n) const
+  return this->spieler_weg_[n];
+} // SpielerWeg const& Spielraster::weg(int const n) const
 
 /**
- ** bewegt den Bot um einen Schritt
+ ** bewegt den Spieler um einen Schritt
  ** 
- ** @param     n    Nummer des Bots
+ ** @param     n    Nummer des Spielers
  ** @param     br   Bewegungsrichtung
  **
  ** @return    -
@@ -347,91 +347,91 @@ Spielraster::weg(int const n) const
  ** @version   2014-11-13
  **/
 void 
-Spielraster::bewege_bot(int const n, Bewegungsrichtung const br)
+Spielraster::bewege_spieler(int const n, Bewegungsrichtung const br)
 {
-  BotPosition const bp{this->position(n) + br};
+  SpielerPosition const bp{this->position(n) + br};
   if ((*this)(bp)) {
-    this->entferne_bot(n);
+    this->entferne_spieler(n);
     return ;
   }
 
-  this->bot_weg_[n].push_back(bp);
+  this->spieler_weg_[n].push_back(bp);
   this->belege(bp);
 
   return ;
-} // void Spielraster::bewege_bot(int const n, Bewegungsrichtung const br)
+} // void Spielraster::bewege_spieler(int const n, Bewegungsrichtung const br)
 
 /**
  ** -> Rückgabe
  ** 
- ** @param     bot       Nummer des Bots
+ ** @param     spieler       Nummer des Spielers
  **
- ** @return    Informationen über den Raum, in dem sich der Bot befindet
+ ** @return    Informationen über den Raum, in dem sich der Spieler befindet
  **
  ** @version   2014-11-11
  **/
 Spielraster::RaumInfo
-Spielraster::rauminfo(int const bot) const
+Spielraster::rauminfo(int const spieler) const
 {
-  if (!this->bot_im_spiel(bot))
+  if (!this->spieler_im_spiel(spieler))
     return RaumInfo{};
   RaumInfo rauminfo;
-  rauminfo.groesse = this->raumgroesse(this->position(bot));
-  rauminfo.bot_anz = 0;
+  rauminfo.groesse = this->raumgroesse(this->position(spieler));
+  rauminfo.spieler_anz = 0;
 
-  // Entfernung zum nächsten Bot
-  rauminfo.entfernung_naechster_bot = this->breite() * this->laenge() + 1;
-  for (int b = 0; b < this->bot_anz(); ++b) {
-    if (b == bot)
+  // Entfernung zum nächsten Spieler
+  rauminfo.entfernung_naechster_spieler = this->breite() * this->laenge() + 1;
+  for (int b = 0; b < this->spieler_anz(); ++b) {
+    if (b == spieler)
       continue;
-    if (!this->bot_im_spiel(b))
+    if (!this->spieler_im_spiel(b))
       continue;
-    auto const n = this->kuerzeste_entfernung(this->position(bot),
+    auto const n = this->kuerzeste_entfernung(this->position(spieler),
                                              this->position(b));
     if (n >= 0) {
-      rauminfo.bot_anz += 1;
-      rauminfo.entfernung_naechster_bot = std::min(rauminfo.entfernung_naechster_bot, n);
+      rauminfo.spieler_anz += 1;
+      rauminfo.entfernung_naechster_spieler = std::min(rauminfo.entfernung_naechster_spieler, n);
     }
-  } // for (int b = 0; b < this->bot_anz(); ++b)
-  if (rauminfo.bot_anz == 0)
-    rauminfo.entfernung_naechster_bot = -1;
+  } // for (int b = 0; b < this->spieler_anz(); ++b)
+  if (rauminfo.spieler_anz == 0)
+    rauminfo.entfernung_naechster_spieler = -1;
   return rauminfo;
-} // Spielraster::RaumInfo Spielraster::rauminfo(int const bot) const
+} // Spielraster::RaumInfo Spielraster::rauminfo(int const spieler) const
 
 /**
  ** -> Rückgabe
  ** 
- ** @param     bot       Nummer des Bots
+ ** @param     spieler       Nummer des Spielers
  ** @param     bewegungsrichtung   Richtung des Raumes
  **
- ** @return    Informationen über den Raum des Bots in Richtung „bewegungsrichtung”
+ ** @return    Informationen über den Raum des Spielers in Richtung „bewegungsrichtung”
  **
  ** @version   2014-11-11
  **
  ** @todo      Durch kopieren und modifizieren der Algorithmen Raster::raumgroesse / Raster::kuerzeste_entfernung lässt sich die Performance steigern. Dies lohnt hier aber vermutlich nicht, also wird der Code hier lieber simpel gehalten.
  **/
 Spielraster::RaumInfo
-Spielraster::rauminfo(int const bot,
+Spielraster::rauminfo(int const spieler,
                       Bewegungsrichtung const bewegungsrichtung) const
 {
   RaumInfo rauminfo;
-  rauminfo.groesse = this->raumgroesse(this->position(bot) + bewegungsrichtung, true);
-  rauminfo.bot_anz = 0;
-  rauminfo.entfernung_naechster_bot = this->breite() * this->laenge() + 1;
-  for (int b = 0; b < this->bot_anz(); ++b) {
-    if (b == bot)
+  rauminfo.groesse = this->raumgroesse(this->position(spieler) + bewegungsrichtung, true);
+  rauminfo.spieler_anz = 0;
+  rauminfo.entfernung_naechster_spieler = this->breite() * this->laenge() + 1;
+  for (int b = 0; b < this->spieler_anz(); ++b) {
+    if (b == spieler)
       continue;
-    auto const n = this->kuerzeste_entfernung(this->position(bot),
+    auto const n = this->kuerzeste_entfernung(this->position(spieler),
                                              this->position(b));
     if (n >= 0) {
-      rauminfo.bot_anz += 1;
-      rauminfo.entfernung_naechster_bot = std::min(rauminfo.entfernung_naechster_bot, n);
+      rauminfo.spieler_anz += 1;
+      rauminfo.entfernung_naechster_spieler = std::min(rauminfo.entfernung_naechster_spieler, n);
     }
-  } // for (int b = 0; b < this->bot_anz(); ++b)
-  if (rauminfo.bot_anz == 0)
-    rauminfo.entfernung_naechster_bot = -1;
+  } // for (int b = 0; b < this->spieler_anz(); ++b)
+  if (rauminfo.spieler_anz == 0)
+    rauminfo.entfernung_naechster_spieler = -1;
   return rauminfo;
-} // Spielraster::RaumInfo Spielraster::rauminfo(int const bot, Bewegungsrichtung const bewegungsrichtung) const
+} // Spielraster::RaumInfo Spielraster::rauminfo(int const spieler, Bewegungsrichtung const bewegungsrichtung) const
 
 /**
  ** -> Rückgabe
@@ -445,8 +445,8 @@ Spielraster::rauminfo(int const bot,
 int 
 Spielraster::runde() const
 {
-  auto r = this->bot_weg_[0].size();
-  for (auto const& w : this->bot_weg_)
+  auto r = this->spieler_weg_[0].size();
+  for (auto const& w : this->spieler_weg_)
     r = std::max(r, w.size());
 
   return r;
@@ -469,13 +469,13 @@ Spielraster::historie(int const runde) const
 
   auto sr = *this;
   // Felder wieder freisetzen
-  for (auto const& w : sr.bot_weg_) {
+  for (auto const& w : sr.spieler_weg_) {
     if (static_cast<int>(w.size()) >= runde + 2)
       for (auto f = (begin(w) + runde + 1); f != end(w); ++f)
         sr.belege(*f, false);
   }
-  // Weg der Bots beschneiden
-  for (auto& w : sr.bot_weg_)
+  // Weg der Spieler beschneiden
+  for (auto& w : sr.spieler_weg_)
     w.resize(std::min(static_cast<int>(w.size()), runde + 1));
 
   return sr;
@@ -484,22 +484,22 @@ Spielraster::historie(int const runde) const
 /**
  ** -> Rückgabe
  ** 
- ** @param     bot       Nummer des Bots
+ ** @param     spieler       Nummer des Spielers
  **
  ** @return    Groesse des Einflussbereichs
  **
  ** @version   2014-11-22
  **/
 int 
-Spielraster::einflussbereich_groesse(int const bot) const
+Spielraster::einflussbereich_groesse(int const spieler) const
 {
-  return this->einflussbereich(bot).felder_belegt();
-} // int Spielraster::einflussbereich_groesse(int bot) const
+  return this->einflussbereich(spieler).felder_belegt();
+} // int Spielraster::einflussbereich_groesse(int spieler) const
 
 /**
  ** -> Rückgabe
  ** 
- ** @param     bot   Nummer des Bots
+ ** @param     spieler   Nummer des Spielers
  ** @param     br    Richtung, für die geprüft wird
  **
  ** @return    Groesse des Einflussbereichs in dem Feld Richtung br
@@ -507,83 +507,83 @@ Spielraster::einflussbereich_groesse(int const bot) const
  ** @version   2014-11-22
  **/
 int 
-Spielraster::einflussbereich_groesse(int const bot, Bewegungsrichtung const br) const
+Spielraster::einflussbereich_groesse(int const spieler, Bewegungsrichtung const br) const
 {
-  return this->einflussbereich(bot, br).felder_belegt();
-} // int Spielraster::einflussbereich_groesse(int bot, Bewegungsrichtung const br) const
+  return this->einflussbereich(spieler, br).felder_belegt();
+} // int Spielraster::einflussbereich_groesse(int spieler, Bewegungsrichtung const br) const
 
 /**
  ** -> Rückgabe
- ** Ermittelt den Einflussbereich eines Bots
+ ** Ermittelt den Einflussbereich eines Spieler
  ** 
- ** @param     bot       Nummer des Bots
+ ** @param     spieler       Nummer des Spielers
  **
- ** @return    Einflussbereich des Bots
+ ** @return    Einflussbereich des Spielers
  **
  ** @version   2014-11-22
  **/
 Raster 
-Spielraster::einflussbereich(int const bot) const
+Spielraster::einflussbereich(int const spieler) const
 {
-  return einflussbereich(bot, this->position(bot));
-} // Raster Spielraster::einflussbereich(int const bot) const
+  return einflussbereich(spieler, this->position(spieler));
+} // Raster Spielraster::einflussbereich(int const spieler) const
 
 /**
  ** -> Rückgabe
- ** Ermittelt den Einflussbereich eines Bots
+ ** Ermittelt den Einflussbereich eines Spieler
  ** 
- ** @param     bot       Nummer des Bots
+ ** @param     spieler       Nummer des Spielers
  ** @param     br    Richtung, für die geprüft wird
  **
- ** @return    Einflussbereich des Bots
+ ** @return    Einflussbereich des Spielers
  **
  ** @version   2014-11-22
  **/
 Raster 
-Spielraster::einflussbereich(int const bot, Bewegungsrichtung const br) const
+Spielraster::einflussbereich(int const spieler, Bewegungsrichtung const br) const
 {
-  return einflussbereich(bot, this->position(bot) + br);
-} // Raster Spielraster::einflussbereich(int bot, Bewegungsrichtung br) const
+  return einflussbereich(spieler, this->position(spieler) + br);
+} // Raster Spielraster::einflussbereich(int spieler, Bewegungsrichtung br) const
 
 /**
  ** -> Rückgabe
- ** Ermittelt den Einflussbereich eines Bots
+ ** Ermittelt den Einflussbereich eines Spieler
  ** 
- ** @param     bot       Nummer des Bots
- ** @param     position  Position des Bots
+ ** @param     spieler       Nummer des Spielers
+ ** @param     position  Position des Spielers
  **
- ** @return    Einflussbereich des Bots
+ ** @return    Einflussbereich des Spielers
  **
  ** @version   2014-11-22
  **/
 Raster 
-Spielraster::einflussbereich(int const bot, Position const position) const
+Spielraster::einflussbereich(int const spieler, Position const position) const
 {
   if (  (*this)(position)
-      && (position != this->position(bot)) )
+      && (position != this->position(spieler)) )
     return Raster{this->breite(), this->laenge()};
   auto raster = static_cast<Raster>(*this);
-  auto raster_bot = Raster{this->breite(), this->laenge()};
+  auto raster_spieler = Raster{this->breite(), this->laenge()};
 
-  std::set<Position> offene_positionen_bot; // offene Positionen des Bots
-  std::set<Position> offene_positionen_sonst; // offene Positionen der anderen Bots
-  for (int b = 0; b < this->bot_anz(); ++b) {
+  std::set<Position> offene_positionen_spieler; // offene Positionen des Spielers
+  std::set<Position> offene_positionen_sonst; // offene Positionen der anderen Spieler
+  for (int b = 0; b < this->spieler_anz(); ++b) {
     auto const p = this->position(b);
     if (!p)
       continue;
-    if (b == bot)
-      offene_positionen_bot.insert(position);
+    if (b == spieler)
+      offene_positionen_spieler.insert(position);
     else
       offene_positionen_sonst.insert(p);
   } // for (b)
 
-  std::set<Position> offene_positionen_bot_neu; // neue offene Positionen des Bots
-  std::set<Position> offene_positionen_sonst_neu; // neue offene Positionen der anderen Bots
-  while (   !offene_positionen_bot.empty()
+  std::set<Position> offene_positionen_spieler_neu; // neue offene Positionen des Spielers
+  std::set<Position> offene_positionen_sonst_neu; // neue offene Positionen der anderen Spieler
+  while (   !offene_positionen_spieler.empty()
          || !offene_positionen_sonst.empty()) {
-    offene_positionen_bot_neu.clear();
+    offene_positionen_spieler_neu.clear();
     offene_positionen_sonst_neu.clear();
-    // Erst den Einflussbereich der anderen Bots erweitern, anschließend den eigenen
+    // Erst den Einflussbereich der anderen Spieler erweitern, anschließend den eigenen
     for (auto p : offene_positionen_sonst) {
       for (auto r : ::richtungen) {
         if (!raster(p + r)) {
@@ -592,36 +592,36 @@ Spielraster::einflussbereich(int const bot, Position const position) const
         }
       }
     } // for (p)
-    for (auto p : offene_positionen_bot) {
+    for (auto p : offene_positionen_spieler) {
       for (auto r : ::richtungen) {
         if (!raster(p + r)) {
           raster.belege(p + r);
-          raster_bot.belege(p + r);
-          offene_positionen_bot_neu.insert(p + r);
+          raster_spieler.belege(p + r);
+          offene_positionen_spieler_neu.insert(p + r);
         }
       }
     } // for (p)
-    offene_positionen_bot = offene_positionen_bot_neu;
+    offene_positionen_spieler = offene_positionen_spieler_neu;
     offene_positionen_sonst = offene_positionen_sonst_neu;
-  } // while (offene_positionen_bot || offene_positionen_sonst)
+  } // while (offene_positionen_spieler || offene_positionen_sonst)
 
-  return raster_bot;
-} // Raster Spielraster::einflussbereich(int bot, Position position) const
+  return raster_spieler;
+} // Raster Spielraster::einflussbereich(int spieler, Position position) const
 
 /**
  ** -> Rückgabe
  ** Ermittelt, wie viele Felder vom Einflussbereich durch einen Durchlauf erreicht werden können.
  ** 
- ** @param     bot       Nummer des Bots
+ ** @param     spieler       Nummer des Spielers
  **
- ** @return    Anzahl der Felder, die der Bot aus seinem Einflussbereich und nur über den Einflussbereich erreichen kann
+ ** @return    Anzahl der Felder, die der Spieler aus seinem Einflussbereich und nur über den Einflussbereich erreichen kann
  **
  ** @version   2014-11-28
  **/
 int 
-Spielraster::einflussbereich_groesse_erreichbar(int const bot) const
+Spielraster::einflussbereich_groesse_erreichbar(int const spieler) const
 {
   Raster r = *this;
-  r.belege(this->einflussbereich(bot).invertiert());
-  return r.raumgroesse_erreichbar(this->position(bot));
-} // int Spielraster::einflussbereich_groesse_erreichbar(int bot) const
+  r.belege(this->einflussbereich(spieler).invertiert());
+  return r.raumgroesse_erreichbar(this->position(spieler));
+} // int Spielraster::einflussbereich_groesse_erreichbar(int spieler) const

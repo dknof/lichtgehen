@@ -55,22 +55,22 @@ namespace TaktikNS {
    ** Gehe zum dichtesten Gegner
    ** 
    ** @param     spielraster   das Spielraster
-   ** @param     bot_nummer    die Nummer des Bots
+   ** @param     spieler_nummer    die Nummer des Spielers
    **
    ** @return    Richtung zum Gegner
    **
    ** @version   2014-12-08
    **/
   Taktik::Ergebnis
-    GegnerVerfolgen::ergebnis(Spielraster const& spielraster, int const bot_nummer)
+    GegnerVerfolgen::ergebnis(Spielraster const& spielraster, int const spieler_nummer)
     {
       int entfernung_min = spielraster.groesse();
       auto richtung_min = Bewegungsrichtung::VORWAERTS;
       for (auto r : bewegungsrichtungen) {
-        for (int b = 0; b < spielraster.bot_anz(); ++b) {
-          if (b == bot_nummer)
+        for (int b = 0; b < spielraster.spieler_anz(); ++b) {
+          if (b == spieler_nummer)
             continue;
-          auto const e = spielraster.kuerzeste_entfernung(spielraster.position(b), spielraster.position(bot_nummer) + r);
+          auto const e = spielraster.kuerzeste_entfernung(spielraster.position(b), spielraster.position(spieler_nummer) + r);
           if ((e > 0) && (e < entfernung_min)) {
             entfernung_min = e;
             richtung_min = r;
@@ -81,5 +81,5 @@ namespace TaktikNS {
       if (entfernung_min == spielraster.groesse())
         return false;
       return richtung_min;
-    } // Taktik::Ergebnis GegnerVerfolgen::ergebnis(Spielraster const& spielraster, int const bot_nummer)
+    } // Taktik::Ergebnis GegnerVerfolgen::ergebnis(Spielraster const& spielraster, int const spieler_nummer)
 } // namespace TaktikNS

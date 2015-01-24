@@ -1,7 +1,7 @@
 OBJECTS = spielraster.o \
 	  raster.o \
 	  position.o \
-	  botposition.o \
+	  spielerposition.o \
 	  richtung.o
 
 DIRECTORIES = 

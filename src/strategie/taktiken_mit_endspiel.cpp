@@ -81,7 +81,7 @@ namespace StrategieNS {
     Taktiken{name}
   {
     this->setze_name("Taktiken mit Endspiel", "verschiedene Taktiken durchgehen, zum Spielende auf Endspieltaktiken wechseln");
-} // TaktikenMitEndspiel::TaktikenMitEndspiel(std::initializer_list<string> name)
+  } // TaktikenMitEndspiel::TaktikenMitEndspiel(std::initializer_list<string> name)
 
   /**
    ** Standarddestruktor
@@ -120,7 +120,7 @@ namespace StrategieNS {
    ** Die Bewegungsrichtung nach den Taktiken ermitteln
    ** 
    ** @param     spielraster   das Spielraster
-   ** @param     bot_nummer  die Nummer des Bots
+   ** @param     spieler_nummer  die Nummer des Spielers
    **
    ** @return    -
    **
@@ -128,11 +128,11 @@ namespace StrategieNS {
    **/
   Bewegungsrichtung
     TaktikenMitEndspiel::bewegung(Spielraster const& spielraster,
-                                  int const bot_nummer)
+                                  int const spieler_nummer)
     {
-      this->teste_spielstatus(spielraster, bot_nummer);
-      return this->Taktiken::bewegung(spielraster, bot_nummer);
-    } // Bewegungsrichtung TaktikenMitEndspiel::bewegung(Spielraster spielraster, int bot_nummer)
+      this->teste_spielstatus(spielraster, spieler_nummer);
+      return this->Taktiken::bewegung(spielraster, spieler_nummer);
+    } // Bewegungsrichtung TaktikenMitEndspiel::bewegung(Spielraster spielraster, int spieler_nummer)
 
   /**
    ** Teste die Änderung des Spielstatus
@@ -145,11 +145,11 @@ namespace StrategieNS {
    **/
   void
     TaktikenMitEndspiel::teste_spielstatus(Spielraster const& spielraster,
-                                           int const bot_nummer)
+                                           int const spieler_nummer)
     {
       auto neuer_status = this->spielstatus;
 
-      auto const rauminfo = spielraster.rauminfo(bot_nummer);
+      auto const rauminfo = spielraster.rauminfo(spieler_nummer);
 
       // Teste, auf letzte Felder
       if (!(this->spielstatus & LETZTE_FELDER)) {
@@ -159,7 +159,7 @@ namespace StrategieNS {
 
       // Teste, auf eigenen Raum
       if (!(this->spielstatus & EIGENER_RAUM)) {
-        if (rauminfo.bot_anz == 0)
+        if (rauminfo.spieler_anz == 0)
           neuer_status |= EIGENER_RAUM;
       } // if (!(this->spielstatus & EIGENER_RAUM))
 
@@ -167,9 +167,9 @@ namespace StrategieNS {
       if (neuer_status == this->spielstatus)
         return ;
 
-      // Die Tiefensuche ist nur für zwei Bots implementiert
+      // Die Tiefensuche ist nur für zwei Spieler implementiert
       if (   (neuer_status == LETZTE_FELDER)
-        && (rauminfo.bot_anz > 1) )
+          && (rauminfo.spieler_anz > 1) )
         return ;
 
       this->taktiken.clear();
@@ -195,6 +195,6 @@ namespace StrategieNS {
       this->spielstatus = neuer_status;
 
       return ;
-    } // void TaktikenMitEndspiel::teste_spielstatus(Spielraster spielraster, int bot_nummer)
+    } // void TaktikenMitEndspiel::teste_spielstatus(Spielraster spielraster, int spieler_nummer)
 
 } // namespace StrategieNS

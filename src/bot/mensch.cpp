@@ -46,21 +46,22 @@
  **
  ** @return    -
  **
- ** @version   2014-11-21
+ ** @version   2015-01-25
  **/
 Mensch::Mensch(Spielraster const& spielraster, UI& ui) :
-  Bot(spielraster),
+  Spieler(spielraster, "Mensch"),
   ui(ui)
 { }
 
 /**
- ** setzt die Nummer
+ ** -> Rückgabe
+ ** Die Richtung wir dvon der UI übernommen, belegte Felder werden aber nicht betreten
  ** 
- ** @param     nummer    die Nummer
+ ** @param     -
  **
- ** @return    -
+ ** @return    Richtung, in die der Mensch geht
  **
- ** @version   2014-11-21
+ ** @version   2015-01-24
  **/
 Bewegungsrichtung
 Mensch::bewegung()

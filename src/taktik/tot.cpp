@@ -54,20 +54,20 @@ namespace TaktikNS {
    ** -> Rückgabe
    ** 
    ** @param     spielraster   das Spielraster
-   ** @param     bot_nummer   die Nummer des Bots
+   ** @param     spieler_nummer   die Nummer des Spielers
    **
    ** @return    falsch, wenn noch ein Weg frei ist, VERWAERTS, wenn kein Weg mehr frei ist
    **
    ** @version   2014-10-25
    **/
   Taktik::Ergebnis
-    Tot::ergebnis(Spielraster const& spielraster, int const bot_nummer)
+    Tot::ergebnis(Spielraster const& spielraster, int const spieler_nummer)
     {
-      BotPosition const bp{spielraster.position(bot_nummer)};
-      if (   spielraster(bp + Bewegungsrichtung::VORWAERTS)
-          && spielraster(bp + Bewegungsrichtung::LINKS)
-          && spielraster(bp + Bewegungsrichtung::RECHTS) )
+      SpielerPosition const sp{spielraster.position(spieler_nummer)};
+      if (   spielraster(sp + Bewegungsrichtung::VORWAERTS)
+          && spielraster(sp + Bewegungsrichtung::LINKS)
+          && spielraster(sp + Bewegungsrichtung::RECHTS) )
         return Bewegungsrichtung::VORWAERTS;
       return false;
-    } // Taktik::Ergebnis Tot::ergebnis(Spielraster const& spielraster, int const bot_nummer)
+    } // Taktik::Ergebnis Tot::ergebnis(Spielraster const& spielraster, int const spieler_nummer)
 } // namespace TaktikNS

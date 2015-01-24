@@ -52,7 +52,7 @@ class Richtung : public Taktik {
 
     // gibt das Ergebnis der Taktik zurück (ob sie greift und die Richtung)
     Ergebnis ergebnis(Spielraster const& spielraster,
-                      int bot_nummer) override;
+                      int spieler_nummer) override;
 
   private:
     // Die Richtung, in die sich bewegt werden soll

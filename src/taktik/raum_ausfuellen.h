@@ -50,7 +50,7 @@ class RaumAusfuellen : public Taktik {
 
     // gibt das Ergebnis der Taktik zurück (ob sie greift und die Richtung)
     Ergebnis ergebnis(Spielraster const& spielraster,
-                      int bot_nummer) override;
+                      int spieler_nummer) override;
 
 }; // class RaumAusfuellen : public Taktik
 

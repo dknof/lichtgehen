@@ -53,19 +53,19 @@ namespace TaktikNS {
   /**
    ** -> Rückgabe
    ** Gehe in die größten Raum
-   ** Greift nur, wenn sich der Bot für einen Raum entscheiden muss.
+   ** Greift nur, wenn sich der Spieler für einen Raum entscheiden muss.
    ** 
    ** @param     spielraster   das Spielraster
-   ** @param     bot_nummer   die Nummer des Bots
+   ** @param     spieler_nummer   die Nummer des Spielers
    **
    ** @return    Richtung mit dem größten Raum
    **
    ** @version   2014-11-01
    **/
   Taktik::Ergebnis
-    GroessterRaum::ergebnis(Spielraster const& spielraster, int const bot_nummer)
+    GroessterRaum::ergebnis(Spielraster const& spielraster, int const spieler_nummer)
     {
-      BotPosition const bp{spielraster.position(bot_nummer)};
+      SpielerPosition const bp{spielraster.position(spieler_nummer)};
       int const groesse_v
         = {spielraster.raumgroesse_erreichbar(bp + Bewegungsrichtung::VORWAERTS, true)};
       int const groesse_l
@@ -83,5 +83,5 @@ namespace TaktikNS {
           && (groesse_r > groesse_l))
         return Bewegungsrichtung::RECHTS;
       return false;
-    } // Taktik::Ergebnis GroessterRaum::ergebnis(Spielraster const& spielraster, int const bot_nummer)
+    } // Taktik::Ergebnis GroessterRaum::ergebnis(Spielraster const& spielraster, int const spieler_nummer)
 } // namespace TaktikNS

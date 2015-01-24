@@ -34,7 +34,7 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#include "botposition.h"
+#include "spielerposition.h"
 
 /**
  ** Konstruktor
@@ -45,7 +45,7 @@
  **
  ** @version   2014-11-22
  **/
-BotPosition::BotPosition() :
+SpielerPosition::SpielerPosition() :
   Position(), richtung_(Richtung::NORDEN)
 { }
 
@@ -59,7 +59,7 @@ BotPosition::BotPosition() :
  **
  ** @version   2014-10-25
  **/
-BotPosition::BotPosition(Position const& position, Richtung const richtung) :
+SpielerPosition::SpielerPosition(Position const& position, Richtung const richtung) :
   Position{position}, richtung_{richtung}
 { }
 
@@ -72,7 +72,7 @@ BotPosition::BotPosition(Position const& position, Richtung const richtung) :
  **
  ** @version   2014-10-25
  **/
-BotPosition::BotPosition(istream& istr) :
+SpielerPosition::SpielerPosition(istream& istr) :
   Position{istr}, richtung_{Richtung::NORDEN}
 {
   while (istr.good() && isspace(istr.peek()))
@@ -96,7 +96,7 @@ BotPosition::BotPosition(istream& istr) :
     cerr << "Richtung '" << c << "' unbekannt.\n";
     assert(false);
   } // switch (c)
-} // BotPosition::BotPosition(istream& istr)
+} // SpielerPosition::SpielerPosition(istream& istr)
 
 /**
  ** Text-Repräsentation
@@ -107,7 +107,7 @@ BotPosition::BotPosition(istream& istr) :
  **
  ** @version   2014-11-22
  **/
-BotPosition::operator string() const
+SpielerPosition::operator string() const
 { 
   string r;
   switch (this->richtung()) {
@@ -121,24 +121,24 @@ BotPosition::operator string() const
             + ", " + r + ")");
   else
     return "(--)";
-} // BotPosition::operator string() const
+} // SpielerPosition::operator string() const
 
 /**
- ** Die BotPosition auf ostr ausgeben
+ ** Die SpielerPosition auf ostr ausgeben
  ** 
  ** @param     ostr         Ausgabestrom
- ** @param     botposition  BotPosition zum ausgeben
+ ** @param     spielerposition  SpielerPosition zum ausgeben
  **
  ** @return    Ausgabestrom
  **
  ** @version   2014-10-25
  **/
 ostream&
-operator<<(ostream& ostr, BotPosition const& botposition)
+operator<<(ostream& ostr, SpielerPosition const& spielerposition)
 { 
-  ostr << static_cast<Position const&>(botposition) << ' ' << botposition.richtung();
+  ostr << static_cast<Position const&>(spielerposition) << ' ' << spielerposition.richtung();
   return ostr;
-} // ostream& operator<<(ostream& ostr, BotPosition const& botposition)
+} // ostream& operator<<(ostream& ostr, SpielerPosition const& spielerposition)
 
 /**
  ** -> Rückgabe
@@ -150,13 +150,13 @@ operator<<(ostream& ostr, BotPosition const& botposition)
  ** @version   2014-10-25
  **/
 Richtung
-BotPosition::richtung() const
+SpielerPosition::richtung() const
 {
   return this->richtung_;
-} // Richtung BotPosition::richtung() const
+} // Richtung SpielerPosition::richtung() const
 
 /**
- ** Bewegt die BotPosition entsprechend bewegungsrichtung
+ ** Bewegt die SpielerPosition entsprechend bewegungsrichtung
  ** 
  ** @param     bewegungsrichtung   Bewegungsrichtung
  **
@@ -164,13 +164,13 @@ BotPosition::richtung() const
  **
  ** @version   2014-10-25
  **/
-BotPosition&
-BotPosition::operator+=(Bewegungsrichtung const bewegungsrichtung)
+SpielerPosition&
+SpielerPosition::operator+=(Bewegungsrichtung const bewegungsrichtung)
 {
   this->richtung_ += bewegungsrichtung;
   static_cast<Position&>(*this) += this->richtung();
   return *this;
-} // BotPosition& BotPosition::operator+=(Bewegungsrichtung const bewegungsrichtung)
+} // SpielerPosition& SpielerPosition::operator+=(Bewegungsrichtung const bewegungsrichtung)
 
 /**
  ** -> Rückgabe
@@ -182,8 +182,8 @@ BotPosition::operator+=(Bewegungsrichtung const bewegungsrichtung)
  **
  ** @version   2014-11-13
  **/
-BotPosition
-operator+(BotPosition bp, Bewegungsrichtung const rhs)
+SpielerPosition
+operator+(SpielerPosition bp, Bewegungsrichtung const rhs)
 {
   return (bp += rhs);
-} // BotPosition operator+(Botposition lhs, Bewegungsrichtung const rhs)
+} // SpielerPosition operator+(Spielerposition lhs, Bewegungsrichtung const rhs)

@@ -34,52 +34,95 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef BOTPOSITION_H
-#define BOTPOSITION_H
+#include "spieler.h"
 
-#include "constants.h"
-#include "position.h"
-#include "richtung.h"
+#include "../spielraster/spielraster.h"
 
-/** Die Position eines Bots
+/**
+ ** Standardkonstruktor
  ** 
- ** @todo    kein default Konstruktor
- ** @todo    += → +
+ ** @param     spielraster   Spielraster
+ ** @param     name          Name des Spielers
+ **
+ ** @return    -
+ **
+ ** @version   2015-01-24
  **/
-class BotPosition : public Position {
-  public:
-    // Konstruktor
-    BotPosition();
-    // Konstruktor
-    BotPosition(Position const& position, Richtung const richtung);
-    // Konstruktor
-    BotPosition(istream& istr);
+Spieler::Spieler(Spielraster const& spielraster,
+                 string const& name) :
+  spielraster_(spielraster),
+  name_(name)
+{ }
 
-    // Die Richtung
-    Richtung richtung() const;
+/**
+ ** Destruktor
+ ** 
+ ** @param     -
+ **
+ ** @return    -
+ **
+ ** @version   2015-01-24
+ **/
+Spieler::~Spieler()
+{ }
 
-    // Text
-    operator string() const;
+/**
+ ** -> Rückgabe
+ ** 
+ ** @param     -
+ **
+ ** @return    der Name des Spielers
+ **
+ ** @version   2015-01-24
+ **/
+string const&
+Spieler::name() const
+{
+  return this->name_;
+} // string const& Spieler::name() const
 
-    // Ein Schritt in der Bewegungsrichtung bewegen
-    BotPosition& operator+=(Bewegungsrichtung bewegungsrichtung);
+/**
+ ** -> Rückgabe
+ ** 
+ ** @param     -
+ **
+ ** @return    die Nummer des Spielers
+ **
+ ** @version   2014-11-10
+ **/
+Spielraster const&
+Spieler::spielraster() const
+{
+  return this->spielraster_;
+} // Spielraster const& Spieler::spielraster() const
 
-  private:
-    // Blickrichtung
-    Richtung richtung_ = Richtung::NORDEN;
-}; // class BotPosition
+/**
+ ** -> Rückgabe
+ ** 
+ ** @param     -
+ **
+ ** @return    die Nummer des Spielers
+ **
+ ** @version   2014-11-10
+ **/
+int
+Spieler::nummer() const
+{
+  return this->nummer_;
+} // int Spieler::nummer() const
 
-// der Weg eines Bots
-typedef vector<BotPosition> BotWeg;
-
-// BotPosition ausgeben
-ostream& operator<<(ostream& ostr, BotPosition const& botposition);
-// Ein Schritt in der Bewegungsrichtung weiter
-BotPosition operator+(BotPosition lhs, Bewegungsrichtung rhs);
-
-namespace std {
-  inline string to_string(BotPosition const bp)
-  { return static_cast<string>(bp); }
-}
-
-#endif // #ifndef BOTPOSITION_H
+/**
+ ** setzt die Nummer
+ ** 
+ ** @param     nummer    die Nummer
+ **
+ ** @return    -
+ **
+ ** @version   2014-10-25
+ **/
+void
+Spieler::setze_nummer(int const nummer)
+{
+  this->nummer_ = nummer;
+  return ;
+} // void Spieler::setze_nummer(int const nummer)

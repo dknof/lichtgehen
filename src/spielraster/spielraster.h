@@ -40,16 +40,16 @@
 #include "constants.h"
 
 #include "raster.h"
-#include "botposition.h"
+#include "spielerposition.h"
 
-/** Ein Spielraster mit Bots
+/** Ein Spielraster mit Spieler
  **/
 class Spielraster : public Raster {
   public:
   struct RaumInfo {
     int groesse = 0; // die Größe des Raums
-    int bot_anz = 0; // die Anzahl der (gegnerischen) Bots
-    int entfernung_naechster_bot = -1; // die Entfernung zum nächsten Bot
+    int spieler_anz = 0; // die Anzahl der (gegnerischen) Spieler
+    int entfernung_naechster_spieler = -1; // die Entfernung zum nächsten Spieler
   }; // struct RaumInfo
 
   public:
@@ -62,29 +62,29 @@ class Spielraster : public Raster {
   ostream& ausgeben(ostream& ostr) const override;
 
 
-  // Bots
+  // Spieler
 
-  // Die Anzahl der Bots
-  int bot_anz() const;
-  // Die Anzahl der Bots noch im Spiel
-  int bots_im_spiel() const;
-  // Ob der Bot mit der Nummer noch im Spiel ist
-  bool bot_im_spiel(int bot) const;
+  // Die Anzahl der Spieler
+  int spieler_anz() const;
+  // Die Anzahl der Spieler noch im Spiel
+  int spieler_im_spiel() const;
+  // Ob der Spielermit der Nummer noch im Spiel ist
+  bool spieler_im_spiel(int spieler) const;
 
-  // setzt einen Bot auf das Raster
-  void setze_bot(istream& istr);
-  // setzt einen Bot auf das Raster
-  void setze_bot(int n, BotPosition const& bot_position);
-  // entfernt einen Bot vom Spielfed
-  void entferne_bot(int n);
+  // setzt einen Spieler auf das Raster
+  void setze_spieler(istream& istr);
+  // setzt einen Spieler auf das Raster
+  void setze_spieler(int n, SpielerPosition const& spieler_position);
+  // entfernt einen Spieler vom Spielfed
+  void entferne_spieler(int n);
 
-  // die aktuelle Position des Bots
-  BotPosition const& position(int n) const;
-  // der Weg des Bots
-  BotWeg const& weg(int n) const;
+  // die aktuelle Position des Spieler
+  SpielerPosition const& position(int n) const;
+  // der Weg des Spieler
+  SpielerWeg const& weg(int n) const;
 
-  // bewegt den Bot um ein Feld
-  void bewege_bot(int n, Bewegungsrichtung br);
+  // bewegt den Spieler um ein Feld
+  void bewege_spieler(int n, Bewegungsrichtung br);
 
   //
   // Informationen über das Spielraster
@@ -95,31 +95,31 @@ class Spielraster : public Raster {
   // das Spielraster in der angegeben Runde
   Spielraster historie(int runde) const;
 
-  // Informationen über den Raum des Bots
-  Spielraster::RaumInfo rauminfo(int bot) const;
-  Spielraster::RaumInfo rauminfo(int bot,
+  // Informationen über den Raum des Spieler
+  Spielraster::RaumInfo rauminfo(int spieler) const;
+  Spielraster::RaumInfo rauminfo(int spieler,
                                  Bewegungsrichtung bewegungsrichtung) const;
 
   // Einflussbereich
 
   // Größe des Einflussbereichs ermitteln
-  int einflussbereich_groesse(int bot) const;
+  int einflussbereich_groesse(int spieler) const;
   // Größe des Einflussbereichs ermitteln
-  int einflussbereich_groesse(int bot, Bewegungsrichtung br) const;
+  int einflussbereich_groesse(int spieler, Bewegungsrichtung br) const;
   // Einflussbereich ermitteln
-  Raster einflussbereich(int bot) const;
+  Raster einflussbereich(int spieler) const;
   // Einflussbereich ermitteln
-  Raster einflussbereich(int bot, Bewegungsrichtung br) const;
+  Raster einflussbereich(int spieler, Bewegungsrichtung br) const;
   // Einflussbereich ermitteln
-  Raster einflussbereich(int bot, Position p) const;
+  Raster einflussbereich(int spieler, Position p) const;
   // Die Größe des erreichbaren Einflussbereich
-  int einflussbereich_groesse_erreichbar(int bot) const;
+  int einflussbereich_groesse_erreichbar(int spieler) const;
 
   private:
-  // Anzahl der Bots
-  int bot_anz_ = 0;
-  // Der Wegverlauf der Bots
-  vector<BotWeg> bot_weg_;
+  // Anzahl der Spieler
+  int spieler_anz_ = 0;
+  // Der Wegverlauf der Spieler
+  vector<SpielerWeg> spieler_weg_;
 }; // class Spielraster : public Raster
 
 // Spielraster ausgeben

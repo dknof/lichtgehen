@@ -38,13 +38,13 @@
 #define MENSCH_H
 
 #include "constants.h"
-#include "bot.h"
+#include "spieler.h"
 
 class UI;
 
 /** Ein Mensch
  **/
-class Mensch : public Bot {
+class Mensch : public Spieler {
   public:
     // Konstruktor
     Mensch(Spielraster const& spielraster, UI& ui);
@@ -55,6 +55,6 @@ class Mensch : public Bot {
   private:
     // UI
     UI& ui;
-}; // class Mensch : public Bot
+}; // class Mensch : public Spieler
 
 #endif // #ifndef MENSCH_H

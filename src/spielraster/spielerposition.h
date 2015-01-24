@@ -34,27 +34,52 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef TAKTIK_GROESSTER_RAUM_H
-#define TAKTIK_GROESSTER_RAUM_H
+#ifndef SPIELERPOSITION_H
+#define SPIELERPOSITION_H
 
-#include "taktik.h"
+#include "constants.h"
+#include "position.h"
+#include "richtung.h"
 
-namespace TaktikNS {
-/** Taktik GroessterRaum
- ** In den größten Raum wechseln
- ** @todo   Sind zwei Richtungen in den gleichen Raum und die dritte in einen kleineren, dann sperre diese Richtung
+/** Die Position eines Spielers
+ ** 
+ ** @todo    kein default Konstruktor
+ ** @todo    += → +
  **/
-class GroessterRaum : public Taktik {
+class SpielerPosition : public Position {
   public:
     // Konstruktor
-    GroessterRaum();
+    SpielerPosition();
+    // Konstruktor
+    SpielerPosition(Position const& position, Richtung const richtung);
+    // Konstruktor
+    SpielerPosition(istream& istr);
 
-    // gibt das Ergebnis der Taktik zurück (ob sie greift und die Richtung)
-    Ergebnis ergebnis(Spielraster const& spielraster,
-                      int spieler_nummer) override;
+    // Die Richtung
+    Richtung richtung() const;
 
-}; // class GroessterRaum : public Taktik
+    // Text
+    operator string() const;
 
-} // namespace TaktikNS
+    // Ein Schritt in der Bewegungsrichtung bewegen
+    SpielerPosition& operator+=(Bewegungsrichtung bewegungsrichtung);
 
-#endif // #ifndef TAKTIK_GROESSTER_RAUM_H
+  private:
+    // Blickrichtung
+    Richtung richtung_ = Richtung::NORDEN;
+}; // class SpielerPosition
+
+// der Weg eines Spielers
+typedef vector<SpielerPosition> SpielerWeg;
+
+// SpielerPosition ausgeben
+ostream& operator<<(ostream& ostr, SpielerPosition const& spielerposition);
+// Ein Schritt in der Bewegungsrichtung weiter
+SpielerPosition operator+(SpielerPosition lhs, Bewegungsrichtung rhs);
+
+namespace std {
+  inline string to_string(SpielerPosition const bp)
+  { return static_cast<string>(bp); }
+}
+
+#endif // #ifndef SPIELERPOSITION_H

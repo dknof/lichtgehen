@@ -34,27 +34,35 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef TAKTIK_GROESSTER_RAUM_H
-#define TAKTIK_GROESSTER_RAUM_H
+#ifndef PROGRAMM_H
+#define PROGRAMM_H
 
-#include "taktik.h"
+#include "constants.h"
+#include "spieler.h"
 
-namespace TaktikNS {
-/** Taktik GroessterRaum
- ** In den größten Raum wechseln
- ** @todo   Sind zwei Richtungen in den gleichen Raum und die dritte in einen kleineren, dann sperre diese Richtung
+class UI;
+
+/** Ein Programm (aus dem Wettbewerb für freiesMagazin)
  **/
-class GroessterRaum : public Taktik {
+class Programm : public Spieler {
   public:
     // Konstruktor
-    GroessterRaum();
+    Programm(Spielraster const& spielraster, string const& pfad);
+    // Destruktor
+    ~Programm();
 
-    // gibt das Ergebnis der Taktik zurück (ob sie greift und die Richtung)
-    Ergebnis ergebnis(Spielraster const& spielraster,
-                      int spieler_nummer) override;
+    // die Bewegung
+    Bewegungsrichtung bewegung();
 
-}; // class GroessterRaum : public Taktik
+  private:
+    // startet das Programm und verbindet istr und ostr mit den entsprechenden Strömen
+    void starte_programm(string const& pfad);
 
-} // namespace TaktikNS
+  private:
+    // Strom für Anweisungen an das Programm
+    unique_ptr<istream> istr;
+    // Strom für Ergebnisse aus dem Programm
+    unique_ptr<ostream> ostr;
+}; // class Programm : public Spieler
 
-#endif // #ifndef TAKTIK_GROESSTER_RAUM_H
+#endif // #ifndef PROGRAMM_H

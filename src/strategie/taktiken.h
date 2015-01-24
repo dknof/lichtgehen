@@ -65,7 +65,7 @@ class Taktiken : public Strategie {
 
     // Die Bewegungsrichtung nach der Strategie ermitteln
     virtual Bewegungsrichtung bewegung(Spielraster const& spielraster,
-                                       int bot_nummer) override;
+                                       int spieler_nummer) override;
 
   protected:
     // Die Taktiken

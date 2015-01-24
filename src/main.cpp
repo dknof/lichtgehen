@@ -85,7 +85,7 @@ return 0;
 } // int main()
 
 /**
- ** Hauptfunktion für ein eigenes Spiel (mit eigenen Bots)
+ ** Hauptfunktion für ein eigenes Spiel (mit eigenen Spielern)
  **
  ** @param     argc   Anzahl der Argumente (-> GUI)
  ** @param     argv   Argumente (-> GUI)
@@ -94,7 +94,7 @@ return 0;
  **
  ** @version   2014-11-18
  **
- ** @todo      Die Kollisionsabfrage zählt die Runden nicht genau (treffen sich zwei Bots schafft der erste einen Schritt mehr), so reicht es aber zum Testen aus.
+ ** @todo      Die Kollisionsabfrage zählt die Runden nicht genau (treffen sich zwei Spieler schafft der erste einen Schritt mehr), so reicht es aber zum Testen aus.
  **/
 void
 main_eigenes_spiel(int& argc, char* argv[])
@@ -111,74 +111,63 @@ main_eigenes_spiel(int& argc, char* argv[])
   //auto ui = UI::create("cerr", argc, argv);
 #endif
 
-  { // Positionen der Bots lesen
+  { // Positionen der Spieler lesen
     while (cin.peek() && cin.good()) {
-      spielraster.setze_bot(cin);
+      spielraster.setze_spieler(cin);
 #if 0
-      break; // Test: nur ein Bot
+      break; // Test: nur ein Spieler
 #endif
       while (isspace(cin.peek()))
         cin.get();
     } // while (cin.good())
   }
-  vector<unique_ptr<Bot>> bots; // Die Bots
-  // Bots erzeugen
-  for (int i = 0; i < spielraster.bot_anz(); ++i) {
-    auto bot = (
-#ifdef USE_EINGABE
-                (i == 0)
-#else
-                false
-#endif
-                ? make_unique<Mensch>(spielraster, *ui)
-                : make_unique<Bot>(spielraster));
-    bot->setze_nummer(i);
+  vector<unique_ptr<Spieler>> spieler; // Die Spieler
+  // Spieler erzeugen
+  for (int i = 0; i < spielraster.spieler_anz(); ++i) {
+    unique_ptr<Spieler> s;
     switch (i) {
     case 0:
-    case 1:
+      s = std::move(make_unique<Mensch>(spielraster, *ui));
     default:
-      bot->setze_strategie(Strategie::create({"Tiefensuche",
-                                             "in größten Raum",
-                                             "zum größten Einflussgebiet",
-                                             "Gegner verfolgen",
-                                             "vorwärts 0.7",
-                                             "links 0.7",
-                                             }));
+      auto b = make_unique<Bot>(spielraster);
+      b->setze_strategie(Strategie::create({"Tiefensuche",
+                                           "in größten Raum",
+                                           "zum größten Einflussgebiet",
+                                           "Gegner verfolgen",
+                                           "vorwärts 0.7",
+                                           "links 0.7",
+                                           }));
+      s = std::move(b);
       break;
-#if 0
-    default:
-      //bot->setze_strategie(Strategie::create({"Tiefensuche"}));
-      bot->setze_strategie(Strategie::create({"vorwärts"}));
-      break;
-#endif
     } // switch (i)
-    bots.push_back(std::move(bot));
+    s->setze_nummer(i);
+    spieler.push_back(std::move(s));
   }
 
   // Spielen
   int runde = 0;
-  auto naechster_schritt = vector<Bewegungsrichtung>(spielraster.bot_anz());
+  auto naechster_schritt = vector<Bewegungsrichtung>(spielraster.spieler_anz());
   ui->spiel_startet(spielraster);
-  while (spielraster.bots_im_spiel()) {
+  while (spielraster.spieler_im_spiel()) {
     runde += 1;
     cdebug << "Runde " << runde << '\n';
     //cdebug << spielraster << '\n';
     //usleep(10000);
     ui->runde(runde);
     // Schritte abfragen
-    for (int b = 0; b < spielraster.bot_anz(); ++b) {
+    for (int b = 0; b < spielraster.spieler_anz(); ++b) {
       if (spielraster.position(b)) {
         //cdebug << b << " erreichbare Raumgröße: " << spielraster.raumgroesse_erreichbar(spielraster.position(b)) << '\n';
 #ifdef ZEIT_MESSEN
-      auto const zeit_start = std::chrono::system_clock::now();
+        auto const zeit_start = std::chrono::system_clock::now();
 #endif
-        naechster_schritt[b] = bots[b]->bewegung();
+        naechster_schritt[b] = spieler[b]->bewegung();
 #ifdef ZEIT_MESSEN
-      std::chrono::duration<double> const dauer
-        = std::chrono::system_clock::now() - zeit_start;
-      if (dauer.count() > 0.9 * ZEITBESCHRAENKUNG) {
-        cout << b << ": " << dauer.count() << " Sekunden\n";
-      }
+        std::chrono::duration<double> const dauer
+          = std::chrono::system_clock::now() - zeit_start;
+        if (dauer.count() > 0.9 * ZEITBESCHRAENKUNG) {
+          cout << b << ": " << dauer.count() << " Sekunden\n";
+        }
 #endif
 
       }
@@ -187,27 +176,27 @@ main_eigenes_spiel(int& argc, char* argv[])
     //break;
 
     // Schritte gehen
-    auto pos_neu = vector<Position>(spielraster.bot_anz());
-    for (int b = 0; b < spielraster.bot_anz(); ++b) {
+    auto pos_neu = vector<Position>(spielraster.spieler_anz());
+    for (int b = 0; b < spielraster.spieler_anz(); ++b) {
       if (spielraster.position(b))
         pos_neu[b] = spielraster.position(b) + naechster_schritt[b];
     }
-    for (int b = 0; b < spielraster.bot_anz(); ++b) {
+    for (int b = 0; b < spielraster.spieler_anz(); ++b) {
       if (!spielraster.position(b))
         continue;
       if (std::count(begin(pos_neu), end(pos_neu), pos_neu[b]) > 1) {
-        spielraster.entferne_bot(b);
+        spielraster.entferne_spieler(b);
         spielraster.belege(pos_neu[b]);
       } else {
-        spielraster.bewege_bot(b, naechster_schritt[b]);
+        spielraster.bewege_spieler(b, naechster_schritt[b]);
       }
     } // for (b)
 #if 0
-    if (spielraster.bots_im_spiel() == 1)
+    if (spielraster.spieler_im_spiel() == 1)
       break;
 #endif
     //break;
-  } // while (spielraster.bots_im_spiel())
+  } // while (spielraster.spieler_im_spiel())
 
   ui->spiel_endet();
 
@@ -237,17 +226,17 @@ main_wettbewerb(int& argc, char* argv[])
   //auto ui = UI::create("cerr", argc, argv);
 #endif
 #ifdef USE_EINGABE
-  Mensch bot(spielraster, *ui);
+  Mensch spieler(spielraster, *ui);
 #else
-  Bot bot(spielraster);
+  Bot spieler(spielraster);
 #endif
-  bot.setze_strategie(Strategie::create({"Tiefensuche",
-                                        "in größten Raum",
-                                        "zum größten Einflussgebiet",
-                                        "Gegner verfolgen",
-                                        "vorwärts 0.7",
-                                        "links 0.7",
-                                        }));
+  spieler.setze_strategie(Strategie::create({"Tiefensuche",
+                                            "in größten Raum",
+                                            "zum größten Einflussgebiet",
+                                            "Gegner verfolgen",
+                                            "vorwärts 0.7",
+                                            "links 0.7",
+                                            }));
 
   string zeile;
   while (cin.good()) {
@@ -268,11 +257,11 @@ main_wettbewerb(int& argc, char* argv[])
 
     } else if (zeile.compare( 0, 4, "SET ") == 0) {
       // SET P - Eigene Spielernummer festlegen
-      bot.setze_nummer(std::stoi(string(zeile, 4)) - 1);
+      spieler.setze_nummer(std::stoi(string(zeile, 4)) - 1);
 
     } else if (zeile.compare( 0, 4, "POS ") == 0) {
-      // POS P N,M DIR - Position N,M des Bots P auf dem Spielbrett festlegen, wobei der Bot in Richtung DIR = (NORTH|EAST|SOUTH|WEST) schaut.
-      spielraster.setze_bot(istr);
+      // POS P N,M DIR - Position N,M des Spielers P auf dem Spielbrett festlegen, wobei der Spieler in Richtung DIR = (NORTH|EAST|SOUTH|WEST) schaut.
+      spielraster.setze_spieler(istr);
 
     } else if (zeile.compare( 0, 6, "ROUND ") == 0) {
       // ROUND R - Runde R beginnt.  Das Spielbrett beginnt links oben bei (1,1).  Nach diesem Befehl erwartet der Server eine Antwort vom Client.
@@ -280,13 +269,13 @@ main_wettbewerb(int& argc, char* argv[])
       if (spielraster.runde() == 1)
         ui->spiel_startet(spielraster);
       ui->runde(spielraster.runde());
-      if (spielraster.bot_im_spiel(bot.nummer()))
-        cout << bot.bewegung() << '\n';
+      if (spielraster.spieler_im_spiel(spieler.nummer()))
+        cout << spieler.bewegung() << '\n';
 
     } else if (zeile.compare( 0, 4, "OUT ") == 0) {
       // OUT P - Spieler P ist ausgeschieden.
 
-      spielraster.entferne_bot(std::stoi(string(zeile, 4)) - 1);
+      spielraster.entferne_spieler(std::stoi(string(zeile, 4)) - 1);
     } else if (zeile == "END") {
       // END - Das Spiel ist zu Ende.
       ui->spiel_endet();
@@ -307,10 +296,10 @@ main_wettbewerb(int& argc, char* argv[])
 
 
 /*
-   Kommandos vom Bot an den Server:
+   Kommandos vom Spieler an den Server:
 
-   RIGHT  – Dreht den Bot um 90 Grad nach rechts.
-   LEFT   – Dreht den Bot um 90 Grad nach links.
-   AHEAD  – Lässt die Ausrichtung des Bots, wie sie ist.
+   RIGHT  – Dreht den Spieler um 90 Grad nach rechts.
+   LEFT   – Dreht den Spieler um 90 Grad nach links.
+   AHEAD  – Lässt die Ausrichtung des Spielers, wie sie ist.
    */
 

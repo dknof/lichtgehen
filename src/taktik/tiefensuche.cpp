@@ -54,7 +54,7 @@ namespace TaktikNS {
    ** @version   2014-11-08
    **/
   Tiefensuche::Tiefensuche() :
-    Taktik{"Tiefensuche", "Bestimme alle möglichen Wege und beschreite den „besten“ (nur für zwei Bots)."},
+    Taktik{"Tiefensuche", "Bestimme alle möglichen Wege und beschreite den „besten“ (nur für zwei Spielers)."},
     tiefe_max(0)
     { }
 
@@ -75,7 +75,7 @@ namespace TaktikNS {
    ** Suche mit Tiefensuche die „beste“ Richtung
    ** 
    ** @param     spielraster   das Spielraster
-   ** @param     bot   die Nummer des Bots
+   ** @param     spieler   die Nummer des Spielers
    **
    ** @return    Richtung mit dem „besten“ Wert
    **
@@ -83,23 +83,23 @@ namespace TaktikNS {
    **/
   Taktik::Ergebnis
     Tiefensuche::ergebnis(Spielraster const& spielraster,
-                          int const bot)
+                          int const spieler)
     {
-      // nur für zwei Bots
-      if (spielraster.rauminfo(bot).bot_anz != 1)
+      // nur für zwei Spielers
+      if (spielraster.rauminfo(spieler).spieler_anz != 1)
         return false;
 
-      // bot 2 suchen
-      int bot2;
-      for (bot2 = 0; bot2 < spielraster.bot_anz(); ++bot2) {
-        if (bot2 == bot)
+      // spieler 2 suchen
+      int spieler2;
+      for (spieler2 = 0; spieler2 < spielraster.spieler_anz(); ++spieler2) {
+        if (spieler2 == spieler)
           continue;
-        if (spielraster.kuerzeste_entfernung(spielraster.position(bot),
-                                             spielraster.position(bot2))
+        if (spielraster.kuerzeste_entfernung(spielraster.position(spieler),
+                                             spielraster.position(spieler2))
             >= 0)
           break;
       }
-      if (bot2 == spielraster.bot_anz())
+      if (spieler2 == spielraster.spieler_anz())
         return false;
 
       auto const felder_frei = spielraster.felder_frei();
@@ -117,24 +117,24 @@ namespace TaktikNS {
       auto dauer = std::chrono::duration<double>{zeit_start - zeit_start};
       this->tiefe_max = 0;
       do {
-        ergebnis = this->tiefensuche(spielraster, bot, bot2);
+        ergebnis = this->tiefensuche(spielraster, spieler, spieler2);
         dauer = std::chrono::system_clock::now() - zeit_start;
         this->tiefe_max += 1;
       } while (dauer.count() < 0.1 * 0.9 * ZEITBESCHRAENKUNG);
 #else
-      ergebnis = tiefensuche(spielraster, bot, bot2);
+      ergebnis = tiefensuche(spielraster, spieler, spieler2);
 #endif
 
       return ergebnis;
-    } // Taktik::Ergebnis Tiefensuche::ergebnis(Spielraster spielraster, int bot)
+    } // Taktik::Ergebnis Tiefensuche::ergebnis(Spielraster spielraster, int spieler)
 
   /**
    ** -> Rückgabe
    ** Suche mit Tiefensuche die „beste“ Richtung
    ** 
    ** @param     spielraster   das Spielraster
-   ** @param     bot   die Nummer des Bots
-   ** @param     bot2   die Nummer des zweiten Bots
+   ** @param     spieler   die Nummer des Spielers
+   ** @param     spieler2   die Nummer des zweiten Spielers
    **
    ** @return    Richtung mit dem „besten“ Wert
    **
@@ -142,10 +142,10 @@ namespace TaktikNS {
    **/
   Taktik::Ergebnis
     Tiefensuche::tiefensuche(Spielraster const& spielraster,
-                             int const bot, int const bot2) const
+                             int const spieler, int const spieler2) const
     {
 #ifdef USE_THREADS
-#define THREAD(b1, b2) std::async(std::launch::async, std::bind(&Tiefensuche::iteration, this, spielraster, bot, bot2, b1, b2, 0))
+#define THREAD(b1, b2) std::async(std::launch::async, std::bind(&Tiefensuche::iteration, this, spielraster, spieler, spieler2, b1, b2, 0))
       std::array<std::future<Bewertung>, 9> threads
         = {THREAD(Bewegungsrichtung::VORWAERTS, Bewegungsrichtung::VORWAERTS),
           THREAD(Bewegungsrichtung::VORWAERTS, Bewegungsrichtung::LINKS),
@@ -157,7 +157,7 @@ namespace TaktikNS {
           THREAD(Bewegungsrichtung::RECHTS, Bewegungsrichtung::LINKS),
           THREAD(Bewegungsrichtung::RECHTS, Bewegungsrichtung::RECHTS)};
 #undef THREAD
-      RichtungenErgebnis const ergebnisse(spielraster, bot,
+      RichtungenErgebnis const ergebnisse(spielraster, spieler,
                                           RichtungenErgebnis::Ergebnisse({threads[0].get(),
                                           threads[1].get(),
                                           threads[2].get(),
@@ -169,63 +169,63 @@ namespace TaktikNS {
                                           threads[8].get()
                                           }));
 #else // #ifdef !USE_THREADS
-      RichtungenErgebnis const ergebnisse(spielraster, bot,
+      RichtungenErgebnis const ergebnisse(spielraster, spieler,
                                           RichtungenErgebnis::Ergebnisse{
-                                          this->iteration(spielraster, bot, bot2,
+                                          this->iteration(spielraster, spieler, spieler2,
                                                           Bewegungsrichtung::VORWAERTS,
                                                           Bewegungsrichtung::VORWAERTS,
                                                           0),
-                                          this->iteration(spielraster, bot, bot2,
+                                          this->iteration(spielraster, spieler, spieler2,
                                                           Bewegungsrichtung::VORWAERTS,
                                                           Bewegungsrichtung::LINKS,
                                                           0),
-                                          this->iteration(spielraster, bot, bot2,
+                                          this->iteration(spielraster, spieler, spieler2,
                                                           Bewegungsrichtung::VORWAERTS,
                                                           Bewegungsrichtung::RECHTS,
                                                           0),
-                                          this->iteration(spielraster, bot, bot2,
+                                          this->iteration(spielraster, spieler, spieler2,
                                                           Bewegungsrichtung::LINKS,
                                                           Bewegungsrichtung::VORWAERTS,
                                                           0),
-                                          this->iteration(spielraster, bot, bot2,
+                                          this->iteration(spielraster, spieler, spieler2,
                                                           Bewegungsrichtung::LINKS,
                                                           Bewegungsrichtung::LINKS,
                                                           0),
-                                          this->iteration(spielraster, bot, bot2,
+                                          this->iteration(spielraster, spieler, spieler2,
                                                           Bewegungsrichtung::LINKS,
                                                           Bewegungsrichtung::RECHTS,
                                                           0),
-                                          this->iteration(spielraster, bot, bot2,
+                                          this->iteration(spielraster, spieler, spieler2,
                                                           Bewegungsrichtung::RECHTS,
                                                           Bewegungsrichtung::VORWAERTS,
                                                           0),
-                                          this->iteration(spielraster, bot, bot2,
+                                          this->iteration(spielraster, spieler, spieler2,
                                                           Bewegungsrichtung::RECHTS,
                                                           Bewegungsrichtung::LINKS,
                                                           0),
-                                          this->iteration(spielraster, bot, bot2,
+                                          this->iteration(spielraster, spieler, spieler2,
                                                           Bewegungsrichtung::RECHTS,
                                                           Bewegungsrichtung::RECHTS,
                                                           1)
                                           });
 #endif // #ifdef !USE_THREADS
-      cdebug << bot << ": " << ergebnisse;
+      cdebug << spieler << ": " << ergebnisse;
       return ergebnisse.beste_richtung();
 
       return false;
-    } // Taktik::Ergebnis Tiefensuche::tiefensuche(Spielraster const& spielraster, int const bot, int const bot2) const
+    } // Taktik::Ergebnis Tiefensuche::tiefensuche(Spielraster const& spielraster, int const spieler, int const spieler2) const
 
   /**
    ** -> Rückgabe
    ** bewertet das Spielfeld rekursiv
-   ** Der Wert ist vom ersten Bot zu sehen. 
+   ** Der Wert ist vom ersten Spieler zu sehen. 
    ** 1: er gewinnt, -1: er verliert, 0: unentschieden
    ** 
    ** @param     spielraster   das Spielraster
-   ** @param     bot1          die Nummer des ersten Bots
-   ** @param     bot2          die Nummer des zweiten Bots
-   ** @param     r1            die Bewegungsrichtung des ersten Bots
-   ** @param     r2            die Bewegungsrichtung des zweiten Bots
+   ** @param     spieler1          die Nummer des ersten Spielers
+   ** @param     spieler2          die Nummer des zweiten Spielers
+   ** @param     r1            die Bewegungsrichtung des ersten Spielers
+   ** @param     r2            die Bewegungsrichtung des zweiten Spielers
    ** @param     tiefe         verbleibende Tiefe
    **
    ** @return    Wert der Bewegungen
@@ -234,13 +234,13 @@ namespace TaktikNS {
    **/
   Tiefensuche::Bewertung
     Tiefensuche::iteration(Spielraster const& spielraster,
-                           int const bot1, int const bot2,
+                           int const spieler1, int const spieler2,
                            Bewegungsrichtung const r1,
                            Bewegungsrichtung const r2,
                            int tiefe) const
     {
-      BotPosition const bp1 = spielraster.position(bot1);
-      BotPosition const bp2 = spielraster.position(bot2);
+      SpielerPosition const bp1 = spielraster.position(spieler1);
+      SpielerPosition const bp2 = spielraster.position(spieler2);
 
       if (bp1 + r1 == bp2 + r2) // ineinander gelaufen
         return Bewertung(Bewertung::Spielstand::UNENTSCHIEDEN, tiefe);
@@ -253,53 +253,53 @@ namespace TaktikNS {
         return Bewertung(Bewertung::Spielstand::GEWONNEN, tiefe);
       }
 
-      // Beide Bots konnten einen Schritt machen
+      // Beide Spielers konnten einen Schritt machen
 
       // die Schritte durchführen
       Spielraster sr{spielraster};
-      sr.bewege_bot(bot1, r1);
-      sr.bewege_bot(bot2, r2);
+      sr.bewege_spieler(spieler1, r1);
+      sr.bewege_spieler(spieler2, r2);
 
       if (tiefe >= this->tiefe_max)
         return Bewertung(Bewertung::Spielstand::OFFEN,
                          tiefe,
-                         this->bewertung(sr, bot1, bot2));
+                         this->bewertung(sr, spieler1, spieler2));
 
       tiefe += 1;
       // rekursiver Aufruf (aufwendig)
-      auto const bewertung_vv = this->iteration(sr, bot1, bot2,
+      auto const bewertung_vv = this->iteration(sr, spieler1, spieler2,
                                                 Bewegungsrichtung::VORWAERTS,
                                                 Bewegungsrichtung::VORWAERTS,
                                                 tiefe);
-      auto const bewertung_vl = this->iteration(sr, bot1, bot2,
+      auto const bewertung_vl = this->iteration(sr, spieler1, spieler2,
                                                 Bewegungsrichtung::VORWAERTS,
                                                 Bewegungsrichtung::LINKS,
                                                 tiefe);
-      auto const bewertung_vr = this->iteration(sr, bot1, bot2,
+      auto const bewertung_vr = this->iteration(sr, spieler1, spieler2,
                                                 Bewegungsrichtung::VORWAERTS,
                                                 Bewegungsrichtung::RECHTS,
                                                 tiefe);
-      auto const bewertung_lv = this->iteration(sr, bot1, bot2,
+      auto const bewertung_lv = this->iteration(sr, spieler1, spieler2,
                                                 Bewegungsrichtung::LINKS,
                                                 Bewegungsrichtung::VORWAERTS,
                                                 tiefe);
-      auto const bewertung_ll = this->iteration(sr, bot1, bot2,
+      auto const bewertung_ll = this->iteration(sr, spieler1, spieler2,
                                                 Bewegungsrichtung::LINKS,
                                                 Bewegungsrichtung::LINKS,
                                                 tiefe);
-      auto const bewertung_lr = this->iteration(sr, bot1, bot2,
+      auto const bewertung_lr = this->iteration(sr, spieler1, spieler2,
                                                 Bewegungsrichtung::LINKS,
                                                 Bewegungsrichtung::RECHTS,
                                                 tiefe);
-      auto const bewertung_rv = this->iteration(sr, bot1, bot2,
+      auto const bewertung_rv = this->iteration(sr, spieler1, spieler2,
                                                 Bewegungsrichtung::RECHTS,
                                                 Bewegungsrichtung::VORWAERTS,
                                                 tiefe);
-      auto const bewertung_rl = this->iteration(sr, bot1, bot2,
+      auto const bewertung_rl = this->iteration(sr, spieler1, spieler2,
                                                 Bewegungsrichtung::RECHTS,
                                                 Bewegungsrichtung::LINKS,
                                                 tiefe);
-      auto const bewertung_rr = this->iteration(sr, bot1, bot2,
+      auto const bewertung_rr = this->iteration(sr, spieler1, spieler2,
                                                 Bewegungsrichtung::RECHTS,
                                                 Bewegungsrichtung::RECHTS,
                                                 tiefe);
@@ -345,14 +345,14 @@ namespace TaktikNS {
         return Bewertung(Bewertung::Spielstand::OFFEN, -1);
       } // Variante C
 #endif
-    } // Taktik::Ergebnis Tiefensuche::iteration(Spielraster spielraster, int bot, int bot2, Bewegungsrichtung b1, Bewegungsrichtung b2, int tiefe) const
+    } // Taktik::Ergebnis Tiefensuche::iteration(Spielraster spielraster, int spieler, int spieler2, Bewegungsrichtung b1, Bewegungsrichtung b2, int tiefe) const
 
   /**
    ** -> Rückgabe
    ** 
    ** @param     spielraster   das Spielraster
-   ** @param     bot1          die Nummer des ersten Bots
-   ** @param     bot2          die Nummer des zweiten Bots
+   ** @param     spieler1          die Nummer des ersten Spielers
+   ** @param     spieler2          die Nummer des zweiten Spielers
    **
    ** @return    Bewertung des Spielrasters
    **
@@ -360,11 +360,11 @@ namespace TaktikNS {
    **/
   double
     Tiefensuche::bewertung(Spielraster const& spielraster,
-                           int bot1, int bot2) const
+                           int spieler1, int spieler2) const
     {
-      return (spielraster.einflussbereich_groesse_erreichbar(bot1)
-              - spielraster.einflussbereich_groesse_erreichbar(bot2));
-    } // double Tiefensuche::bewertung(Spielraster const& spielraster, int bot1, int bot2) const
+      return (spielraster.einflussbereich_groesse_erreichbar(spieler1)
+              - spielraster.einflussbereich_groesse_erreichbar(spieler2));
+    } // double Tiefensuche::bewertung(Spielraster const& spielraster, int spieler1, int spieler2) const
 
   /**
    ** -> Rückgabe
@@ -525,18 +525,18 @@ namespace TaktikNS {
    ** Konstruktor
    ** 
    ** @param     spielraster   Spielraster
-   ** @param     bot           Nummer des Bots
+   ** @param     spieler           Nummer des Spielers
    ** @param     bewertung     Bewertungen für alle Richtungskombinationen
    **
    ** @return    -
    **
    ** @version   2014-12-13
    **/
-  Tiefensuche::RichtungenErgebnis::RichtungenErgebnis(Spielraster const& spielraster, int bot, RichtungenErgebnis::Ergebnisse const& bewertung) :
+  Tiefensuche::RichtungenErgebnis::RichtungenErgebnis(Spielraster const& spielraster, int spieler, RichtungenErgebnis::Ergebnisse const& bewertung) :
     bewertung(bewertung),
-    nachbarn_frei({spielraster.nachbarn_frei(spielraster.position(bot) + Bewegungsrichtung::VORWAERTS),
-                  spielraster.nachbarn_frei(spielraster.position(bot) + Bewegungsrichtung::LINKS),
-                  spielraster.nachbarn_frei(spielraster.position(bot) + Bewegungsrichtung::RECHTS)})
+    nachbarn_frei({spielraster.nachbarn_frei(spielraster.position(spieler) + Bewegungsrichtung::VORWAERTS),
+                  spielraster.nachbarn_frei(spielraster.position(spieler) + Bewegungsrichtung::LINKS),
+                  spielraster.nachbarn_frei(spielraster.position(spieler) + Bewegungsrichtung::RECHTS)})
     { }
 
   /**

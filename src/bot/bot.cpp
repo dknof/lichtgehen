@@ -45,10 +45,10 @@
  **
  ** @return    -
  **
- ** @version   2014-10-25
+ ** @version   2015-01-24
  **/
 Bot::Bot(Spielraster const& spielraster) :
-  spielraster_(spielraster)
+  Spieler(spielraster, "Bot")
 { }
 
 /**
@@ -62,37 +62,6 @@ Bot::Bot(Spielraster const& spielraster) :
  **/
 Bot::~Bot()
 { }
-
-/**
- ** -> Rückgabe
- ** 
- ** @param     -
- **
- ** @return    die Nummer des Bots
- **
- ** @version   2014-11-10
- **/
-int
-Bot::nummer() const
-{
-  return this->nummer_;
-} // int Bot::nummer() const
-
-/**
- ** setzt die Nummer
- ** 
- ** @param     nummer    die Nummer
- **
- ** @return    -
- **
- ** @version   2014-10-25
- **/
-void
-Bot::setze_nummer(int const nummer)
-{
-  this->nummer_ = nummer;
-  return ;
-} // void Bot::setze_nummer(int const nummer)
 
 /**
  ** setzt die Strategie
@@ -122,5 +91,5 @@ Bot::setze_strategie(unique_ptr<Strategie> strategie)
 Bewegungsrichtung
 Bot::bewegung()
 {
-  return this->strategie_->bewegung(this->spielraster_, this->nummer_);
+  return this->strategie_->bewegung(this->spielraster(), this->nummer());
 } // Bewegungsrichtung Bot::bewegung()

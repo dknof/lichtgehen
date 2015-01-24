@@ -37,6 +37,7 @@
 #ifndef BOT_H
 #define BOT_H
 
+#include "spieler.h"
 #include "constants.h"
 
 #include "../strategie/strategie.h"
@@ -44,29 +45,20 @@
 
 /** Ein Bot
  **/
-class Bot {
+class Bot : public Spieler {
   public:
     // Konstruktor
     Bot(Spielraster const& spielraster);
     // Destruktor
-    virtual ~Bot();
+    ~Bot();
 
-    // die Nummer
-    int nummer() const;
-    // setzt die Nummer
-    void setze_nummer(int const nummer);
     // setzt die Strategie
     void setze_strategie(unique_ptr<Strategie> strategie);
 
     // die Bewegung
-    virtual Bewegungsrichtung bewegung();
+    Bewegungsrichtung bewegung();
 
-  protected:
-    // Feld
-    Spielraster const& spielraster_;
   private:
-    // Nummer
-    int nummer_ = -1;
     // die Strategie
     unique_ptr<Strategie> strategie_ = nullptr;
 }; // class Bot

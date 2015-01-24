@@ -34,27 +34,48 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef TAKTIK_GROESSTER_RAUM_H
-#define TAKTIK_GROESSTER_RAUM_H
+#ifndef SPIELER_H
+#define SPIELER_H
 
-#include "taktik.h"
+#include "constants.h"
 
-namespace TaktikNS {
-/** Taktik GroessterRaum
- ** In den größten Raum wechseln
- ** @todo   Sind zwei Richtungen in den gleichen Raum und die dritte in einen kleineren, dann sperre diese Richtung
+#include "../spielraster/spielraster.h"
+
+/** Ein Spieler (abstrakte Basisklasse)
  **/
-class GroessterRaum : public Taktik {
+class Spieler {
+  public:
+    // Erzeuge einen Spieler
+    static std::unique_ptr<Spieler> erzeuge(string const& text);
+
   public:
     // Konstruktor
-    GroessterRaum();
+    Spieler(Spielraster const& spielraster, string const& name);
+    // Destruktor
+    virtual ~Spieler();
 
-    // gibt das Ergebnis der Taktik zurück (ob sie greift und die Richtung)
-    Ergebnis ergebnis(Spielraster const& spielraster,
-                      int spieler_nummer) override;
+    // die Nummer
+    string const& name() const;
 
-}; // class GroessterRaum : public Taktik
+    // die Nummer
+    int nummer() const;
+    // setzt die Nummer
+    void setze_nummer(int const nummer);
 
-} // namespace TaktikNS
+    // das Spielraster
+    Spielraster const& spielraster() const;
 
-#endif // #ifndef TAKTIK_GROESSTER_RAUM_H
+    // die Bewegung
+    virtual Bewegungsrichtung bewegung() = 0;
+
+  protected:
+    // Feld
+    Spielraster const& spielraster_;
+  private:
+    // Nummer
+    int nummer_ = -1;
+    // Name
+    string name_;
+}; // class Spieler
+
+#endif // #ifndef SPIELER_H

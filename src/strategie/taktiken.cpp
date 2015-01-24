@@ -146,30 +146,30 @@ namespace StrategieNS {
    ** Die Bewegungsrichtung nach den Taktiken ermitteln
    ** 
    ** @param     spielraster   das Spielraster
-   ** @param     bot_nummer  die Nummer des Bots
+   ** @param     spieler_nummer  die Nummer des Spielers
    **
    ** @return    -
    **
    ** @version   2014-10-30
    **/
   Bewegungsrichtung
-    Taktiken::bewegung(Spielraster const& spielraster, int const bot_nummer)
+    Taktiken::bewegung(Spielraster const& spielraster, int const spieler_nummer)
     {
       for (auto& t : this->taktiken) {
         //cdebug << "Teste Taktik " << *t << '\n';
-        auto ergebnis = t->ergebnis(spielraster, bot_nummer);
+        auto ergebnis = t->ergebnis(spielraster, spieler_nummer);
         if (ergebnis) {
-          //cdebug << bot_nummer << ": " << ergebnis.richtung << ": " << *t << '\n';
+          //cdebug << spieler_nummer << ": " << ergebnis.richtung << ": " << *t << '\n';
           return ergebnis.richtung;
         }
       }
-      auto const bp = BotPosition{spielraster.position(bot_nummer)};
+      auto const bp = SpielerPosition{spielraster.position(spieler_nummer)};
       if (!spielraster(bp + Bewegungsrichtung::VORWAERTS))
         return Bewegungsrichtung::VORWAERTS;
       else if (!spielraster(bp + Bewegungsrichtung::LINKS))
         return Bewegungsrichtung::LINKS;
       else
         return Bewegungsrichtung::RECHTS;
-    } // Bewegungsrichtung Taktiken::bewegung(Spielraster spielraster, int bot_nummer)
+    } // Bewegungsrichtung Taktiken::bewegung(Spielraster spielraster, int spieler_nummer)
 
 } // namespace StrategieNS

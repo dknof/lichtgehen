@@ -63,7 +63,7 @@ class Tiefensuche : public Taktik {
     // Ergebnisse der Rekursion
     struct RichtungenErgebnis {
       using Ergebnisse = std::array<Bewertung, 3*3>;
-      RichtungenErgebnis(Spielraster const& spielraster, int bot, Ergebnisse const& bewertung);
+      RichtungenErgebnis(Spielraster const& spielraster, int spieler, Ergebnisse const& bewertung);
       Bewegungsrichtung beste_richtung() const;
       Ergebnisse const bewertung;
       std::array<int, 3> const nachbarn_frei;
@@ -76,18 +76,18 @@ class Tiefensuche : public Taktik {
 
     // gibt das Ergebnis der Taktik zurück (ob sie greift und die Richtung)
     Ergebnis ergebnis(Spielraster const& spielraster,
-                      int bot);
+                      int spieler);
 
   private:
     // bewertet das Spielfeld
     Bewertung::Wert bewertung(Spielraster const& spielraster,
-                              int bot1, int bot2) const;
+                              int spieler1, int spieler2) const;
 
   private:
     // bewertet rekursiv die Schritte
     Ergebnis tiefensuche(Spielraster const& spielraster,
-                         int bot, int bot2) const;
-    Bewertung iteration(Spielraster const& spielraster, int bot1, int bot2,
+                         int spieler, int spieler2) const;
+    Bewertung iteration(Spielraster const& spielraster, int spieler1, int spieler2,
                         Bewegungsrichtung r1, Bewegungsrichtung r2,
                         int tiefe) const;
 
