@@ -71,7 +71,7 @@ void main_eigenes_spiel(int& argc, char* argv[]);
 int
 main(int argc, char* argv[])
 {
-//cdebug_ = &cerr;
+cdebug_ = &cerr;
 //cdebug_ = &cout;
 
 #ifdef USE_EIGENES_SPIEL
@@ -148,6 +148,7 @@ main_eigenes_spiel(int& argc, char* argv[])
     spieler.push_back(std::move(s));
   }
 
+  CLOG << endl;
   // Spielen
   int runde = 0;
   auto naechster_schritt = vector<Bewegungsrichtung>(spielraster.spieler_anz());
@@ -201,6 +202,7 @@ main_eigenes_spiel(int& argc, char* argv[])
 #endif
     //break;
   } // while (spielraster.spieler_im_spiel())
+  CLOG << endl;
 
   ui->spiel_endet();
 

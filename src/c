@@ -42,6 +42,9 @@ SPIELRASTER="../Spielraster/Säulen_21.txt"
 #SPIELRASTER="../Spielraster/5x5_1.txt"
 
 # Eigenes Spiel
+  echo "Eigenes Spiel"
+  ./tronbot <"$SPIELRASTER"
+  exit
 
 if grep -q "USE_EIGENES_SPIEL *= *true" Makefile.modules; then
   echo "Eigenes Spiel"

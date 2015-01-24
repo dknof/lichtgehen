@@ -43,6 +43,7 @@
 class UI;
 
 /** Ein Programm (aus dem Wettbewerb für freiesMagazin)
+ ** ToDo: streams verwenden
  **/
 class Programm : public Spieler {
   public:
@@ -60,9 +61,9 @@ class Programm : public Spieler {
 
   private:
     // Strom für Anweisungen an das Programm
-    unique_ptr<istream> istr;
+    FILE* istr;
     // Strom für Ergebnisse aus dem Programm
-    unique_ptr<ostream> ostr;
+    FILE* ostr;
 }; // class Programm : public Spieler
 
 #endif // #ifndef PROGRAMM_H

@@ -43,6 +43,8 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 
+#include <fstream>
+
 /**
  ** Standardkonstruktor
  ** 
@@ -73,6 +75,14 @@ Programm::Programm(Spielraster const& spielraster,
  **/
 Programm::~Programm()
 {
+#if 0
+
+  fclose(write_to_child);
+  fclose(read_from_child);
+  close(fdin[1]);
+  close(fdout[0]);
+#endif
+
   // noch auf den Kindprozess (das gestartete Programm) warten
   int status;
   wait(&status);
@@ -130,7 +140,8 @@ Programm::starte_programm(string const& pfad)
     close(1); //close stdout
     dup(fdout[1]); //connect pipe from execl cat to stdout
 
-    execl(pfad.c_str(), "sort", (char *) 0);
+    CLOG << endl;
+    execl(pfad.c_str(), this->name().c_str(), (char *) 0);
     perror("exec failed!");
     exit(20);
   } // if (pid == 0)
@@ -139,19 +150,20 @@ Programm::starte_programm(string const& pfad)
   close(fdin[0]);
   close(fdout[1]);
 
-  auto write_to_child = fdopen(fdin[1], "w");
-  auto read_from_child = fdopen(fdout[0], "r");
+  this->ostr = fdopen(fdin[1], "w");
+  this->istr = fdopen(fdout[0], "r");
 
-  if (write_to_child == NULL) {
+  if (this->ostr == nullptr) {
     perror("write to pipe failed");
     exit(EXIT_FAILURE);
   }
+  if (this->istr == nullptr) {
+    perror("read from pipe failed");
+    exit(EXIT_FAILURE);
+  }
 
-
-  fclose(write_to_child);
-  fclose(read_from_child);
-  close(fdin[1]);
-  close(fdout[0]);
+  //this->istr = std::make_unique<std::ifstream>(read_from_child);
+  //this->ostr = std::make_unique<std::ofstream>(write_to_child);
 
   return ;
 } // void Programm::starte_programm(string pfad)
@@ -172,8 +184,12 @@ Programm::bewegung()
 
   // lese die Ausgabe vom Programm
   string zeile;
-  while (this->istr->good()) {
-    std::getline(cin, zeile);
+  char zeile_c[256];
+  zeile_c[255] = 0;
+  while (!ferror(this->istr)) {
+    fgets(zeile_c, 255, this->istr);
+    zeile = string(zeile_c);
+    //std::getline(cin, zeile);
     if (zeile == "AHEAD")
       return Bewegungsrichtung::VORWAERTS;
     else if (zeile == "LEFT")
@@ -183,5 +199,6 @@ Programm::bewegung()
     else
       cerr << "Bewegung '" << zeile << "' unbekannt.\n";
   }
+  CLOG << endl;
   return Bewegungsrichtung::VORWAERTS;;
 } // Bewegungsrichtung Programm::bewegung()
