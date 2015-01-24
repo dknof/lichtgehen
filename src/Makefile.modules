@@ -1,5 +1,5 @@
 # Graphische Ausgabe des Spielverlaufs
-USE_UI_GTKMM = false
+USE_UI_GTKMM = true
 
 # Eingabe, nur mit USE_UI_GTKMM verwenden
 # Muss für den Wettbewerb auf „false“ stehen
@@ -7,7 +7,7 @@ USE_EINGABE = false
 
 # Spiel, ohne einen separaten Server.
 # Muss für den Wettbewerb auf „false“ stehen
-USE_EIGENES_SPIEL = false
+USE_EIGENES_SPIEL = true
 
 # Mit Threads arbeiten (9 Stück)
 USE_THREADS = true

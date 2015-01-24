@@ -81,8 +81,8 @@ namespace UI_Gtkmm {
       Gtk::Label* runde = nullptr;
       // Freie Felder
       Gtk::Label* felder_frei = nullptr;
-      // Botinfo
-      vector<Gtk::Label*> bot;
+      // Spielerinfo
+      vector<Gtk::Label*> spieler;
   }; // class Hauptfenster : public Gtk::Window
 } // namespace UI_Gtkmm
 

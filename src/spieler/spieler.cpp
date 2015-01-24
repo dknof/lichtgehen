@@ -35,8 +35,38 @@
    */
 
 #include "spieler.h"
+#include "bot.h"
+#include "mensch.h"
+#include "programm.h"
 
 #include "../spielraster/spielraster.h"
+
+/**
+ ** erstellt einen Spieler entsprechend dem Namen
+ ** 
+ ** @param     spielraster   Spielraster
+ ** @param     typ    Typ des Spielers („Mensch“, „Bot“ oder Pfad zum Programm)
+ ** @param     name   Name des zu erzeugenden Spielers
+ **
+ ** @return    -
+ **
+ ** @version   2015-01-24
+ **/
+unique_ptr<Spieler>
+Spieler::create(Spielraster const& spielraster,
+                string const& typ, string const& name)
+{
+  if (name == "Mensch")
+    //return make_unique<Mensch>(spielraster); // ToDo: UI fehlt
+  return nullptr;
+  else if (name == "Bot")
+    return make_unique<Bot>(spielraster);
+  else
+    return make_unique<Programm>(spielraster, typ);
+
+  cerr << "Spieler '" << typ << "' unbekannt\n";
+  return nullptr;
+} // unique_ptr<Spieler> Spieler::create(string const& name)
 
 /**
  ** Standardkonstruktor

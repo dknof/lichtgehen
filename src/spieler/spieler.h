@@ -46,7 +46,8 @@
 class Spieler {
   public:
     // Erzeuge einen Spieler
-    static std::unique_ptr<Spieler> erzeuge(string const& text);
+    static std::unique_ptr<Spieler> create(Spielraster const& spielraster,
+                                           string const& typ, string const& name);
 
   public:
     // Konstruktor

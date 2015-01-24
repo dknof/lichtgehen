@@ -1,5 +1,5 @@
 /*
-   tronbot
+   tronnot
 
    Copyright (C) 2014 by Diether Knof
 
@@ -43,7 +43,7 @@
 #include <fstream>
 
 namespace UI_Gtkmm {
-  auto const bot_colors
+  auto const spieler_colors
     = vector<Gdk::Color>({Gdk::Color("#f00"),
                          Gdk::Color("#00f"),
                          Gdk::Color("#0c0"),
@@ -118,9 +118,9 @@ namespace UI_Gtkmm {
           this->felder_frei = Gtk::manage(new Gtk::Label("Felder frei"));
           box_info->add(*this->felder_frei);
           // Bots
-          for (int b = 0; b < this->ui->spielraster->bot_anz(); ++b) {
-            this->bot.push_back(Gtk::manage(new Gtk::Label("Bot " + std::to_string(b))));
-            auto& bot = *this->bot[b];
+          for (int b = 0; b < this->ui->spielraster->spieler_anz(); ++b) {
+            this->spieler.push_back(Gtk::manage(new Gtk::Label("Bot " + std::to_string(b))));
+            auto& spieler = *this->spieler[b];
             Pango::AttrList attrlist;
             {
               //auto attr = Pango::Attribute::create_attr_weight(Pango::WEIGHT_BOLD);
@@ -128,13 +128,13 @@ namespace UI_Gtkmm {
             }
             {
               auto color = Pango::Color();
-              color.parse(bot_colors[std::min(b, static_cast<int>(bot_colors.size()) - 1)].to_string());
+              color.parse(spieler_colors[std::min(b, static_cast<int>(spieler_colors.size()) - 1)].to_string());
               auto attr = Pango::Attribute::create_attr_foreground(0, 0, 0);
               attr.set_color(color);
               attrlist.insert(attr);
             }
-            bot.set_attributes(attrlist);
-            box_info->add(bot);
+            spieler.set_attributes(attrlist);
+            box_info->add(spieler);
           }
         } // Informationsbereich
       } // Oberer Bereich 
@@ -216,7 +216,7 @@ namespace UI_Gtkmm {
       this->felder_frei->set_label(std::to_string(spielraster.felder_frei()) + " Felder frei");
 
       // Bots
-      for (int b = 0; b < spielraster.bot_anz(); ++b) {
+      for (int b = 0; b < spielraster.spieler_anz(); ++b) {
         auto text = "Bot " + std::to_string(b);
         if (spielraster.position(b)) {
           text += " " + std::to_string(spielraster.position(b));
@@ -225,7 +225,7 @@ namespace UI_Gtkmm {
         } else {
           text += ", tot, Runde " + std::to_string(spielraster.weg(b).size());
         }
-        this->bot[b]->set_label(text);
+        this->spieler[b]->set_label(text);
       } // for (b)
       // Weitere Informationen
 
@@ -280,7 +280,7 @@ namespace UI_Gtkmm {
       // Pfade der Bots wieder freimachen
       cr->save();
       cr->set_source_rgb(1, 1, 1);
-      for (int b = 0; b < spielraster.bot_anz(); ++b)
+      for (int b = 0; b < spielraster.spieler_anz(); ++b)
         for (auto const f : spielraster.weg(b))
           cr->rectangle(f.x(), f.y(), 1, 1);
       cr->fill();
@@ -288,8 +288,8 @@ namespace UI_Gtkmm {
 
       // Einflussbereich der Bots malen
       cr->save();
-      for (int b = 0; b < spielraster.bot_anz(); ++b) {
-        auto const& color = bot_colors[std::min(b, static_cast<int>(bot_colors.size()) - 1)];
+      for (int b = 0; b < spielraster.spieler_anz(); ++b) {
+        auto const& color = spieler_colors[std::min(b, static_cast<int>(spieler_colors.size()) - 1)];
         cr->set_source_rgba(color.get_red_p(),
                             color.get_green_p(),
                             color.get_blue_p(),
@@ -329,8 +329,8 @@ namespace UI_Gtkmm {
       cr->set_line_join(Cairo::LINE_JOIN_ROUND);
       //cr->set_line_cap(Cairo::LINE_CAP_ROUND);
 
-      for (int b = 0; b < spielraster.bot_anz(); ++b) {
-        auto const& color = bot_colors[std::min(b, static_cast<int>(bot_colors.size()) - 1)];
+      for (int b = 0; b < spielraster.spieler_anz(); ++b) {
+        auto const& color = spieler_colors[std::min(b, static_cast<int>(spieler_colors.size()) - 1)];
         cr->set_source_rgb(color.get_red_p(),
                            color.get_green_p(),
                            color.get_blue_p());
@@ -358,8 +358,8 @@ namespace UI_Gtkmm {
       cr->save();
       cr->set_line_width(0.01);
       cr->set_line_join(Cairo::LINE_JOIN_ROUND);
-      for (int b = 0; b < spielraster.bot_anz(); ++b) {
-        auto const& color = bot_colors[std::min(b, static_cast<int>(bot_colors.size()) - 1)];
+      for (int b = 0; b < spielraster.spieler_anz(); ++b) {
+        auto const& color = spieler_colors[std::min(b, static_cast<int>(spieler_colors.size()) - 1)];
         cr->set_source_rgb(color.get_red_p(),
                            color.get_green_p(),
                            color.get_blue_p());

@@ -44,8 +44,10 @@ SPIELRASTER="../Spielraster/Säulen_21.txt"
 # Eigenes Spiel
 
 if grep -q "USE_EIGENES_SPIEL *= *true" Makefile.modules; then
+  echo "Eigenes Spiel"
   time ./tronbot <"$SPIELRASTER"
 else
+  echo "Serverspiel"
   # Spiel über den Server
   pushd ../freiesmagazin-2014-10-contest
   #./start.sh "$SPIELRASTER" "$BOTA" "$BOTB"

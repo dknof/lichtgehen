@@ -128,6 +128,10 @@ main_eigenes_spiel(int& argc, char* argv[])
     switch (i) {
     case 0:
       s = std::move(make_unique<Mensch>(spielraster, *ui));
+      s = Spieler::create(spielraster,
+                          "../freiesmagazin-2014-10-contest/bots/Wagenfuehr/bot",
+                          "Wagenfuehr");
+      break;
     default:
       auto b = make_unique<Bot>(spielraster);
       b->setze_strategie(Strategie::create({"Tiefensuche",
