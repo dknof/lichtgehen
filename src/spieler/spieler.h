@@ -61,7 +61,7 @@ class Spieler {
     // die Nummer
     int nummer() const;
     // setzt die Nummer
-    void setze_nummer(int const nummer);
+    virtual void setze_nummer(int const nummer);
 
     // das Spielraster
     Spielraster const& spielraster() const;
@@ -71,6 +71,8 @@ class Spieler {
 
     // das Spiel startet
     virtual void spiel_startet(Spielraster const& spielraster);
+    // die Runde startet
+    virtual void runde(int runde);
 
     // die Bewegung
     virtual Bewegungsrichtung bewegung() = 0;

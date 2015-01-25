@@ -168,3 +168,16 @@ Spieler::spiel_startet(Spielraster const& spielraster)
   this->spielraster_ = &spielraster;
   return ;
 } // void Spieler::spiel_startet(Spielraster const& spielraster)
+
+/**
+ ** die Runde startet
+ ** 
+ ** @param     runde   Nummer der Runde
+ **
+ ** @return    -
+ **
+ ** @version   2014-10-25
+ **/
+void
+Spieler::runde(int const runde)
+{ }

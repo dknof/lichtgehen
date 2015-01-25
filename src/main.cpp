@@ -106,8 +106,8 @@ main_eigenes_spiel(int& argc, char* argv[])
 #ifdef USE_UI_GTKMM
   auto ui = UI::create("gtkmm", argc, argv);
 #else
-  auto ui = UI::create("none", argc, argv);
-  //auto ui = UI::create("cout", argc, argv);
+  //auto ui = UI::create("none", argc, argv);
+  auto ui = UI::create("cout", argc, argv);
   //auto ui = UI::create("cerr", argc, argv);
 #endif
 
@@ -128,8 +128,10 @@ main_eigenes_spiel(int& argc, char* argv[])
     switch (i) {
     case 0:
       s = std::move(make_unique<Mensch>(*ui));
-      s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Wagenfuehr/bot",
-                          "Wagenfuehr");
+      s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Wagenfuehr/bot", "Wagenfuehr");
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Knof/src/tronbot", "Knof");
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/dummybot/bot", "dummybot");
+      //s = Spieler::create("/bin/cat", "cat");
       break;
     default:
       auto b = make_unique<Bot>();
@@ -147,7 +149,6 @@ main_eigenes_spiel(int& argc, char* argv[])
     spieler.push_back(std::move(s));
   }
 
-  CLOG << endl;
   // Spielen
   int runde = 0;
   auto naechster_schritt = vector<Bewegungsrichtung>(spielraster.spieler_anz());
@@ -155,11 +156,15 @@ main_eigenes_spiel(int& argc, char* argv[])
     s->spiel_startet(spielraster);
   ui->spiel_startet(spielraster);
   while (spielraster.spieler_im_spiel()) {
-    runde += 1;
+    for (auto& s : spieler)
+      s->runde(runde);
+    ui->runde(runde);
+
     cdebug << "Runde " << runde << '\n';
+
+    runde += 1;
     //cdebug << spielraster << '\n';
     //usleep(10000);
-    ui->runde(runde);
     // Schritte abfragen
     for (int b = 0; b < spielraster.spieler_anz(); ++b) {
       if (spielraster.position(b)) {

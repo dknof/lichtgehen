@@ -52,6 +52,15 @@ class Programm : public Spieler {
     // Destruktor
     ~Programm();
 
+    // Spielaktionen
+
+    // das Spiel startet
+    void spiel_startet(Spielraster const& spielraster);
+    // setzt die Nummer
+    void setze_nummer(int const nummer);
+    // die Runde startet
+    void runde(int runde);
+
     // die Bewegung
     Bewegungsrichtung bewegung();
 

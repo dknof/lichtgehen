@@ -39,41 +39,42 @@
 
 #include "constants.h"
 
-/** Ein Buffer für eine pipe
- **/
-class opipestreambuf : public std::streambuf {
-  public:
-    // Konstruktor
-    explicit opipestreambuf(int pipefd);
-    // Destruktor
-    ~opipestreambuf();
-
-    // Daten dem Buffer übergeben
-    int_type overflow( int_type c_ = traits_type::eof() );
-
-  private:
-    // pipe
-    int const pipefd;
-    // Dateideskriptor
-    FILE* fd;
-}; // class opipestreambuf : public std:streambuf
-
-
 /** Ein Stream für eine pipe
  **/
 class opipestream : public std::ostream {
+  /** Ein Buffer für eine pipe
+   **/
+  class buf : public std::streambuf {
+    public:
+      // Konstruktor
+      explicit buf(int pipefd);
+      // Destruktor
+      ~buf();
+
+      // ob der Stream geöffnet ist
+      bool is_open() const;
+
+      // Daten dem Buffer übergeben
+      int_type overflow( int_type c_ = traits_type::eof() );
+
+    private:
+      // pipe
+      int const pipefd;
+      // Dateideskriptor
+      FILE* fd;
+  }; // class opipestream::buf : public std:streambuf
+
   public:
-    // Konstruktor
-    explicit opipestream(int pipefd) :
-      std::ostream(&ostrb),
-      ostrb(pipefd)
+  // Konstruktor
+  explicit opipestream(int pipefd) :
+    std::ostream(&ostrb),
+    ostrb(pipefd)
   { }
-    //bool is_open() const
-    //{ return ostrb.is_open(); }
-//  bool is_open() const { return m_fp != 0; }
+  bool is_open() const
+  { return this->ostrb.is_open(); }
   private:
-    // Pipe
-    opipestreambuf ostrb;
+  // Pipe
+  buf ostrb;
 }; // class opipestream : public ostream
 
 #endif // #ifndef PSTREAM_H

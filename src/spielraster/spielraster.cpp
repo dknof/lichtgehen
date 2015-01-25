@@ -86,11 +86,13 @@ Spielraster::ausgeben(ostream& ostr) const
     raster.belege(this->position(b), false);
   ostr << raster;
   ostr << "GAMEBOARDEND\n";
+#if 0
   for (int b = 0; b < this->spieler_anz(); ++b) {
     auto const p = this->position(b);
     ostr << "POS " << b+1 << " "
       << p.x()+1 << "," << p.y()+1 << " " << p.richtung() << '\n';
   }
+#endif
   return ostr;
 } // ostream& Spielraster::ausgeben(ostream& ostr) const
 

@@ -131,16 +131,15 @@ Programm::starte_programm(string const& pfad)
 
     // Streams verbinden:
     // fdin -> stdin
+    close(fdin[1]);
+    close(0);
+    dup(fdin[0]);
+
     // fdout -> stdout
-    close(fdin[1]); //close write side from parents
-    close(0); //close stdin
-    dup(fdin[0]); //connect pipe from execl cat to stdin
+    close(fdout[0]);
+    close(1);
+    dup(fdout[1]);
 
-    close(fdout[0]); //close read side from parents
-    close(1); //close stdout
-    dup(fdout[1]); //connect pipe from execl cat to stdout
-
-    CLOG << endl;
     execl(pfad.c_str(), this->name().c_str(), (char *) 0);
     perror("exec failed!");
     exit(20);
@@ -169,6 +168,68 @@ Programm::starte_programm(string const& pfad)
 } // void Programm::starte_programm(string pfad)
 
 /**
+ ** das Spiel startet
+ ** 
+ ** @param     spielraster   das Spielraster
+ **
+ ** @return    -
+ **
+ ** @version   2014-10-25
+ **/
+void
+Programm::spiel_startet(Spielraster const& spielraster)
+{
+  this->Spieler::spiel_startet(spielraster);
+
+  spielraster.ausgeben(*this->ostr);
+  *this->ostr << "SET " << this->nummer() + 1 << '\n';
+  return ;
+} // void Spieler::spiel_startet(Spielraster const& spielraster)
+
+/**
+ ** setzt die Nummer
+ ** 
+ ** @param     nummer    die Nummer
+ **
+ ** @return    -
+ **
+ ** @version   2014-10-25
+ **/
+void
+Programm::setze_nummer(int const nummer)
+{
+  this->Spieler::setze_nummer(nummer);
+  return ;
+} // void Programm::setze_nummer(int const nummer)
+
+/**
+ ** die Runde startet
+ ** 
+ ** @param     runde   Nummer der Runde
+ **
+ ** @return    -
+ **
+ ** @version   2014-10-25
+ **/
+void
+Programm::runde(int const runde)
+{
+  this->Spieler::runde(runde);
+
+  for (int s = 0; s < this->spielraster().spieler_anz(); ++s) {
+    cout << "POS " << s + 1 << this->spielraster().position(s) << '\n';
+    *this->ostr << "POS " << s + 1 << ' '
+      << this->spielraster().position(s).x() + 1 << ','
+      << this->spielraster().position(s).y() + 1 << ' '
+      << this->spielraster().position(s).richtung() << '\n';
+  }
+  *this->ostr << "ROUND " << runde + 1 << '\n';
+  *this->ostr << std::flush;
+
+  return ;
+} // void Programm::runde(int const runde)
+
+/**
  ** setzt die Nummer
  ** 
  ** @param     nummer    die Nummer
@@ -180,8 +241,6 @@ Programm::starte_programm(string const& pfad)
 Bewegungsrichtung
 Programm::bewegung()
 {
-  // schreibe den letzten Zug
-
   // lese die Ausgabe vom Programm
   string zeile;
   char zeile_c[256];
@@ -190,15 +249,17 @@ Programm::bewegung()
     fgets(zeile_c, 255, this->istr);
     zeile = string(zeile_c);
     //std::getline(cin, zeile);
-    if (zeile == "AHEAD")
+    if (zeile == "AHEAD\n")
       return Bewegungsrichtung::VORWAERTS;
-    else if (zeile == "LEFT")
+    else if (zeile == "LEFT\n")
       return Bewegungsrichtung::LINKS;
-    else if (zeile == "RIGHT")
+    else if (zeile == "RIGHT\n")
       return Bewegungsrichtung::RECHTS;
-    else
+    else {
       cerr << "Bewegung '" << zeile << "' unbekannt.\n";
+    exit(0);
+    }
   }
   CLOG << endl;
-  return Bewegungsrichtung::VORWAERTS;;
+  return Bewegungsrichtung::VORWAERTS;
 } // Bewegungsrichtung Programm::bewegung()

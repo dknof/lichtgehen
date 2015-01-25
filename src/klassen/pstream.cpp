@@ -48,7 +48,7 @@
  **
  ** @version   2015-01-25
  **/
-opipestreambuf::opipestreambuf(int const pipefd) :
+opipestream::buf::buf(int const pipefd) :
   pipefd(pipefd),
   fd(nullptr)
 {
@@ -57,7 +57,7 @@ opipestreambuf::opipestreambuf(int const pipefd) :
     perror("read from pipe failed");
     exit(EXIT_FAILURE);
   }
-} // opipestreambuf::opipestreambuf(int const pipefd)
+} // opipestream::buf::buf(int const pipefd)
 
 /**
  ** Destruktor
@@ -68,11 +68,26 @@ opipestreambuf::opipestreambuf(int const pipefd) :
  **
  ** @version   2015-01-25
  **/
-opipestreambuf::~opipestreambuf()
+opipestream::buf::~buf()
 {
   std::fclose(this->fd);
   close(this->pipefd);
-} // opipestreambuf::~opipestreambuf()
+} // opipestream::buf::~buf()
+
+/**
+ ** -> Rückgabe
+ ** 
+ ** @param     -
+ **
+ ** @return    ob der Stream geöffnet ist
+ **
+ ** @version   2015-01-25
+ **/
+bool
+opipestream::buf::is_open() const
+{
+  return (this->fd != 0);
+} // bool opipestream::buf::is_open() const
 
 /**
  ** Daten in die Pipe schreiben
@@ -83,13 +98,17 @@ opipestreambuf::~opipestreambuf()
  **
  ** @version   2015-01-25
  **/
-opipestreambuf::int_type
-opipestreambuf::overflow(int_type const c_)
+opipestream::buf::int_type
+opipestream::buf::overflow(int_type const c_)
 {
   if( traits_type::eq_int_type( c_, traits_type::eof() ) )
     return traits_type::not_eof( c_ );
   char const c = traits_type::to_char_type( c_ );
-  if( std::fwrite( &c, 1, 1, this->fd ) == 1 ) // zeichenweise wegschreiben
+  std::clog << c;
+ // zeichenweise wegschreiben
+  if( std::fwrite( &c, 1, 1, this->fd ) == 1 ) {
+  std::fflush(this->fd);
     return c_;  // ok
+  }
   return traits_type::eof(); // Fehler
-} // int_type opipestreambuf::overflow(int_type c_ = traits_type::eof())
+} // int_type opipestream::buf::overflow(int_type c_ = traits_type::eof())
