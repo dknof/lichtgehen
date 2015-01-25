@@ -48,7 +48,7 @@ class UI;
 class Programm : public Spieler {
   public:
     // Konstruktor
-    Programm(Spielraster const& spielraster, string const& pfad);
+    explicit Programm(string const& pfad, string const& name = "");
     // Destruktor
     ~Programm();
 

@@ -47,7 +47,7 @@ class UI;
 class Mensch : public Spieler {
   public:
     // Konstruktor
-    Mensch(Spielraster const& spielraster, UI& ui);
+    Mensch(UI& ui);
 
     // die Bewegung
     Bewegungsrichtung bewegung();

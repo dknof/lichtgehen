@@ -46,12 +46,12 @@
 class Spieler {
   public:
     // Erzeuge einen Spieler
-    static std::unique_ptr<Spieler> create(Spielraster const& spielraster,
-                                           string const& typ, string const& name);
+    static std::unique_ptr<Spieler> create(string const& typ,
+                                           string const& name);
 
   public:
     // Konstruktor
-    Spieler(Spielraster const& spielraster, string const& name);
+    explicit Spieler(string const& name);
     // Destruktor
     virtual ~Spieler();
 
@@ -66,17 +66,23 @@ class Spieler {
     // das Spielraster
     Spielraster const& spielraster() const;
 
+
+    // Spielaktionen
+
+    // das Spiel startet
+    virtual void spiel_startet(Spielraster const& spielraster);
+
     // die Bewegung
     virtual Bewegungsrichtung bewegung() = 0;
 
   protected:
-    // Feld
-    Spielraster const& spielraster_;
+    // Spielraster
+    Spielraster const* spielraster_ = nullptr;
   private:
     // Nummer
     int nummer_ = -1;
     // Name
-    string name_;
+    string name_ = "";
 }; // class Spieler
 
 #endif // #ifndef SPIELER_H

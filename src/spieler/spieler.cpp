@@ -44,7 +44,6 @@
 /**
  ** erstellt einen Spieler entsprechend dem Namen
  ** 
- ** @param     spielraster   Spielraster
  ** @param     typ    Typ des Spielers („Mensch“, „Bot“ oder Pfad zum Programm)
  ** @param     name   Name des zu erzeugenden Spielers
  **
@@ -53,16 +52,15 @@
  ** @version   2015-01-24
  **/
 unique_ptr<Spieler>
-Spieler::create(Spielraster const& spielraster,
-                string const& typ, string const& name)
+Spieler::create(string const& typ, string const& name)
 {
-  if (name == "Mensch")
-    //return make_unique<Mensch>(spielraster); // ToDo: UI fehlt
+  if (typ == "Mensch")
+    //return make_unique<Mensch>(name); // ToDo: UI fehlt
   return nullptr;
-  else if (name == "Bot")
-    return make_unique<Bot>(spielraster);
+  else if (typ == "Bot")
+    return make_unique<Bot>(name);
   else
-    return make_unique<Programm>(spielraster, typ);
+    return make_unique<Programm>(typ, name);
 
   cerr << "Spieler '" << typ << "' unbekannt\n";
   return nullptr;
@@ -78,9 +76,7 @@ Spieler::create(Spielraster const& spielraster,
  **
  ** @version   2015-01-24
  **/
-Spieler::Spieler(Spielraster const& spielraster,
-                 string const& name) :
-  spielraster_(spielraster),
+Spieler::Spieler(string const& name) :
   name_(name)
 { }
 
@@ -123,7 +119,7 @@ Spieler::name() const
 Spielraster const&
 Spieler::spielraster() const
 {
-  return this->spielraster_;
+  return *this->spielraster_;
 } // Spielraster const& Spieler::spielraster() const
 
 /**
@@ -156,3 +152,19 @@ Spieler::setze_nummer(int const nummer)
   this->nummer_ = nummer;
   return ;
 } // void Spieler::setze_nummer(int const nummer)
+
+/**
+ ** das Spiel startet
+ ** 
+ ** @param     spielraster   das Spielraster
+ **
+ ** @return    -
+ **
+ ** @version   2014-10-25
+ **/
+void
+Spieler::spiel_startet(Spielraster const& spielraster)
+{
+  this->spielraster_ = &spielraster;
+  return ;
+} // void Spieler::spiel_startet(Spielraster const& spielraster)

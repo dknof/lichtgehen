@@ -127,13 +127,12 @@ main_eigenes_spiel(int& argc, char* argv[])
     unique_ptr<Spieler> s;
     switch (i) {
     case 0:
-      s = std::move(make_unique<Mensch>(spielraster, *ui));
-      s = Spieler::create(spielraster,
-                          "../freiesmagazin-2014-10-contest/bots/Wagenfuehr/bot",
+      s = std::move(make_unique<Mensch>(*ui));
+      s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Wagenfuehr/bot",
                           "Wagenfuehr");
       break;
     default:
-      auto b = make_unique<Bot>(spielraster);
+      auto b = make_unique<Bot>();
       b->setze_strategie(Strategie::create({"Tiefensuche",
                                            "in größten Raum",
                                            "zum größten Einflussgebiet",
@@ -152,6 +151,8 @@ main_eigenes_spiel(int& argc, char* argv[])
   // Spielen
   int runde = 0;
   auto naechster_schritt = vector<Bewegungsrichtung>(spielraster.spieler_anz());
+  for (auto& s : spieler)
+    s->spiel_startet(spielraster);
   ui->spiel_startet(spielraster);
   while (spielraster.spieler_im_spiel()) {
     runde += 1;
@@ -232,10 +233,9 @@ main_wettbewerb(int& argc, char* argv[])
   //auto ui = UI::create("cerr", argc, argv);
 #endif
 #ifdef USE_EINGABE
-  Mensch spieler(spielraster, *ui);
+  Mensch spieler(*ui);
 #else
-  Bot spieler(spielraster);
-#endif
+  Bot spieler;
   spieler.setze_strategie(Strategie::create({"Tiefensuche",
                                             "in größten Raum",
                                             "zum größten Einflussgebiet",
@@ -243,6 +243,7 @@ main_wettbewerb(int& argc, char* argv[])
                                             "vorwärts 0.7",
                                             "links 0.7",
                                             }));
+#endif
 
   string zeile;
   while (cin.good()) {
@@ -260,6 +261,7 @@ main_wettbewerb(int& argc, char* argv[])
                && zeile != "GAMEBOARDEND") ;
       std::istringstream istr(text);
       spielraster.einlesen(istr);
+      spieler.spiel_startet(spielraster);
 
     } else if (zeile.compare( 0, 4, "SET ") == 0) {
       // SET P - Eigene Spielernummer festlegen

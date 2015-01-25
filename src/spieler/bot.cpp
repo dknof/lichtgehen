@@ -41,14 +41,14 @@
 /**
  ** Standardkonstruktor
  ** 
- ** @param     spielraster   Spielraster
+ ** @param     name   Name des Bots
  **
  ** @return    -
  **
- ** @version   2015-01-24
+ ** @version   2015-01-25
  **/
-Bot::Bot(Spielraster const& spielraster) :
-  Spieler(spielraster, "Bot")
+Bot::Bot(string const& name) :
+  Spieler(name)
 { }
 
 /**

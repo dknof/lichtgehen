@@ -48,7 +48,7 @@
 class Bot : public Spieler {
   public:
     // Konstruktor
-    Bot(Spielraster const& spielraster);
+    explicit Bot(string const& name = "Bot");
     // Destruktor
     ~Bot();
 

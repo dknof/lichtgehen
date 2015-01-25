@@ -1,5 +1,5 @@
 DEPTH = ..
-DIRECTORY = ui
+DIRECTORY = klassen
 
 all : lib
 

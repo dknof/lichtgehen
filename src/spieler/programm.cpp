@@ -50,21 +50,19 @@
 /**
  ** Standardkonstruktor
  ** 
- ** @param     spielraster   Spielraster
- ** @param     pfad          Pfad zum Programm
+ ** @param     pfad    Pfad zum Programm
+ ** @param     name    Name des Programms
  **
  ** @return    -
  **
  ** @version   2015-01-24
  **/
-Programm::Programm(Spielraster const& spielraster,
-               string const& pfad) :
-  Spieler(spielraster, pfad),
-  istr(),
-  ostr()
+Programm::Programm(string const& pfad,
+                   string const& name) :
+  Spieler(name == "" ? pfad : name)
 {
   this->starte_programm(pfad);
-} // Programm::Programm(Spielraster const& spielraster, string const& pfad)
+} // Programm::Programm(string const& pfad)
 
 /**
  ** Destruktor
@@ -160,7 +158,7 @@ Programm::starte_programm(string const& pfad)
     exit(EXIT_FAILURE);
   }
   if (this->istr == nullptr) {
-    perror("read from pipe failed uiae");
+    perror("read from pipe failed");
     exit(EXIT_FAILURE);
   }
 

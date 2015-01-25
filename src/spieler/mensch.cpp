@@ -41,15 +41,14 @@
 /**
  ** Standardkonstruktor
  ** 
- ** @param     spielraster   Spielraster
  ** @param     ui            UI
  **
  ** @return    -
  **
  ** @version   2015-01-25
  **/
-Mensch::Mensch(Spielraster const& spielraster, UI& ui) :
-  Spieler(spielraster, "Mensch"),
+Mensch::Mensch(UI& ui) :
+  Spieler("Mensch"),
   ui(ui)
 { }
 
@@ -66,12 +65,12 @@ Mensch::Mensch(Spielraster const& spielraster, UI& ui) :
 Bewegungsrichtung
 Mensch::bewegung()
 {
-  auto const bp = this->spielraster_.position(this->nummer()); // Position
+  auto const bp = this->spielraster().position(this->nummer()); // Position
   auto const bw = (this->ui.naechste_richtung() - bp.richtung()); // Bewegung
-  if (!this->spielraster_.nachbarn_frei(bp))
+  if (!this->spielraster().nachbarn_frei(bp))
     return bw;
   // Wenn das Feld belegt ist, nehme das nächste
-  if (this->spielraster_(bp + bw))
+  if (this->spielraster()(bp + bw))
     return this->bewegung();
   return bw;
 } // Bewegungsrichtung Mensch::bewegung()
