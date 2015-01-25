@@ -34,36 +34,46 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef PROGRAMM_H
-#define PROGRAMM_H
+#ifndef PSTREAM_H
+#define PSTREAM_H
 
 #include "constants.h"
-#include "spieler.h"
 
-class UI;
-
-/** Ein Programm (aus dem Wettbewerb für freiesMagazin)
- ** ToDo: streams verwenden
+/** Ein Buffer für eine pipe
  **/
-class Programm : public Spieler {
+class opipestreambuf : public std::streambuf {
   public:
     // Konstruktor
-    Programm(Spielraster const& spielraster, string const& pfad);
+    explicit opipestreambuf(int pipefd);
     // Destruktor
-    ~Programm();
+    ~opipestreambuf();
 
-    // die Bewegung
-    Bewegungsrichtung bewegung();
-
-  private:
-    // startet das Programm und verbindet istr und ostr mit den entsprechenden Strömen
-    void starte_programm(string const& pfad);
+    // Daten dem Buffer übergeben
+    int_type overflow( int_type c_ = traits_type::eof() );
 
   private:
-    // Strom für Anweisungen an das Programm
-    FILE* istr;
-    // Strom für Ergebnisse aus dem Programm
-    std::unique_ptr<ostream> ostr;
-}; // class Programm : public Spieler
+    // pipe
+    int const pipefd;
+    // Dateideskriptor
+    FILE* fd;
+}; // class opipestreambuf : public std:streambuf
 
-#endif // #ifndef PROGRAMM_H
+
+/** Ein Stream für eine pipe
+ **/
+class opipestream : public std::ostream {
+  public:
+    // Konstruktor
+    explicit opipestream(int pipefd) :
+      std::ostream(&ostrb),
+      ostrb(pipefd)
+  { }
+    //bool is_open() const
+    //{ return ostrb.is_open(); }
+//  bool is_open() const { return m_fp != 0; }
+  private:
+    // Pipe
+    opipestreambuf ostrb;
+}; // class opipestream : public ostream
+
+#endif // #ifndef PSTREAM_H

@@ -34,36 +34,62 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef PROGRAMM_H
-#define PROGRAMM_H
+#include "pstream.h"
 
-#include "constants.h"
-#include "spieler.h"
+#include <cstdio>
+#include <unistd.h>
 
-class UI;
-
-/** Ein Programm (aus dem Wettbewerb für freiesMagazin)
- ** ToDo: streams verwenden
+/**
+ ** Standardkonstruktor
+ ** 
+ ** @param     istr    Dateidescriptor zum Eingabestrom
+ **
+ ** @return    -
+ **
+ ** @version   2015-01-25
  **/
-class Programm : public Spieler {
-  public:
-    // Konstruktor
-    Programm(Spielraster const& spielraster, string const& pfad);
-    // Destruktor
-    ~Programm();
+opipestreambuf::opipestreambuf(int const pipefd) :
+  pipefd(pipefd),
+  fd(nullptr)
+{
+  this->fd = fdopen(this->pipefd, "w");
+  if (this->fd == nullptr) {
+    perror("read from pipe failed");
+    exit(EXIT_FAILURE);
+  }
+} // opipestreambuf::opipestreambuf(int const pipefd)
 
-    // die Bewegung
-    Bewegungsrichtung bewegung();
+/**
+ ** Destruktor
+ ** 
+ ** @param     -
+ **
+ ** @return    -
+ **
+ ** @version   2015-01-25
+ **/
+opipestreambuf::~opipestreambuf()
+{
+  std::fclose(this->fd);
+  close(this->pipefd);
+} // opipestreambuf::~opipestreambuf()
 
-  private:
-    // startet das Programm und verbindet istr und ostr mit den entsprechenden Strömen
-    void starte_programm(string const& pfad);
-
-  private:
-    // Strom für Anweisungen an das Programm
-    FILE* istr;
-    // Strom für Ergebnisse aus dem Programm
-    std::unique_ptr<ostream> ostr;
-}; // class Programm : public Spieler
-
-#endif // #ifndef PROGRAMM_H
+/**
+ ** Daten in die Pipe schreiben
+ ** 
+ ** @param     -
+ **
+ ** @return    -
+ **
+ ** @version   2015-01-25
+ **/
+opipestreambuf::int_type
+opipestreambuf::overflow(int_type const c_)
+{
+  if( traits_type::eq_int_type( c_, traits_type::eof() ) )
+    return traits_type::not_eof( c_ );
+  char const c = traits_type::to_char_type( c_ );
+  if( std::fwrite( &c, 1, 1, this->fd ) == 1 ) // zeichenweise wegschreiben
+    return c_;  // ok
+  return traits_type::eof(); // Fehler
+} // int_type opipestreambuf::overflow(int_type c_ = traits_type::eof())

@@ -34,36 +34,9 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef PROGRAMM_H
-#define PROGRAMM_H
+#ifndef CONSTANTS_KLASSEN_H
+#define CONSTANTS_KLASSEN_H
 
-#include "constants.h"
-#include "spieler.h"
+#include "../constants.h"
 
-class UI;
-
-/** Ein Programm (aus dem Wettbewerb für freiesMagazin)
- ** ToDo: streams verwenden
- **/
-class Programm : public Spieler {
-  public:
-    // Konstruktor
-    Programm(Spielraster const& spielraster, string const& pfad);
-    // Destruktor
-    ~Programm();
-
-    // die Bewegung
-    Bewegungsrichtung bewegung();
-
-  private:
-    // startet das Programm und verbindet istr und ostr mit den entsprechenden Strömen
-    void starte_programm(string const& pfad);
-
-  private:
-    // Strom für Anweisungen an das Programm
-    FILE* istr;
-    // Strom für Ergebnisse aus dem Programm
-    std::unique_ptr<ostream> ostr;
-}; // class Programm : public Spieler
-
-#endif // #ifndef PROGRAMM_H
+#endif // #ifndef CONSTANTS_KLASSEN_H

@@ -38,6 +38,8 @@
 
 #include "../ui/ui.h"
 
+#include "../klassen/pstream.h"
+
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -100,8 +102,8 @@ Programm::~Programm()
 void
 Programm::starte_programm(string const& pfad)
 {
-  int fdin[2];
-  int fdout[2];
+  int fdin[2];  // stdin für das Programm
+  int fdout[2]; // stdout für das Programm
 
   // Erstelle erste Pipe
   if (pipe(fdin) == -1) {
@@ -150,7 +152,7 @@ Programm::starte_programm(string const& pfad)
   close(fdin[0]);
   close(fdout[1]);
 
-  this->ostr = fdopen(fdin[1], "w");
+  this->ostr = std::make_unique<opipestream>(fdin[1]);
   this->istr = fdopen(fdout[0], "r");
 
   if (this->ostr == nullptr) {
@@ -158,7 +160,7 @@ Programm::starte_programm(string const& pfad)
     exit(EXIT_FAILURE);
   }
   if (this->istr == nullptr) {
-    perror("read from pipe failed");
+    perror("read from pipe failed uiae");
     exit(EXIT_FAILURE);
   }
 

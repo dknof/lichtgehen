@@ -1,4 +1,4 @@
 OBJECTS = main.o
 
-DIRECTORIES = spielraster spieler strategie taktik
+DIRECTORIES = spielraster spieler strategie taktik klassen
 DIRECTORIES += ui
