@@ -59,10 +59,9 @@
  **/
 Programm::Programm(string const& pfad,
                    string const& name) :
-  Spieler(name == "" ? pfad : name)
-{
-  this->starte_programm(pfad);
-} // Programm::Programm(string const& pfad)
+  Spieler(name == "" ? pfad : name),
+  iostr(iopipestream::erzeuge_zum_programm(pfad, name))
+{ }
 
 /**
  ** Destruktor
@@ -74,96 +73,7 @@ Programm::Programm(string const& pfad,
  ** @version   2015-01-24
  **/
 Programm::~Programm()
-{
-#if 0
-
-  fclose(write_to_child);
-  fclose(read_from_child);
-  close(fdin[1]);
-  close(fdout[0]);
-#endif
-
-  // noch auf den Kindprozess (das gestartete Programm) warten
-  int status;
-  wait(&status);
-} // Programm::~Programm()
-
-/**
- ** startet das Programm und verbindet istr und ostr mit den entsprechenden Strömen
- ** 
- ** @param     pfad   Pfad zum Programm
- **
- ** @return    -
- **
- ** @version   2015-01-24
- **/
-void
-Programm::starte_programm(string const& pfad)
-{
-  int fdin[2];  // stdin für das Programm
-  int fdout[2]; // stdout für das Programm
-
-  // Erstelle erste Pipe
-  if (pipe(fdin) == -1) {
-    perror("creating pipe: failed");
-    exit(EXIT_FAILURE);
-  }
-
-  // Erstelle zweite Pipe
-  if (pipe(fdout) == -1) {
-    perror("creating pipe: failed");
-    exit(EXIT_FAILURE);
-  }
-
-  // Eigener Thread für das Programm
-
-  int pid = fork();
-
-  if (pid == -1) {
-    // Fehler
-    perror("fork failed: cat process");
-    exit(EXIT_FAILURE);
-  } // if (pid == -1)
-
-  if (pid == 0) {
-    // Thread
-    // -> starte Programm
-
-    // Streams verbinden:
-    // fdin -> stdin
-    close(fdin[1]);
-    close(0);
-    dup(fdin[0]);
-
-    // fdout -> stdout
-    close(fdout[0]);
-    close(1);
-    dup(fdout[1]);
-
-    execl(pfad.c_str(), this->name().c_str(), (char *) 0);
-    perror("exec failed!");
-    exit(20);
-  } // if (pid == 0)
-
-  // Standardprozess
-  close(fdin[0]);
-  close(fdout[1]);
-
-  this->ostr = std::make_unique<opipestream>(fdin[1]);
-  this->istr = std::make_unique<ipipestream>(fdout[0]);
-
-  if (this->ostr == nullptr) {
-    perror("write to pipe failed");
-    exit(EXIT_FAILURE);
-  }
-  if (this->istr == nullptr) {
-    perror("read from pipe failed");
-    exit(EXIT_FAILURE);
-  }
-
-
-  return ;
-} // void Programm::starte_programm(string pfad)
+{ }
 
 /**
  ** das Spiel startet
@@ -179,8 +89,8 @@ Programm::spiel_startet(Spielraster const& spielraster)
 {
   this->Spieler::spiel_startet(spielraster);
 
-  spielraster.ausgeben(*this->ostr);
-  *this->ostr << "SET " << this->nummer() + 1 << '\n';
+  spielraster.ausgeben(*this->iostr);
+  *this->iostr << "SET " << this->nummer() + 1 << '\n';
   return ;
 } // void Spieler::spiel_startet(Spielraster const& spielraster)
 
@@ -215,17 +125,39 @@ Programm::runde(int const runde)
   this->Spieler::runde(runde);
 
   for (int s = 0; s < this->spielraster().spieler_anz(); ++s) {
-    cout << "POS " << s + 1 << this->spielraster().position(s) << '\n';
-    *this->ostr << "POS " << s + 1 << ' '
-      << this->spielraster().position(s).x() + 1 << ','
-      << this->spielraster().position(s).y() + 1 << ' '
-      << this->spielraster().position(s).richtung() << '\n';
+    SpielerPosition p = this->spielraster().position(s);
+    cout << "POS " << s + 1 << p << '\n';
+    if (!p) {
+      p = this->spielraster().weg(s)[this->spielraster().weg(s).size() - 2];
+    }
+    *this->iostr << "POS " << s + 1 << ' '
+      << p.x() + 1 << ','
+      << p.y() + 1 << ' '
+      << p.richtung() << '\n';
   }
-  *this->ostr << "ROUND " << runde + 1 << '\n';
-  *this->ostr << std::flush;
+  *this->iostr << "ROUND " << runde + 1 << '\n';
 
   return ;
 } // void Programm::runde(int const runde)
+
+/**
+ ** das Spiel endet
+ ** 
+ ** @param     -
+ **
+ ** @return    -
+ **
+ ** @version   2014-10-25
+ **/
+void
+Programm::spiel_endet()
+{
+  *this->iostr << "END" << '\n';
+
+  this->Spieler::spiel_endet();
+  return ;
+} // void Spieler::spiel_endet()
+
 
 /**
  ** setzt die Nummer
@@ -242,8 +174,7 @@ Programm::bewegung()
   // lese die Ausgabe vom Programm
   string zeile = "";
   while (true) {
-    std::getline(*this->istr, zeile);
-    CLOG << zeile << endl;
+    std::getline(*this->iostr, zeile);
     if (zeile == "AHEAD")
       return Bewegungsrichtung::VORWAERTS;
     else if (zeile == "LEFT")

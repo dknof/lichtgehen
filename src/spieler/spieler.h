@@ -73,6 +73,8 @@ class Spieler {
     virtual void spiel_startet(Spielraster const& spielraster);
     // die Runde startet
     virtual void runde(int runde);
+    // das Spiel startet
+    virtual void spiel_endet();
 
     // die Bewegung
     virtual Bewegungsrichtung bewegung() = 0;

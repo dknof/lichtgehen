@@ -181,3 +181,20 @@ Spieler::spiel_startet(Spielraster const& spielraster)
 void
 Spieler::runde(int const runde)
 { }
+
+/**
+ ** das Spiel endet
+ ** 
+ ** @param     -
+ **
+ ** @return    -
+ **
+ ** @version   2014-10-26
+ **/
+void
+Spieler::spiel_endet()
+{
+  this->spielraster_ = NULL;
+  return ;
+} // void Spieler::spiel_endet()
+

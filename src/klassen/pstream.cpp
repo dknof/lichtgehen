@@ -40,6 +40,70 @@
 #include <unistd.h>
 
 /**
+ ** Startet ein Programm und gibt einen entsprechenden Stream zurück
+ ** 
+ ** @param     pfad   Pfad zum Programm
+ **
+ ** @return    Strom zur Kommunikation
+ **
+ ** @version   2015-01-25
+ **/
+unique_ptr<iopipestream>
+iopipestream::erzeuge_zum_programm(string const& pfad, string const& name)
+{
+  int fdin[2];  // stdin für das Programm
+  int fdout[2]; // stdout für das Programm
+
+  // Erstelle erste Pipe
+  if (pipe(fdin) == -1) {
+    perror("creating pipe: failed");
+    exit(EXIT_FAILURE);
+  }
+
+  // Erstelle zweite Pipe
+  if (pipe(fdout) == -1) {
+    perror("creating pipe: failed");
+    exit(EXIT_FAILURE);
+  }
+
+  // Eigener Thread für das Programm
+
+  int pid = fork();
+
+  if (pid == -1) {
+    // Fehler
+    perror("fork failed: cat process");
+    exit(EXIT_FAILURE);
+  } // if (pid == -1)
+
+  if (pid == 0) {
+    // Thread
+    // -> starte Programm
+
+    // Streams verbinden:
+    // fdin -> stdin
+    close(fdin[1]);
+    close(0);
+    dup(fdin[0]);
+
+    // fdout -> stdout
+    close(fdout[0]);
+    close(1);
+    dup(fdout[1]);
+
+    execl(pfad.c_str(), name.c_str(), nullptr);
+    perror("exec failed!");
+    exit(20);
+  } // if (pid == 0)
+
+  // Standardprozess
+  close(fdin[0]);
+  close(fdout[1]);
+
+  return std::make_unique<iopipestream>(fdout[0], fdin[1]);
+} // unique_ptr<iopipestream> iopipestream::erzeuge_zum_programm(string pfad, string name)
+
+/**
  ** Standardkonstruktor
  ** 
  ** @param     pipefd    Dateidescriptor zum Ausgabestrom
@@ -48,16 +112,23 @@
  **
  ** @version   2015-01-25
  **/
-opipestream::buf::buf(int const pipefd) :
-  pipefd(pipefd),
-  fd(nullptr)
+iopipestream::buf::buf(int const ipipefd, int const opipefd) :
+  ipipefd(ipipefd),
+  opipefd(opipefd),
+  ifd(nullptr),
+  ofd(nullptr)
 {
-  this->fd = fdopen(this->pipefd, "w");
-  if (this->fd == nullptr) {
-    perror("read from pipe failed");
+  this->ifd = fdopen(this->ipipefd, "r");
+  this->ofd = fdopen(this->opipefd, "w");
+  if (this->ifd == nullptr) {
+    perror("Eingabepipe konnte nicht geöffnet werden");
     exit(EXIT_FAILURE);
   }
-} // opipestream::buf::buf(int const pipefd)
+  if (this->ofd == nullptr) {
+    perror("Ausgabepipe konnte nicht geöffnet werden");
+    exit(EXIT_FAILURE);
+  }
+} // iopipestream::buf::buf(int ipipefd, int opipefd)
 
 /**
  ** Destruktor
@@ -68,11 +139,13 @@ opipestream::buf::buf(int const pipefd) :
  **
  ** @version   2015-01-25
  **/
-opipestream::buf::~buf()
+iopipestream::buf::~buf()
 {
-  std::fclose(this->fd);
-  close(this->pipefd);
-} // opipestream::buf::~buf()
+  std::fclose(this->ofd);
+  std::fclose(this->ifd);
+  close(this->opipefd);
+  close(this->ipipefd);
+} // iopipestream::buf::~buf()
 
 /**
  ** Daten in die Pipe schreiben
@@ -83,54 +156,21 @@ opipestream::buf::~buf()
  **
  ** @version   2015-01-25
  **/
-opipestream::buf::int_type
-opipestream::buf::overflow(int_type const c_)
+iopipestream::buf::int_type
+iopipestream::buf::overflow(int_type const c_)
 {
   if( traits_type::eq_int_type( c_, traits_type::eof() ) )
     return traits_type::not_eof( c_ );
   char const c = traits_type::to_char_type( c_ );
   // zeichenweise wegschreiben
-  if (std::fputc(c, this->fd) == EOF)
+  if (std::fputc(c, this->ofd) == EOF)
     return traits_type::eof();
 
-  std::fflush(this->fd);
+  if (c == '\n')
+    std::fflush(this->ofd);
+
   return c_;
-} // int_type opipestream::buf::overflow(int_type c_ = traits_type::eof())
-
-/**
- ** Standardkonstruktor
- ** 
- ** @param     pipefd    Dateidescriptor zum Eingabestrom
- **
- ** @return    -
- **
- ** @version   2015-01-25
- **/
-ipipestream::buf::buf(int const pipefd) :
-  pipefd(pipefd),
-  fd(nullptr)
-{
-  this->fd = fdopen(this->pipefd, "r");
-  if (this->fd == nullptr) {
-    perror("read from pipe failed");
-    exit(EXIT_FAILURE);
-  }
-} // ipipestream::buf::buf(int const pipefd)
-
-/**
- ** Destruktor
- ** 
- ** @param     -
- **
- ** @return    -
- **
- ** @version   2015-01-25
- **/
-ipipestream::buf::~buf()
-{
-  std::fclose(this->fd);
-  close(this->pipefd);
-} // ipipestream::buf::~buf()
+} // int_type iopipestream::buf::overflow(int_type c_ = traits_type::eof())
 
 /**
  ** Daten aus der Pipe lesen
@@ -141,15 +181,15 @@ ipipestream::buf::~buf()
  **
  ** @version   2015-01-25
  **/
-ipipestream::buf::int_type
-ipipestream::buf::underflow()
+iopipestream::buf::int_type
+iopipestream::buf::underflow()
 {
-  int const c = fgetc(this->fd);
+  int const c = fgetc(this->ifd);
   if (c == EOF)
     return traits_type::eof();
-  ungetc(c, this->fd);
+  ungetc(c, this->ifd);
   return c;
-} // int_type ipipestream::buf::underflow()
+} // int_type iopipestream::buf::underflow()
 
 /**
  ** Daten aus der Pipe lesen
@@ -160,11 +200,11 @@ ipipestream::buf::underflow()
  **
  ** @version   2015-01-25
  **/
-ipipestream::buf::int_type
-ipipestream::buf::uflow()
+iopipestream::buf::int_type
+iopipestream::buf::uflow()
 {
-  int const c = fgetc(this->fd);
+  int const c = fgetc(this->ifd);
   if (c == EOF)
     return traits_type::eof();
   return c;
-} // int_type ipipestream::buf::uflow()
+} // int_type iopipestream::buf::uflow()

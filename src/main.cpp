@@ -128,10 +128,18 @@ main_eigenes_spiel(int& argc, char* argv[])
     switch (i) {
     case 0:
       s = std::move(make_unique<Mensch>(*ui));
-      s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Wagenfuehr/bot", "Wagenfuehr");
+      // Die möglichen Bots, in der Reihenfolge der Bewertung vom Programmierwettbewerb
       //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Knof/src/tronbot", "Knof");
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Burow/FalkBot", "Burow"); 
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Scharm/tronbot.sh", "Scharm"); // Fehler
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/StaudingerP/run_bot.sh", "StaudingerP");
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Demel/bin/bot", "Demel");
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/StaudingerC/bot.py", "StaudingerC");
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Schmidhuber/build/Bot.jar", "Schmidhuber"); // Fehler
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Maraun/bot", "Maraun");
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Bock/bot", "Bock");
       //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/dummybot/bot", "dummybot");
-      //s = Spieler::create("/bin/cat", "cat");
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Wagenfuehr/bot", "Wagenfuehr");
       break;
     default:
       auto b = make_unique<Bot>();
@@ -209,6 +217,8 @@ main_eigenes_spiel(int& argc, char* argv[])
     //break;
   } // while (spielraster.spieler_im_spiel())
 
+  for (auto& s : spieler)
+    s->spiel_endet();
   ui->spiel_endet();
 
   return ;

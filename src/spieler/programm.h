@@ -60,6 +60,8 @@ class Programm : public Spieler {
     void setze_nummer(int const nummer);
     // die Runde startet
     void runde(int runde);
+    // das Spiel endet
+    void spiel_endet();
 
     // die Bewegung
     Bewegungsrichtung bewegung();
@@ -69,10 +71,8 @@ class Programm : public Spieler {
     void starte_programm(string const& pfad);
 
   private:
-    // Strom für Anweisungen an das Programm
-    std::unique_ptr<istream> istr;
-    // Strom für Ergebnisse aus dem Programm
-    std::unique_ptr<ostream> ostr;
+    // Strom für Anweisungen an und vom das Programm
+    std::unique_ptr<std::iostream> iostr;
 }; // class Programm : public Spieler
 
 #endif // #ifndef PROGRAMM_H

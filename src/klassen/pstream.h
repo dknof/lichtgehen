@@ -41,6 +41,51 @@
 
 /** Ein Ausgabestrom für eine pipe
  **/
+class iopipestream : public std::iostream {
+  public:
+    // Startet ein Programm und gibt einen entsprechenden Stream zurück
+    static unique_ptr<iopipestream> erzeuge_zum_programm(string const& pfad,
+                                                         string const& name);
+
+    /** Ein Buffer für eine pipe
+     **/
+    class buf : public std::streambuf {
+      public:
+        // Konstruktor
+        explicit buf(int ipipefd, int opipefd);
+        // Destruktor
+        ~buf();
+
+        // Daten dem Buffer übergeben
+        int_type overflow( int_type c_ = traits_type::eof() );
+
+        // Daten aus dem Puffer holen
+        int_type underflow();
+        // Daten aus dem Puffer holen
+        int_type uflow();
+
+      private:
+        // pipe
+        int const ipipefd;
+        int const opipefd;
+        // Dateideskriptor
+        FILE* ifd;
+        FILE* ofd;
+    }; // class iopipestream::buf : public std:streambuf
+
+  public:
+    // Konstruktor
+    explicit iopipestream(int ipipefd, int opipefd)
+      : std::iostream(&iostrb), iostrb(ipipefd, opipefd)
+    { }
+  private:
+    // Pipe
+    buf iostrb;
+}; // class iopipestream : public iostream
+
+#ifdef VERALTET
+/** Ein Ausgabestrom für eine pipe
+ **/
 class opipestream : public std::ostream {
   /** Ein Buffer für eine pipe
    **/
@@ -58,7 +103,7 @@ class opipestream : public std::ostream {
       // pipe
       int const pipefd;
       // Dateideskriptor
-      FILE* fd;
+      FILE* ofd;
   }; // class opipestream::buf : public std:streambuf
 
   public:
@@ -86,16 +131,13 @@ class ipipestream : public std::istream {
       int_type underflow();
       // Daten aus dem Puffer holen
       int_type uflow();
-      // 
-      //int sync()
-      //{ std::fflush(this->fd); return 0;}
 
     private:
       // pipe
       int const pipefd;
       // Dateideskriptor
-      FILE* fd;
-  }; // class opipestream::buf : public std:streambuf
+      FILE* ifd;
+  }; // class ipipestream::buf : public std:streambuf
 
   public:
   // Konstruktor
@@ -105,5 +147,6 @@ class ipipestream : public std::istream {
   // Pipe
   buf istrb;
 }; // class ipipestream : public istream
+#endif
 
 #endif // #ifndef PSTREAM_H
