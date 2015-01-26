@@ -39,7 +39,7 @@
 
 #include "constants.h"
 
-/** Ein Stream für eine pipe
+/** Ein Ausgabestrom für eine pipe
  **/
 class opipestream : public std::ostream {
   /** Ein Buffer für eine pipe
@@ -50,9 +50,6 @@ class opipestream : public std::ostream {
       explicit buf(int pipefd);
       // Destruktor
       ~buf();
-
-      // ob der Stream geöffnet ist
-      bool is_open() const;
 
       // Daten dem Buffer übergeben
       int_type overflow( int_type c_ = traits_type::eof() );
@@ -66,15 +63,47 @@ class opipestream : public std::ostream {
 
   public:
   // Konstruktor
-  explicit opipestream(int pipefd) :
-    std::ostream(&ostrb),
-    ostrb(pipefd)
+  explicit opipestream(int pipefd) : std::ostream(&ostrb), ostrb(pipefd)
   { }
-  bool is_open() const
-  { return this->ostrb.is_open(); }
   private:
   // Pipe
   buf ostrb;
 }; // class opipestream : public ostream
+
+/** Ein Eingabestrom für eine pipe
+ **/
+class ipipestream : public std::istream {
+  /** Ein Buffer für eine pipe
+   **/
+  class buf : public std::streambuf {
+    public:
+      // Konstruktor
+      explicit buf(int pipefd);
+      // Destruktor
+      ~buf();
+
+      // Daten aus dem Puffer holen
+      int_type underflow();
+      // Daten aus dem Puffer holen
+      int_type uflow();
+      // 
+      //int sync()
+      //{ std::fflush(this->fd); return 0;}
+
+    private:
+      // pipe
+      int const pipefd;
+      // Dateideskriptor
+      FILE* fd;
+  }; // class opipestream::buf : public std:streambuf
+
+  public:
+  // Konstruktor
+  explicit ipipestream(int pipefd) : std::istream(&istrb), istrb(pipefd)
+  { }
+  private:
+  // Pipe
+  buf istrb;
+}; // class ipipestream : public istream
 
 #endif // #ifndef PSTREAM_H

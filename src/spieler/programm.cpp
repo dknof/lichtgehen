@@ -150,7 +150,7 @@ Programm::starte_programm(string const& pfad)
   close(fdout[1]);
 
   this->ostr = std::make_unique<opipestream>(fdin[1]);
-  this->istr = fdopen(fdout[0], "r");
+  this->istr = std::make_unique<ipipestream>(fdout[0]);
 
   if (this->ostr == nullptr) {
     perror("write to pipe failed");
@@ -161,8 +161,6 @@ Programm::starte_programm(string const& pfad)
     exit(EXIT_FAILURE);
   }
 
-  //this->istr = std::make_unique<std::ifstream>(read_from_child);
-  //this->ostr = std::make_unique<std::ofstream>(write_to_child);
 
   return ;
 } // void Programm::starte_programm(string pfad)
@@ -242,24 +240,20 @@ Bewegungsrichtung
 Programm::bewegung()
 {
   // lese die Ausgabe vom Programm
-  string zeile;
-  char zeile_c[256];
-  zeile_c[255] = 0;
-  while (!ferror(this->istr)) {
-    fgets(zeile_c, 255, this->istr);
-    zeile = string(zeile_c);
-    //std::getline(cin, zeile);
-    if (zeile == "AHEAD\n")
+  string zeile = "";
+  while (true) {
+    std::getline(*this->istr, zeile);
+    CLOG << zeile << endl;
+    if (zeile == "AHEAD")
       return Bewegungsrichtung::VORWAERTS;
-    else if (zeile == "LEFT\n")
+    else if (zeile == "LEFT")
       return Bewegungsrichtung::LINKS;
-    else if (zeile == "RIGHT\n")
+    else if (zeile == "RIGHT")
       return Bewegungsrichtung::RECHTS;
     else {
       cerr << "Bewegung '" << zeile << "' unbekannt.\n";
-    exit(0);
+      exit(0);
     }
   }
-  CLOG << endl;
   return Bewegungsrichtung::VORWAERTS;
 } // Bewegungsrichtung Programm::bewegung()

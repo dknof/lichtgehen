@@ -208,7 +208,6 @@ main_eigenes_spiel(int& argc, char* argv[])
 #endif
     //break;
   } // while (spielraster.spieler_im_spiel())
-  CLOG << endl;
 
   ui->spiel_endet();
 

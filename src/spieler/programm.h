@@ -70,7 +70,7 @@ class Programm : public Spieler {
 
   private:
     // Strom für Anweisungen an das Programm
-    FILE* istr;
+    std::unique_ptr<istream> istr;
     // Strom für Ergebnisse aus dem Programm
     std::unique_ptr<ostream> ostr;
 }; // class Programm : public Spieler

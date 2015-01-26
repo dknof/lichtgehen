@@ -42,7 +42,7 @@
 /**
  ** Standardkonstruktor
  ** 
- ** @param     istr    Dateidescriptor zum Eingabestrom
+ ** @param     pipefd    Dateidescriptor zum Ausgabestrom
  **
  ** @return    -
  **
@@ -75,26 +75,11 @@ opipestream::buf::~buf()
 } // opipestream::buf::~buf()
 
 /**
- ** -> Rückgabe
- ** 
- ** @param     -
- **
- ** @return    ob der Stream geöffnet ist
- **
- ** @version   2015-01-25
- **/
-bool
-opipestream::buf::is_open() const
-{
-  return (this->fd != 0);
-} // bool opipestream::buf::is_open() const
-
-/**
  ** Daten in die Pipe schreiben
  ** 
- ** @param     -
+ ** @param     c_   zu schreibendes Zeichen
  **
- ** @return    -
+ ** @return    geschriebenes Zeichen
  **
  ** @version   2015-01-25
  **/
@@ -104,11 +89,82 @@ opipestream::buf::overflow(int_type const c_)
   if( traits_type::eq_int_type( c_, traits_type::eof() ) )
     return traits_type::not_eof( c_ );
   char const c = traits_type::to_char_type( c_ );
-  std::clog << c;
- // zeichenweise wegschreiben
-  if( std::fwrite( &c, 1, 1, this->fd ) == 1 ) {
+  // zeichenweise wegschreiben
+  if (std::fputc(c, this->fd) == EOF)
+    return traits_type::eof();
+
   std::fflush(this->fd);
-    return c_;  // ok
-  }
-  return traits_type::eof(); // Fehler
+  return c_;
 } // int_type opipestream::buf::overflow(int_type c_ = traits_type::eof())
+
+/**
+ ** Standardkonstruktor
+ ** 
+ ** @param     pipefd    Dateidescriptor zum Eingabestrom
+ **
+ ** @return    -
+ **
+ ** @version   2015-01-25
+ **/
+ipipestream::buf::buf(int const pipefd) :
+  pipefd(pipefd),
+  fd(nullptr)
+{
+  this->fd = fdopen(this->pipefd, "r");
+  if (this->fd == nullptr) {
+    perror("read from pipe failed");
+    exit(EXIT_FAILURE);
+  }
+} // ipipestream::buf::buf(int const pipefd)
+
+/**
+ ** Destruktor
+ ** 
+ ** @param     -
+ **
+ ** @return    -
+ **
+ ** @version   2015-01-25
+ **/
+ipipestream::buf::~buf()
+{
+  std::fclose(this->fd);
+  close(this->pipefd);
+} // ipipestream::buf::~buf()
+
+/**
+ ** Daten aus der Pipe lesen
+ ** 
+ ** @param     -
+ **
+ ** @return    gelesenes Zeichen
+ **
+ ** @version   2015-01-25
+ **/
+ipipestream::buf::int_type
+ipipestream::buf::underflow()
+{
+  int const c = fgetc(this->fd);
+  if (c == EOF)
+    return traits_type::eof();
+  ungetc(c, this->fd);
+  return c;
+} // int_type ipipestream::buf::underflow()
+
+/**
+ ** Daten aus der Pipe lesen
+ ** 
+ ** @param     -
+ **
+ ** @return    gelesenes Zeichen
+ **
+ ** @version   2015-01-25
+ **/
+ipipestream::buf::int_type
+ipipestream::buf::uflow()
+{
+  int const c = fgetc(this->fd);
+  if (c == EOF)
+    return traits_type::eof();
+  return c;
+} // int_type ipipestream::buf::uflow()
