@@ -49,9 +49,10 @@ class Spieler {
     static std::unique_ptr<Spieler> create(string const& typ,
                                            string const& name);
 
-  public:
+  protected:
     // Konstruktor
     explicit Spieler(string const& name);
+  public:
     // Destruktor
     virtual ~Spieler();
 

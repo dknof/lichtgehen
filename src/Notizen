@@ -1,0 +1,31 @@
+* Unter Windows kompilieren
+* Programme aus Datei lesen
+
+Struktur
+* Kommandozeilenargumente
+* KI konfigurieren
+* pdf-Ausgabe als OS
+* spieler/programm: Klasse umbenennen / als Teil von "Spieler"
+* UI global
+* Klasse Spiel
+  - Enthält das Spielfeld und die Spieler
+
+gtkmm
+* Bots zur Auswahl anbieten
+* Spielfelder zur Auswahl anbieten (mit Vorschau)
+* automatisch einige Schritte machen
+* In die Wand rennen schöner gestalten
+* Ineinanderlaufen schöner gestalten
+* Namen der Spieler darstellen
+
+pdf-Ausgabe
+* auch als Buch (jedes Blatt ein Spielfeld)
+* per Kommando aufrufen
+* den Code von gtkmm verwenden
+* besser abstrahieren (OS)
+
+KI
+* Raum füllen
+  - Einfache Bereiche schnell füllen
+* Strategie: Bis zur Entfernung von 5 Schritten einfach zum Gegner gehen
+* Taktik: Raum abschneiden
