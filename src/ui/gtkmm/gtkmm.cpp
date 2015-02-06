@@ -107,7 +107,7 @@ namespace UI_Gtkmm {
   void
     UI_Gtkmm::runde(int const n)
     {
-      this->hauptfenster->aktualisiere();
+      this->hauptfenster->runde(n);
       return;
     } // void UI_Gtkmm::runde(int n)
 
@@ -123,7 +123,7 @@ namespace UI_Gtkmm {
   void
     UI_Gtkmm::spiel_endet()
     {
-      this->hauptfenster->aktualisiere();
+      this->hauptfenster->spiel_endet();
       if (this->hauptfenster->is_visible())
         this->main->run(*this->hauptfenster);
       return;

@@ -60,6 +60,10 @@ namespace UI_Gtkmm {
 
       // aktualisiere alle Elemente
       void aktualisiere();
+      // eine neue Runde
+      void runde(int n);
+      // das Spiel endet
+      void spiel_endet();
     private:
       // initializiere das Hauptfenster
       void init();
@@ -74,13 +78,13 @@ namespace UI_Gtkmm {
       // Nummer, die eingegeben wurde
       int nummer_eingabe = 0;
       // Spielraster
-      Gtk::DrawingArea* spielraster = nullptr;
+      Gtk::DrawingArea* spielraster_ = nullptr;
       // Historie
-      Gtk::Scale* historie;
+      Gtk::Scale* historie_;
       // Rundenanzeige
-      Gtk::Label* runde = nullptr;
+      Gtk::Label* runde_ = nullptr;
       // Freie Felder
-      Gtk::Label* felder_frei = nullptr;
+      Gtk::Label* felder_frei_ = nullptr;
       // Spielerinfo
       vector<Gtk::Label*> spieler;
   }; // class Hauptfenster : public Gtk::Window

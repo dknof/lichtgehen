@@ -91,16 +91,16 @@ namespace UI_Gtkmm {
         auto box_oben = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL, 20));
         hauptbox->pack_start(*box_oben, Gtk::PACK_EXPAND_WIDGET);
         // Spielfläche
-        this->spielraster = Gtk::manage(new Gtk::DrawingArea());
-        box_oben->pack_start(*this->spielraster, Gtk::PACK_EXPAND_WIDGET);
-        this->spielraster->set_size_request(600, 600);
-        this->spielraster->signal_draw().connect(sigc::mem_fun(*this, &Hauptfenster::aktualisiere_spielraster), false);
+        this->spielraster_ = Gtk::manage(new Gtk::DrawingArea());
+        box_oben->pack_start(*this->spielraster_, Gtk::PACK_EXPAND_WIDGET);
+        this->spielraster_->set_size_request(600, 600);
+        this->spielraster_->signal_draw().connect(sigc::mem_fun(*this, &Hauptfenster::aktualisiere_spielraster), false);
         { // Informationsbereich
           auto box_info = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL, 20));
           box_info->set_border_width(20);
           box_oben->pack_end(*box_info, Gtk::PACK_SHRINK);
           // Runde
-          this->runde = Gtk::manage(new Gtk::Label("Runde", Gtk::ALIGN_CENTER));
+          this->runde_ = Gtk::manage(new Gtk::Label("Runde", Gtk::ALIGN_CENTER));
           {
             Pango::AttrList attrlist;
             {
@@ -111,12 +111,12 @@ namespace UI_Gtkmm {
               auto attr = Pango::Attribute::create_attr_scale(1.41);
               attrlist.insert(attr);
             }
-            this->runde->set_attributes(attrlist);
+            this->runde_->set_attributes(attrlist);
           }
-          box_info->add(*this->runde);
+          box_info->add(*this->runde_);
           // Felder frei
-          this->felder_frei = Gtk::manage(new Gtk::Label("Felder frei"));
-          box_info->add(*this->felder_frei);
+          this->felder_frei_ = Gtk::manage(new Gtk::Label("Felder frei"));
+          box_info->add(*this->felder_frei_);
           // Bots
           for (int b = 0; b < this->ui->spielraster->spieler_anz(); ++b) {
             this->spieler.push_back(Gtk::manage(new Gtk::Label("Bot " + std::to_string(b))));
@@ -139,12 +139,12 @@ namespace UI_Gtkmm {
         } // Informationsbereich
       } // Oberer Bereich 
       { // Historie
-        this->historie = Gtk::manage(new Gtk::Scale(Gtk::ORIENTATION_HORIZONTAL));
-        this->historie->set_increments(1, 10);
-        this->historie->set_range(1, 1);
-        this->historie->set_round_digits(0);
-        hauptbox->pack_start(*this->historie, Gtk::PACK_SHRINK);
-        this->historie->signal_value_changed().connect(sigc::mem_fun(*this, &Hauptfenster::aktualisiere), false);
+        this->historie_ = Gtk::manage(new Gtk::Scale(Gtk::ORIENTATION_HORIZONTAL));
+        this->historie_->set_increments(1, 10);
+        this->historie_->set_range(1, 1);
+        this->historie_->set_round_digits(0);
+        hauptbox->pack_start(*this->historie_, Gtk::PACK_SHRINK);
+        this->historie_->signal_value_changed().connect(sigc::mem_fun(*this, &Hauptfenster::aktualisiere), false);
       } // Historie
 
       { // Unterer Bereich 
@@ -178,6 +178,54 @@ namespace UI_Gtkmm {
     } // Hauptfenster::init()
 
   /**
+   ** eine neue Runde
+   ** 
+   ** @param     n   Rundennummer
+   **
+   ** @return    -
+   **
+   ** @version   2015-02-04
+   **/
+  void
+    Hauptfenster::runde(int const n)
+    {
+      // die Historie erweitern, dabei den Wert gegebenenfalls weiterschieben
+      this->historie_->set_range(1, n + 1);
+      if (this->historie_->get_value() == n) {
+        this->historie_->set_value(n + 1);
+        this->aktualisiere();
+      }
+
+      while (this->ui->main->events_pending())
+        this->ui->main->iteration(false);
+
+      return ;
+    } // void Hauptfenster::runde(int const n)
+
+  /**
+   ** das Spiel endet
+   ** 
+   ** @param     -
+   **
+   ** @return    -
+   **
+   ** @version   2015-02-04
+   **/
+  void
+    Hauptfenster::spiel_endet()
+    {
+      // die Historie erweitern, dabei den Wert gegebenenfalls weiterschieben
+      auto const n = this->ui->spielraster->runde();
+      this->historie_->set_range(1, n);
+      if (this->historie_->get_value() >= n - 2) {
+        this->historie_->set_value(n);
+        this->aktualisiere();
+      }
+
+      return ;
+    } // void Hauptfenster::spiel_endet()
+
+  /**
    ** aktualisiert alle Elemente
    ** 
    ** @param     -
@@ -192,28 +240,17 @@ namespace UI_Gtkmm {
       if (!this->ui->spielraster)
         return ;
 
-      { // die Historie gegebenenfalls erweitern, dabei den Wert weiterschieben
-        int r = this->historie->get_value();
-        if (r >= this->ui->spielraster->runde() - 2) {
-          this->historie->set_value(this->ui->spielraster->runde());
-          if (this->historie->get_value() == r)
-            r = this->ui->spielraster->runde();
-        }
-        this->historie->set_range(1, this->ui->spielraster->runde());
-        this->historie->set_value(r);
-      }
-
-      auto const spielraster = this->ui->spielraster->historie(this->historie->get_value() - 1);
+      auto const spielraster = this->ui->spielraster->historie(this->historie_->get_value() - 1);
 
       // Runde
-      if (this->ui->spielraster->runde() == this->historie->get_value())
-        this->runde->set_label("       Runde " + std::to_string(spielraster.runde()) + "       ");
+      if (this->ui->spielraster->runde() == this->historie_->get_value())
+        this->runde_->set_label("       Runde " + std::to_string(spielraster.runde()) + "       ");
       else
-        this->runde->set_label("  Runde "
-                               + std::to_string(static_cast<int>(this->historie->get_value()))
+        this->runde_->set_label("  Runde "
+                               + std::to_string(static_cast<int>(this->historie_->get_value()))
                                + " (" + std::to_string(this->ui->spielraster->runde()) + ")  ");
       // Felder frei
-      this->felder_frei->set_label(std::to_string(spielraster.felder_frei()) + " Felder frei");
+      this->felder_frei_->set_label(std::to_string(spielraster.felder_frei()) + " Felder frei");
 
       // Bots
       for (int b = 0; b < spielraster.spieler_anz(); ++b) {
@@ -230,10 +267,7 @@ namespace UI_Gtkmm {
       // Weitere Informationen
 
       // Spielraster neu zeichnen lassen
-      this->spielraster->queue_draw();
-
-      while (this->ui->main->events_pending())
-        this->ui->main->iteration(false);
+      this->spielraster_->queue_draw();
 
       return ;
     } // void Hauptfenster::aktualisiere()
@@ -252,11 +286,12 @@ namespace UI_Gtkmm {
     {
       if (!this->ui->spielraster)
         return false;
-      auto const spielraster = this->ui->spielraster->historie(this->historie->get_value() - 1);
+
+      auto const spielraster = this->ui->spielraster->historie(this->historie_->get_value() - 1);
       auto const breite = spielraster.breite();
       auto const laenge = spielraster.laenge();
 
-      auto const allocation = this->spielraster->get_allocation();
+      auto const allocation = this->spielraster_->get_allocation();
       cr->scale(static_cast<double>(allocation.get_width()) / breite,
                 static_cast<double>(allocation.get_height()) / laenge);
 
@@ -432,28 +467,28 @@ namespace UI_Gtkmm {
             for (int i = 0; i < this->ui->spielraster->laenge(); ++i)
               this->ui->schwebende_richtungen.push_back(Richtung::NORDEN);
             this->nummer_eingabe = 0;
-            this->historie->set_value(this->ui->spielraster->runde());
+            this->historie_->set_value(this->ui->spielraster->runde());
             return true;
           case GDK_KEY_Right:
           case GDK_KEY_l:
             for (int i = 0; i < this->ui->spielraster->breite(); ++i)
               this->ui->schwebende_richtungen.push_back(Richtung::OSTEN);
             this->nummer_eingabe = 0;
-            this->historie->set_value(this->ui->spielraster->runde());
+            this->historie_->set_value(this->ui->spielraster->runde());
             return true;
           case GDK_KEY_Down:
           case GDK_KEY_k:
             for (int i = 0; i < this->ui->spielraster->laenge(); ++i)
               this->ui->schwebende_richtungen.push_back(Richtung::SUEDEN);
             this->nummer_eingabe = 0;
-            this->historie->set_value(this->ui->spielraster->runde());
+            this->historie_->set_value(this->ui->spielraster->runde());
             return true;
           case GDK_KEY_Left:
           case GDK_KEY_h:
             for (int i = 0; i < this->ui->spielraster->breite(); ++i)
               this->ui->schwebende_richtungen.push_back(Richtung::WESTEN);
             this->nummer_eingabe = 0;
-            this->historie->set_value(this->ui->spielraster->runde());
+            this->historie_->set_value(this->ui->spielraster->runde());
             return true;
           }
         }
@@ -475,40 +510,40 @@ namespace UI_Gtkmm {
           for (int i = 0; i < std::max(1, this->nummer_eingabe); ++i)
             this->ui->schwebende_richtungen.push_back(Richtung::NORDEN);
           this->nummer_eingabe = 0;
-          this->historie->set_value(this->ui->spielraster->runde());
+          this->historie_->set_value(this->ui->spielraster->runde());
           return true;
         case GDK_KEY_Right:
         case GDK_KEY_l:
           for (int i = 0; i < std::max(1, this->nummer_eingabe); ++i)
             this->ui->schwebende_richtungen.push_back(Richtung::OSTEN);
           this->nummer_eingabe = 0;
-          this->historie->set_value(this->ui->spielraster->runde());
+          this->historie_->set_value(this->ui->spielraster->runde());
           return true;
         case GDK_KEY_Down:
         case GDK_KEY_k:
           for (int i = 0; i < std::max(1, this->nummer_eingabe); ++i)
             this->ui->schwebende_richtungen.push_back(Richtung::SUEDEN);
           this->nummer_eingabe = 0;
-          this->historie->set_value(this->ui->spielraster->runde());
+          this->historie_->set_value(this->ui->spielraster->runde());
           return true;
         case GDK_KEY_Left:
         case GDK_KEY_h:
           for (int i = 0; i < std::max(1, this->nummer_eingabe); ++i)
             this->ui->schwebende_richtungen.push_back(Richtung::WESTEN);
           this->nummer_eingabe = 0;
-          this->historie->set_value(this->ui->spielraster->runde());
+          this->historie_->set_value(this->ui->spielraster->runde());
           return true;
         case GDK_KEY_Page_Up:
-          this->historie->set_value(this->historie->get_value() - 1);
+          this->historie_->set_value(this->historie_->get_value() - 1);
           return true;
         case GDK_KEY_Page_Down:
-          this->historie->set_value(this->historie->get_value() + 1);
+          this->historie_->set_value(this->historie_->get_value() + 1);
           return true;
         case GDK_KEY_Home:
-          this->historie->set_value(0);
+          this->historie_->set_value(0);
           return true;
         case GDK_KEY_End:
-          this->historie->set_value(this->ui->spielraster->runde());
+          this->historie_->set_value(this->ui->spielraster->runde());
           return true;
         case GDK_KEY_space:
           break;
@@ -521,16 +556,16 @@ namespace UI_Gtkmm {
           return true;
         case GDK_KEY_r:
           // Spielraster ausgeben und speichern
-          this->ui->spielraster->historie(this->historie->get_value() - 1).ausgeben(cerr);
+          this->ui->spielraster->historie(this->historie_->get_value() - 1).ausgeben(cerr);
           {
             std::ofstream ostr("Test.txt");
             if (ostr.good())
-              this->ui->spielraster->historie(this->historie->get_value() - 1).ausgeben(ostr);
+              this->ui->spielraster->historie(this->historie_->get_value() - 1).ausgeben(ostr);
           }
           return true;
         case GDK_KEY_R:
           // Raster ausgeben
-          cerr << this->ui->spielraster->historie(this->historie->get_value() - 1);
+          cerr << this->ui->spielraster->historie(this->historie_->get_value() - 1);
           return true;
         default:
           return false;
