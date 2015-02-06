@@ -39,6 +39,7 @@
 #include "hauptfenster.h"
 #include "hilfe.h"
 #include "ueber.h"
+#include "pdf_export.h"
 #include <gtkmm/main.h>
 
 namespace UI_Gtkmm {

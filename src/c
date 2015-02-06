@@ -13,11 +13,12 @@ make -j1 || exit
 echo "Starte tronbot…"
 #<../Spielraster/simple.txt ./tronbot
 
-BOTA="../src/tronbot"
-#BOTA="bots/dummybot/bot"
+#BOTB="../src/tronbot"
+BOTA="bots/dummybot/bot"
 
 #BOTB="../src/tronbot"
-BOTB="bots/dummybot/bot"
+BOTB="bots/Burow/FalkBot"
+#BOTB="bots/Wagenfuehr/bot"
 
 SPIELRASTER="Test.txt"
 #SPIELRASTER="../Spielraster/Test.txt"
@@ -46,6 +47,10 @@ SPIELRASTER="../Spielraster/Säulen_21.txt"
   ./tronbot <"$SPIELRASTER"
   exit
 
+
+#./tronbot <../freiesmagazin-2014-10-contest/results_turn1/Burow_Bock_cross.txt
+#exit
+
 if grep -q "USE_EIGENES_SPIEL *= *true" Makefile.modules; then
   echo "Eigenes Spiel"
   time ./tronbot <"$SPIELRASTER"
@@ -53,8 +58,8 @@ else
   echo "Serverspiel"
   # Spiel über den Server
   pushd ../freiesmagazin-2014-10-contest
-  #./start.sh "$SPIELRASTER" "$BOTA" "$BOTB"
-  ./start.sh "$SPIELRASTER" "$BOTA" "$BOTB" --log > bot.log 2>&1
+  ./start.sh "$SPIELRASTER" "$BOTA" "$BOTB"
+  #./start.sh "$SPIELRASTER" "$BOTA" "$BOTB" --log > bot.log 2>&1
   # gui/gui
   popd 
 fi

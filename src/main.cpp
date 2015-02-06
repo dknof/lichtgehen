@@ -40,6 +40,7 @@
 #include "spieler/bot.h"
 #include "spieler/mensch.h"
 #include "ui/ui.h"
+#include "ui/gtkmm/pdf_export.h"
 
 #include <string>
 using std::string;
@@ -78,6 +79,7 @@ cdebug_ = &cerr;
 main_eigenes_spiel(argc, argv);
 #else // Wettbewerb
 cdebug_ = new std::ostringstream;
+cdebug_ = &cout;
 main_wettbewerb(argc, argv);
 #endif
 
@@ -217,6 +219,8 @@ main_eigenes_spiel(int& argc, char* argv[])
     //break;
   } // while (spielraster.spieler_im_spiel())
 
+  UI_Gtkmm::speicher_spielraster(spielraster);
+
   for (auto& s : spieler)
     s->spiel_endet();
   ui->spiel_endet();
@@ -246,6 +250,7 @@ main_wettbewerb(int& argc, char* argv[])
   //auto ui = UI::create("cout", argc, argv);
   //auto ui = UI::create("cerr", argc, argv);
 #endif
+  //ui = UI::create("none", argc, argv);
 #ifdef USE_EINGABE
   Mensch spieler(*ui);
 #else
@@ -303,11 +308,15 @@ main_wettbewerb(int& argc, char* argv[])
       ui->spiel_endet();
       break;
 
+    } else if (zeile.compare(0, 5, "(II) )")) {
+      cout << zeile << endl;
     } else {
       cerr << "Unbekannte Befehlszeile:\n" << zeile << '\n';
       break;
     } // if (zeile == …)
   } // while (true)
+
+  UI_Gtkmm::speicher_spielraster(spielraster);
 
   //usleep(20*1000);
   //cdebug << "___\n" << spielraster << endl;
