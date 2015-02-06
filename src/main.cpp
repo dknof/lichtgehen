@@ -238,7 +238,7 @@ main_wettbewerb(int& argc, char* argv[])
   //auto ui = UI::create("cout", argc, argv);
   //auto ui = UI::create("cerr", argc, argv);
 #endif
-  ui = UI::create("none", argc, argv);
+  //ui = UI::create("none", argc, argv);
 #ifdef USE_EINGABE
   Mensch bot(spielraster, *ui);
 #else

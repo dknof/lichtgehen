@@ -124,10 +124,8 @@ namespace UI_Gtkmm {
     UI_Gtkmm::spiel_endet()
     {
       this->hauptfenster->aktualisiere();
-#if 0
       if (this->hauptfenster->is_visible())
         this->main->run(*this->hauptfenster);
-#endif
       return;
     } // void UI_Gtkmm::spiel_endet()
 
