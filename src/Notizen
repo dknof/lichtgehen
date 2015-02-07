@@ -1,12 +1,11 @@
 * Neuer Name
 * Unter Windows kompilieren
 * Programme aus Datei lesen
+* lib.a wieder raus
 
 Struktur
 * Kommandozeilenargumente
 * KI konfigurieren
-* pdf-Ausgabe als OS
-* spieler/programm: Klasse umbenennen / als Teil von "Spieler"
 * UI global
 * Klasse Spiel
   - Enthält das Spielfeld und die Spieler
@@ -30,3 +29,4 @@ KI
   - Einfache Bereiche schnell füllen
 * Strategie: Bis zur Entfernung von 5 Schritten einfach zum Gegner gehen
 * Taktik: Raum abschneiden
+* einfache Prüfung auf einen Schritt Entfernung: wenn zwei Richtungen maximal einen weiteren Schritt machen können
