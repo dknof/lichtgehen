@@ -34,14 +34,23 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#ifndef UI_GTKMM_PDF_EXPORT_H
-#define UI_GTKMM_PDF_EXPORT_H
+#ifndef UI_CAIRO_SPIELRASTER_H
+#define UI_CAIRO_SPIELRASTER_H
 
 class Spielraster;
+#ifdef INCLUDE_GTKMM_HEADERS
+#include <cairomm/cairomm.h>
+#endif
 
 namespace UI_Gtkmm {
-  // speichert das Spielraster
-  void speicher_spielraster(Spielraster const& spielraster);
+  // speichert das Spielraster in ein pdf oder png
+  void speicher(Spielraster const& spielraster, string const& datei);
+
+#ifdef INCLUDE_GTKMM_HEADERS
+  // zeichnet das Spielraster
+  void zeichne(Spielraster const& spielraster,
+               Cairo::RefPtr<Cairo::Context> const& cr);
+#endif
 } // namespace UI_Gtkmm
 
-#endif // #ifndef UI_GTKMM_PDF_EXPORT_H
+#endif // #ifndef UI_CAIRO_SPIELRASTER_H

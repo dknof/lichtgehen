@@ -40,7 +40,7 @@
 #include "spieler/bot.h"
 #include "spieler/mensch.h"
 #include "ui/ui.h"
-#include "ui/gtkmm/pdf_export.h"
+#include "ui/gtkmm/spielraster.h"
 
 #include <string>
 using std::string;
@@ -219,7 +219,8 @@ main_eigenes_spiel(int& argc, char* argv[])
     //break;
   } // while (spielraster.spieler_im_spiel())
 
-  UI_Gtkmm::speicher_spielraster(spielraster);
+  UI_Gtkmm::speicher(spielraster, "Spielraster.pdf");
+//  UI_Gtkmm::speicher(spielraster, "Spielraster.png");
 
   for (auto& s : spieler)
     s->spiel_endet();
@@ -316,7 +317,8 @@ main_wettbewerb(int& argc, char* argv[])
     } // if (zeile == …)
   } // while (true)
 
-  UI_Gtkmm::speicher_spielraster(spielraster);
+  UI_Gtkmm::speicher(spielraster, "Spielraster.pdf");
+  //UI_Gtkmm::speicher(spielraster, "Spielraster.png");
 
   //usleep(20*1000);
   //cdebug << "___\n" << spielraster << endl;

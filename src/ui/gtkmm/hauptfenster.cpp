@@ -37,6 +37,7 @@
 #include "hauptfenster.h"
 #include "hilfe.h"
 #include "ueber.h"
+#include "spielraster.h"
 #include "../../spielraster/spielraster.h"
 
 #include <gtkmm.h>
@@ -295,139 +296,7 @@ namespace UI_Gtkmm {
       cr->scale(static_cast<double>(allocation.get_width()) / breite,
                 static_cast<double>(allocation.get_height()) / laenge);
 
-      cr->save();
-      cr->set_source_rgb(1, 1, 1);
-      cr->paint();
-      cr->restore();
-
-      // Felder malen
-      cr->save();
-      cr->set_source_rgb(0, 0, 0);
-      for (int x = 0; x < breite; ++x) {
-        for (int y = 0; y < laenge; ++y) {
-          if (spielraster(x, y))
-            cr->rectangle(x, y, 1, 1);
-        } // for (y)
-      } // for (x)
-      cr->fill();
-      cr->restore();
-
-      // Pfade der Bots wieder freimachen
-      cr->save();
-      cr->set_source_rgb(1, 1, 1);
-      for (int b = 0; b < spielraster.spieler_anz(); ++b)
-        for (auto const f : spielraster.weg(b))
-          cr->rectangle(f.x(), f.y(), 1, 1);
-      cr->fill();
-      cr->restore();
-
-      // Einflussbereich der Bots malen
-      cr->save();
-      for (int b = 0; b < spielraster.spieler_anz(); ++b) {
-        auto const& color = spieler_colors[std::min(b, static_cast<int>(spieler_colors.size()) - 1)];
-        cr->set_source_rgba(color.get_red_p(),
-                            color.get_green_p(),
-                            color.get_blue_p(),
-                            0.2);
-        auto raster = spielraster.einflussbereich(b);
-        for (int x = 0; x < breite; ++x) {
-          for (int y = 0; y < laenge; ++y) {
-            if (raster(x, y))
-              cr->rectangle(x, y, 1, 1);
-          } // for (y)
-        } // for (x)
-        for (auto const& p : spielraster.weg(b))
-          cr->rectangle(p.x(), p.y(), 1, 1);
-        cr->fill();
-      } // for (b)
-      cr->restore();
-
-      // Linien malen
-      cr->save();
-      cr->set_source_rgb(0.5, 0.5, 0.5);
-      cr->set_line_width(breite / static_cast<double>(allocation.get_width()));
-      for (int x = 0; x <= breite; ++x)
-        cr->move_to(x, 0), cr->line_to(x, laenge);
-      cr->stroke();
-      cr->restore();
-      cr->save();
-      cr->set_source_rgb(0.5, 0.5, 0.5);
-      cr->set_line_width(laenge / static_cast<double>(allocation.get_height()));
-      for (int y = 0; y <= laenge; ++y)
-        cr->move_to(0, y), cr->line_to(breite, y);
-      cr->stroke();
-      cr->restore();
-
-      // Pfade der Bots malen
-      cr->save();
-      cr->set_line_width(0.6);
-      cr->set_line_join(Cairo::LINE_JOIN_ROUND);
-      //cr->set_line_cap(Cairo::LINE_CAP_ROUND);
-
-      for (int b = 0; b < spielraster.spieler_anz(); ++b) {
-        auto const& color = spieler_colors[std::min(b, static_cast<int>(spieler_colors.size()) - 1)];
-        cr->set_source_rgb(color.get_red_p(),
-                           color.get_green_p(),
-                           color.get_blue_p());
-        auto const p = spielraster.weg(b)[0];
-        switch (spielraster.weg(b).size() == 1 ? p.richtung() : spielraster.weg(b)[1].richtung()) {
-        case Richtung::NORDEN:
-          cr->move_to(p.x() + 0.5, p.y() + 0.7);
-          break;
-        case Richtung::SUEDEN:
-          cr->move_to(p.x() + 0.5, p.y() + 0.3);
-          break;
-        case Richtung::OSTEN:
-          cr->move_to(p.x() + 0.3, p.y() + 0.5);
-          break;
-        case Richtung::WESTEN:
-          cr->move_to(p.x() + 0.7, p.y() + 0.5);
-          break;
-        } // switch (p.richtung())
-        for (auto const& p : spielraster.weg(b))
-          if (p)
-            cr->line_to(p.x() + 0.5, p.y() + 0.5);
-        cr->stroke();
-      } // for (b)
-      cr->restore();
-      cr->save();
-      cr->set_line_width(0.01);
-      cr->set_line_join(Cairo::LINE_JOIN_ROUND);
-      for (int b = 0; b < spielraster.spieler_anz(); ++b) {
-        auto const& color = spieler_colors[std::min(b, static_cast<int>(spieler_colors.size()) - 1)];
-        cr->set_source_rgb(color.get_red_p(),
-                           color.get_green_p(),
-                           color.get_blue_p());
-        auto const p = spielraster.weg(b).back();
-        if (!p)
-          continue;
-        cr->move_to(p.x() + 0.5, p.y() + 0.5);
-        switch (p.richtung()) {
-        case Richtung::NORDEN:
-          cr->rel_line_to(-0.4, 0);
-          cr->rel_line_to(0.4, -0.4);
-          cr->rel_line_to(0.4, 0.4);
-          break;
-        case Richtung::SUEDEN:
-          cr->rel_line_to(-0.4, 0);
-          cr->rel_line_to(0.4, 0.4);
-          cr->rel_line_to(0.4, -0.4);
-          break;
-        case Richtung::OSTEN:
-          cr->rel_line_to(0, -0.4);
-          cr->rel_line_to(0.4, 0.4);
-          cr->rel_line_to(-0.4, 0.4);
-          break;
-        case Richtung::WESTEN:
-          cr->rel_line_to(0, -0.4);
-          cr->rel_line_to(-0.4, 0.4);
-          cr->rel_line_to(0.4, 0.4);
-          break;
-        } // switch (p.richtung())
-        cr->close_path();
-        cr->fill();
-      } // for (b)
-      cr->restore();
+      zeichne(spielraster, cr);
 
       return true;
     } // bool Hauptfenster::aktualisiere_spielraster(Cairo::RefPtr<Cairo::Context> const& cr)

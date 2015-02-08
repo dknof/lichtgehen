@@ -37,6 +37,7 @@
 #ifndef CONSTANTS_UI_GTKMM_H
 #define CONSTANTS_UI_GTKMM_H
 
+#define INCLUDE_GTKMM_HEADERS
 #include "../constants.h"
 
 #endif // #ifndef CONSTANTS_UI_GTKMM_H

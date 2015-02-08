@@ -1,3 +1,3 @@
-OBJECTS = gtkmm.o hauptfenster.o hilfe.o ueber.o pdf_export.o
+OBJECTS = gtkmm.o hauptfenster.o hilfe.o ueber.o spielraster.o
 
 DIRECTORIES = 

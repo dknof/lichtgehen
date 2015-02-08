@@ -34,11 +34,11 @@
    Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.
    */
 
-#include "pdf_export.h"
+#include "constants.h"
+#include "spielraster.h"
 #include "../../spielraster/spielraster.h"
 
-#include <gtkmm.h>
-#include <fstream>
+#include <gdkmm.h>
 
 namespace UI_Gtkmm {
   auto const spieler_colors
@@ -50,30 +50,77 @@ namespace UI_Gtkmm {
                          Gdk::Color("#ed0"),
                          Gdk::Color("#ccc")
                          });
-
   /**
-   ** Speichert das Spielraster in "Spielraster.pdf"
+   ** Speichert das Spielraster in ein pdf oder png
    ** 
-   ** @param     -
+   ** @param     spielraster   Spielraster
+   ** @param     datei         Dateiname
    **
    ** @return    -
    **
-   ** @version   2015-01-21
+   ** @version   2015-02-07
    **/
   void
-    speicher_spielraster(Spielraster const& spielraster)
+    speicher(Spielraster const& spielraster, string const& datei)
     {
+      if (datei.length() < 5) {
+        cerr << "Typ der Datei '" << datei << "' unbekannt, Name ist zu kurz.\n";
+        exit(EXIT_FAILURE);
+      }
+      if (datei.find(".") == string::npos) {
+        cerr << "Typ der Datei '" << datei << "' nicht erkannt, kein '.' gefunden.\n";
+        exit(EXIT_FAILURE);
+      }
+      auto const typ = string(datei, datei.find_last_of(".") + 1);
+      if (   (typ != "pdf")
+          && (typ != "png") ) {
+        cerr << "Typ '" << typ << "' der Datei '" << datei << "' nicht unterstützt, nur 'pdf' und 'png' werden unterstützt\n";
+        exit(EXIT_FAILURE);
+      }
+      if (typ == "png") {
+        cerr << "Die Unterstützung für Typ '" << typ << "' der Datei '" << datei << "' ist noch fehlerhaft.\n";
+        exit(EXIT_FAILURE);
+      }
 
       auto const breite = spielraster.breite();
       auto const laenge = spielraster.laenge();
 
-      auto surface =
-        Cairo::PdfSurface::create("Spielraster.pdf",
-                                  10 * breite,
-                                  10 * laenge);
+      Cairo::RefPtr<Cairo::Surface> surface;
+      if (typ == "pdf")
+        surface = Cairo::PdfSurface::create(datei, 10 * breite, 10 * laenge);
+      else
+        surface = Cairo::ImageSurface::create_from_png(datei);
+
+      if (!surface) {
+        cerr << "Fehler beim Erstellen des Cairo::Surface von Typ '" << typ << "' (Datei '" << datei << "').\n";
+        exit(EXIT_FAILURE);
+      }
 
       auto cr = Cairo::Context::create(surface);
       cr->scale(10.0, 10.0);
+
+      zeichne(spielraster, cr);
+
+      cr->show_page();
+      return ;
+    } // void speicher(Spielraster const& spielraster, string const& datei)
+
+  /**
+   ** Zeichnet das Spielraster
+   ** 
+   ** @param     spielraster   Spielraster
+   ** @param     cr            Zeichenbereich
+   **
+   ** @return    -
+   **
+   ** @version   2015-02-07
+   **/
+  void
+    zeichne(Spielraster const& spielraster,
+            Cairo::RefPtr<Cairo::Context> const& cr)
+    {
+      auto const breite = spielraster.breite();
+      auto const laenge = spielraster.laenge();
 
       cr->save();
       cr->set_source_rgb(1, 1, 1);
@@ -168,37 +215,39 @@ namespace UI_Gtkmm {
           if (p)
             cr->line_to(p.x() + 0.5, p.y() + 0.5);
         {
-        auto p = spielraster.weg(b).back();
-        if (!p)
-          p = spielraster.weg(b)[spielraster.weg(b).size() - 2];
-        if (p) {
-        switch (p.richtung()) {
-        case Richtung::NORDEN:
-          cr->rel_line_to(0, -0.5);
-          break;
-        case Richtung::SUEDEN:
-          cr->rel_line_to(0, 0.5);
-          break;
-        case Richtung::OSTEN:
-          cr->rel_line_to(0.5, 0);
-          break;
-        case Richtung::WESTEN:
-          cr->rel_line_to(-0.5, 0);
-          break;
-        } // switch (p.richtung())
-          //auto const p2 = p + p.richtung();
-        //cr->line_to(p2.x() + 0.5, p2.y() + 0.5);
-        }
+          // letzter Zug
+          auto p = spielraster.weg(b).back();
+          if (!p) {
+            p = spielraster.weg(b)[spielraster.weg(b).size() - 2];
+            if (p) {
+              switch (p.richtung()) {
+              case Richtung::NORDEN:
+                cr->rel_line_to(0, -0.5);
+                break;
+              case Richtung::SUEDEN:
+                cr->rel_line_to(0, 0.5);
+                break;
+              case Richtung::OSTEN:
+                cr->rel_line_to(0.5, 0);
+                break;
+              case Richtung::WESTEN:
+                cr->rel_line_to(-0.5, 0);
+                break;
+              } // switch (p.richtung())
+              //auto const p2 = p + p.richtung();
+              //cr->line_to(p2.x() + 0.5, p2.y() + 0.5);
+            }
+          }
         }
         cr->stroke();
       } // for (b)
       cr->restore();
-#if 0
+
       cr->save();
       cr->set_line_width(0.01);
       cr->set_line_join(Cairo::LINE_JOIN_ROUND);
       for (int b = 0; b < spielraster.spieler_anz(); ++b) {
-        auto const& color = spieler_colors[std::min(b, static_cast<int>(spieler_colors.size()) - 1)+1];
+        auto const& color = spieler_colors[std::min(b, static_cast<int>(spieler_colors.size()) - 1)];
         cr->set_source_rgb(color.get_red_p(),
                            color.get_green_p(),
                            color.get_blue_p());
@@ -232,9 +281,7 @@ namespace UI_Gtkmm {
         cr->fill();
       } // for (b)
       cr->restore();
-#endif
 
-      cr->show_page();
       return ;
-    } // void exportiere_pdf(string const& dateiname)
+    } // void zeichne(Spielraster const& spielraster
 } // namespace UI_Gtkmm
