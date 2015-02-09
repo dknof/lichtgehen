@@ -1,22 +1,22 @@
 #!/bin/zsh
 
-# tronbot kompilieren und ausführen
+# lichtgehen kompilieren und ausführen
 
-rm ./tronbot
+rm ./lichtgehen
 
 #export CXXFLAGS="-Wall -Werror -Wno-parentheses -std=c++14 -O3"
 export CXXFLAGS="-Wall -Werror -Wno-parentheses -std=c++14 -O0 -ggdb"
 
-echo "Kompiliere tronbot…"
+echo "Kompiliere lichtgehen…"
 make -j1 || exit
 
-echo "Starte tronbot…"
-#<../Spielraster/simple.txt ./tronbot
+echo "Starte lichtgehen…"
+#<../Spielraster/simple.txt ./lichtgehen
 
-#BOTB="../src/tronbot"
+#BOTB="../src/lichtgehen"
 BOTA="bots/dummybot/bot"
 
-#BOTB="../src/tronbot"
+#BOTB="../src/lichtgehen"
 BOTB="bots/Burow/FalkBot"
 #BOTB="bots/Wagenfuehr/bot"
 
@@ -44,16 +44,16 @@ SPIELRASTER="../Spielraster/Säulen_21.txt"
 
 # Eigenes Spiel
   echo "Eigenes Spiel"
-  ./tronbot <"$SPIELRASTER"
+  ./lichtgehen <"$SPIELRASTER"
   exit
 
 
-#./tronbot <../freiesmagazin-2014-10-contest/results_turn1/Burow_Bock_cross.txt
+#./lichtgehen <../freiesmagazin-2014-10-contest/results_turn1/Burow_Bock_cross.txt
 #exit
 
 if grep -q "USE_EIGENES_SPIEL *= *true" Makefile.modules; then
   echo "Eigenes Spiel"
-  time ./tronbot <"$SPIELRASTER"
+  time ./lichtgehen <"$SPIELRASTER"
 else
   echo "Serverspiel"
   # Spiel über den Server

@@ -1,9 +1,9 @@
 /*
-   tronbot
+   lichtgehen
 
    Copyright (C) 2014 by Diether Knof
 
-   This file is part of tronbot.
+   This file is part of lichtgehen.
 
    Tronbot is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
    You should have received a copy of the GNU General Public License
    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
-   Diese Datei ist Teil von tronbot.
+   Diese Datei ist Teil von lichtgehen.
 
    Trobot ist Freie Software: Sie können es unter den Bedingungen
    der GNU General Public License, wie von der Free Software Foundation,
@@ -131,9 +131,9 @@ main_eigenes_spiel(int& argc, char* argv[])
     case 0:
       s = std::move(make_unique<Mensch>(*ui));
       // Die möglichen Bots, in der Reihenfolge der Bewertung vom Programmierwettbewerb
-      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Knof/src/tronbot", "Knof");
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Knof/src/lichtgehen", "Knof");
       //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Burow/FalkBot", "Burow"); 
-      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Scharm/tronbot.sh", "Scharm"); // Fehler
+      //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Scharm/lichtgehen.sh", "Scharm"); // Fehler
       //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/StaudingerP/run_bot.sh", "StaudingerP");
       //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/Demel/bin/bot", "Demel");
       //s = Spieler::create("../freiesmagazin-2014-10-contest/bots/StaudingerC/bot.py", "StaudingerC");

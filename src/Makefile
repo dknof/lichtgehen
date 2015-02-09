@@ -14,9 +14,9 @@ endif
 include Makefile.objects
 
 .PHONY: all
-all : tronbot
+all : lichtgehen
 
-tronbot : objects directories
+lichtgehen : objects directories
 	$(CXX) $(CXXFLAGS) \
 	  $(OBJECTS) \
 	  $(DIRECTORIES:%=%/lib.a) \
@@ -30,9 +30,9 @@ tronbot : objects directories
 watch :
 	@$(RM) commands.sh
 	@echo '#!/bin/bash' >> commands.sh
-	@echo 'if [ -e ./tronbot ]; then' >> commands.sh
+	@echo 'if [ -e ./lichtgehen ]; then' >> commands.sh
 	@echo '  for f in $$(find . -name "*.cpp"); do' >> commands.sh
-	@echo '    if [ $$f -nt ./tronbot ]; then rm ./tronbot; break; fi' >> commands.sh
+	@echo '    if [ $$f -nt ./lichtgehen ]; then rm ./lichtgehen; break; fi' >> commands.sh
 	@echo '  done' >> commands.sh
 	@echo 'fi' >> commands.sh
 	@echo 'if [ $$(grep -c processor /proc/cpuinfo) -gt 1 ]; then' >> commands.sh
@@ -52,5 +52,5 @@ include $(DEPTH)/Makefile.rules
 tgz : clean
 	$(RM) commands.sh
 	cd ../..; \
-	  $(RM) tronbot_Diether_Knof.tgz; \
-	tar czvf tronbot_Diether_Knof.tgz tronbot --exclude .git --exclude .gitignore --exclude freiesmagazin-2014-10-contest --exclude tronbot.vimsession --exclude src/tronbot
+	  $(RM) lichtgehen.tgz; \
+	tar czvf lichtgehen.tgz lichtgehen --exclude .git --exclude .gitignore --exclude freiesmagazin-2014-10-contest --exclude lichtgehen.vimsession --exclude src/lichtgehen

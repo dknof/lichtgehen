@@ -3,7 +3,7 @@
 
    Copyright (C) 2014 by Diether Knof
 
-   This file is part of tronbot.
+   This file is part of lichtgehen.
 
    Tronbot is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
    You should have received a copy of the GNU General Public License
    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
-   Diese Datei ist Teil von tronbot.
+   Diese Datei ist Teil von lichtgehen.
 
    Trobot ist Freie Software: Sie können es unter den Bedingungen
    der GNU General Public License, wie von der Free Software Foundation,

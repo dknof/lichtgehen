@@ -52,7 +52,7 @@ clean :
 	-$(RM) *.d
 	-$(RM) lib.a
 ifeq ($(DEPTH),.)
-	-$(RM) tronbot
+	-$(RM) lichtgehen
 	-$(RM) core core.*
 	-$(RM) tags
 endif
