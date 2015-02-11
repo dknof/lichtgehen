@@ -7,10 +7,10 @@ USE_EINGABE = false
 
 # Spiel, ohne einen separaten Server.
 # Muss für den Wettbewerb auf „false“ stehen
-USE_EIGENES_SPIEL = true
+USE_EIGENES_SPIEL = false
 
 # Mit Threads arbeiten (9 Stück)
 USE_THREADS = true
 
 # Zeitbeschränkung für die Tiefensuche (in Sekunden)
-CPPFLAGS += -DZEITBESCHRAENKUNG=0.5
+CPPFLAGS += -DZEITBESCHRAENKUNG=0.05

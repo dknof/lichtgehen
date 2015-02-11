@@ -17,8 +17,9 @@ echo "Starte lichtgehen…"
 BOTA="bots/dummybot/bot"
 
 #BOTB="../src/lichtgehen"
-BOTB="bots/Burow/FalkBot"
+#BOTB="bots/Burow/FalkBot"
 #BOTB="bots/Wagenfuehr/bot"
+BOTB="../javatron.jar"
 
 SPIELRASTER="Test.txt"
 #SPIELRASTER="../Spielraster/Test.txt"
@@ -43,10 +44,11 @@ SPIELRASTER="../Spielraster/Säulen_21.txt"
 #SPIELRASTER="../Spielraster/5x5_1.txt"
 
 # Eigenes Spiel
-  echo "Eigenes Spiel"
-  ./lichtgehen <"$SPIELRASTER"
-  exit
+  #echo "Eigenes Spiel"
+  #./lichtgehen <"$SPIELRASTER"
+  #exit
 
+chmod +x "$BOTA" "$BOTB"
 
 #./lichtgehen <../freiesmagazin-2014-10-contest/results_turn1/Burow_Bock_cross.txt
 #exit
