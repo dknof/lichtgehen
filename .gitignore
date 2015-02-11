@@ -9,8 +9,10 @@ Ergebnisse.*/
 Ergebnisse.zip
 
 Spielraster.pdf
+Spielraster_Verlauf.pdf
+Spielraster.png
 
-javatron*.jar
+javatron/
 
 # Fremdcode
 freiesmagazin-2014-10-contest/

@@ -45,6 +45,8 @@ class Spielraster;
 namespace UI_Gtkmm {
   // speichert das Spielraster in ein pdf oder png
   void speicher(Spielraster const& spielraster, string const& datei);
+  // speichert das Spielraster in ein pdf
+  void speicher_verlauf(Spielraster const& spielraster, string const& datei);
 
 #ifdef INCLUDE_GTKMM_HEADERS
   // zeichnet das Spielraster

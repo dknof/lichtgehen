@@ -97,6 +97,8 @@ namespace UI_Gtkmm {
                                "Ende: in der Historie zur aktuellen Runde springen\n"
                                "r: angezeigtes Spielfeld ausgeben und in Test.txt schreiben (zum Testen der Spielsituation)\n"
                                "R: angezeigtes Spielfeld „schön“ ausgeben\n"
+                               "p: angezeigtes Spielfeld in der Datei „Spielraster.pdf“ speichern\n"
+                               "P: Spielverlauf (als Bilder) in der Datei „Spielraster_Verlauf.pdf“ speichern\n"
                                "\n"
                                "<b>Sonstiges</b>\n"
                                "* Schritte gegen eine Wand werden ignoriert (außer es gibt keine andere Möglichkeit)\n"

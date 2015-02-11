@@ -79,7 +79,7 @@ cdebug_ = &cerr;
 main_eigenes_spiel(argc, argv);
 #else // Wettbewerb
 cdebug_ = new std::ostringstream;
-cdebug_ = &cout;
+//cdebug_ = &cout;
 main_wettbewerb(argc, argv);
 #endif
 
@@ -220,6 +220,7 @@ main_eigenes_spiel(int& argc, char* argv[])
   } // while (spielraster.spieler_im_spiel())
 
   UI_Gtkmm::speicher(spielraster, "Spielraster.pdf");
+  UI_Gtkmm::speicher_verlauf(spielraster, "Spielraster_Verlauf.pdf");
 //  UI_Gtkmm::speicher(spielraster, "Spielraster.png");
 
   for (auto& s : spieler)
@@ -251,7 +252,7 @@ main_wettbewerb(int& argc, char* argv[])
   //auto ui = UI::create("cout", argc, argv);
   //auto ui = UI::create("cerr", argc, argv);
 #endif
-  //ui = UI::create("none", argc, argv);
+  ui = UI::create("none", argc, argv);
 #ifdef USE_EINGABE
   Mensch spieler(*ui);
 #else
@@ -318,6 +319,7 @@ main_wettbewerb(int& argc, char* argv[])
   } // while (true)
 
   UI_Gtkmm::speicher(spielraster, "Spielraster.pdf");
+  UI_Gtkmm::speicher_verlauf(spielraster, "Spielraster_Verlauf.pdf");
   //UI_Gtkmm::speicher(spielraster, "Spielraster.png");
 
   //usleep(20*1000);

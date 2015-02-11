@@ -13,13 +13,13 @@ make -j1 || exit
 echo "Starte lichtgehen…"
 #<../Spielraster/simple.txt ./lichtgehen
 
-#BOTB="../src/lichtgehen"
-BOTA="bots/dummybot/bot"
+BOTA="../src/lichtgehen"
+#BOTA="bots/dummybot/bot"
 
-#BOTB="../src/lichtgehen"
+BOTB="../src/lichtgehen"
 #BOTB="bots/Burow/FalkBot"
 #BOTB="bots/Wagenfuehr/bot"
-BOTB="../javatron.jar"
+#BOTB="../javatron.jar"
 
 SPIELRASTER="Test.txt"
 #SPIELRASTER="../Spielraster/Test.txt"

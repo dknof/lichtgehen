@@ -16,6 +16,6 @@ for f in ../freiesmagazin-2014-10-contest/results/*.txt; do
   echo $(basename "$f")
   ./lichtgehen <"$f" >/dev/null
   inkscape "Spielraster.pdf" --without-gui --export-png="Spielraster.png" >/dev/null
-  mv Spielraster.pdf ../Ergebnisse.pdf/$(basename "$f" .txt).pdf
+  mv Spielraster_Verlauf.pdf ../Ergebnisse.pdf/$(basename "$f" .txt).pdf
   mv Spielraster.png ../Ergebnisse.png/$(basename "$f" .txt).png
 done

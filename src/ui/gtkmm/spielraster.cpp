@@ -106,6 +106,53 @@ namespace UI_Gtkmm {
     } // void speicher(Spielraster const& spielraster, string const& datei)
 
   /**
+   ** Speichert den Verlauf des Spielrasters in ein pdf
+   ** 
+   ** @param     spielraster   Spielraster
+   ** @param     datei         Dateiname
+   **
+   ** @return    -
+   **
+   ** @version   2015-02-07
+   **/
+  void
+    speicher_verlauf(Spielraster const& spielraster, string const& datei)
+    {
+      if (datei.length() < 5) {
+        cerr << "Typ der Datei '" << datei << "' unbekannt, Name ist zu kurz.\n";
+        exit(EXIT_FAILURE);
+      }
+      if (datei.find(".") == string::npos) {
+        cerr << "Typ der Datei '" << datei << "' nicht erkannt, kein '.' gefunden.\n";
+        exit(EXIT_FAILURE);
+      }
+      auto const typ = string(datei, datei.find_last_of(".") + 1);
+      if (   (typ != "pdf") ) {
+        cerr << "Typ '" << typ << "' der Datei '" << datei << "' nicht unterstützt, nur 'pdf' wird unterstützt\n";
+        exit(EXIT_FAILURE);
+      }
+
+      auto const breite = spielraster.breite();
+      auto const laenge = spielraster.laenge();
+
+      auto surface = Cairo::PdfSurface::create(datei, 10 * breite, 10 * laenge);
+
+      if (!surface) {
+        cerr << "Fehler beim Erstellen des Cairo::Surface von Typ '" << typ << "' (Datei '" << datei << "').\n";
+        exit(EXIT_FAILURE);
+      }
+
+      auto cr = Cairo::Context::create(surface);
+      cr->scale(10.0, 10.0);
+
+      for (int r = 0; r < spielraster.runde(); ++r) {
+        zeichne(spielraster.historie(r), cr);
+        cr->show_page();
+      }
+      return ;
+    } // void speicher_verlauf(Spielraster spielraster, string datei)
+
+  /**
    ** Zeichnet das Spielraster
    ** 
    ** @param     spielraster   Spielraster

@@ -436,6 +436,14 @@ namespace UI_Gtkmm {
           // Raster ausgeben
           cerr << this->ui->spielraster->historie(this->historie_->get_value() - 1);
           return true;
+        case GDK_KEY_p:
+          // Raster in ein pdf ausgaben
+          speicher(this->ui->spielraster->historie(this->historie_->get_value() - 1), "Spielraster.pdf");
+          return true;
+        case GDK_KEY_P:
+          // Verlauf in ein pdf ausgaben
+          speicher_verlauf(*this->ui->spielraster, "Spielraster_Verlauf.pdf");
+          return true;
         default:
           return false;
         } // switch (key->keyval)
